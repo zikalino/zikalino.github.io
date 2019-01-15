@@ -4,7 +4,7 @@
   <title><![CDATA[Zim's Notes]]></title>
   <link href="http://zikalino.github.io/atom.xml" rel="self"/>
   <link href="http://zikalino.github.io/"/>
-  <updated>2019-01-15T10:02:17+08:00</updated>
+  <updated>2019-01-15T10:15:36+08:00</updated>
   <id>http://zikalino.github.io/</id>
   <author>
     <name><![CDATA[Your Name]]></name>
@@ -12,5 +12,14 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Azure DevTest Labs REST Examples in Ansible]]></title>
+    <link href="http://zikalino.github.io/blog/2019/01/15/azure-devtest-labs-rest-examples-in-ansible/"/>
+    <updated>2019-01-15T10:14:39+08:00</updated>
+    <id>http://zikalino.github.io/blog/2019/01/15/azure-devtest-labs-rest-examples-in-ansible</id>
+    <content type="html"><![CDATA[<p>So this is first post&hellip;.</p>
+]]></content>
+  </entry>
   
 </feed>
