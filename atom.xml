@@ -4,7 +4,7 @@
   <title><![CDATA[Zim's Notes]]></title>
   <link href="http://zikalino.github.io/atom.xml" rel="self"/>
   <link href="http://zikalino.github.io/"/>
-  <updated>2019-01-15T10:15:36+08:00</updated>
+  <updated>2019-01-20T10:33:16+08:00</updated>
   <id>http://zikalino.github.io/</id>
   <author>
     <name><![CDATA[Your Name]]></name>
@@ -14,11 +14,274 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Azure DevTest Labs REST Examples in Ansible]]></title>
+    <title type="html"><![CDATA[Module Azure_rm_virtualmachine - Delta]]></title>
+    <link href="http://zikalino.github.io/blog/2019/01/20/module-azure-rm-virtualmachine-delta/"/>
+    <updated>2019-01-20T10:26:39+08:00</updated>
+    <id>http://zikalino.github.io/blog/2019/01/20/module-azure-rm-virtualmachine-delta</id>
+    <content type="html"><![CDATA[<p>I have done some research on <strong>azure_rm_virtualmachine</strong> module. It&rsquo;s one of the oldest modules. I went through all the properties supported by Azure REST API and compared with support available via module. I paid attention to:
+- what is currently supported
+- tested all the properties, whether they are updatable
+- checked idempotency supprt in the module</p>
+
+<p>Below is a quick compilation and comparison:</p>
+
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Idempotence</th>
+<th>Support In Ansible</th>
+<th>Idempotence in Ansible</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>identity</td>
+<td></td>
+<td>NO</td>
+<td></td>
+</tr>
+<tr>
+<td>location</td>
+<td></td>
+<td>YES</td>
+<td></td>
+</tr>
+<tr>
+<td>plan</td>
+<td></td>
+<td>YES</td>
+<td></td>
+</tr>
+<tr>
+<td>properties.additionalCapabilities.ultraSSDEnabled</td>
+<td>deallocated only</td>
+<td>NO</td>
+<td></td>
+</tr>
+<tr>
+<td>properties.availabilitySet.id</td>
+<td>changes not allowed</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>properties.diagnosticsProfile.bootDiagnostics.enabled</td>
+<td></td>
+<td>NO</td>
+<td></td>
+</tr>
+<tr>
+<td>properties.diagnosticsProfile.bootDiagnostics.storageUri</td>
+<td></td>
+<td>NO</td>
+<td></td>
+</tr>
+<tr>
+<td>properties.hardwareProfile.vmSize</td>
+<td></td>
+<td>YES</td>
+<td>YES (check)</td>
+</tr>
+<tr>
+<td>properties.licenseType</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>properties.networkProfile.networkInterfaces[].id</td>
+<td></td>
+<td>YES</td>
+<td>YES (check)</td>
+</tr>
+<tr>
+<td>properties.osProfile.adminPassword</td>
+<td>OK</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>properties.osProfile.adminUsername</td>
+<td>not allowed</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>properties.osProfile.allowExtensionOperations</td>
+<td>OK</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>properties.osProfile.computerName</td>
+<td>not allowed</td>
+<td>YES</td>
+<td>YES (check)</td>
+</tr>
+<tr>
+<td>properties.osProfile.customData</td>
+<td>not allowed</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>properties.osProfile.linuxConfiguration&hellip;&hellip;.</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>properties.osProfile.secrets</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>properties.osProfile.windowsConfiguration&hellip;&hellip;.</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>properties.osProfile.</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>properties.storageProfile.dataDisks[]&hellip;&hellip;&hellip;</td>
+<td></td>
+<td>YES - check details</td>
+<td></td>
+</tr>
+<tr>
+<td>properties.storageProfile.imageReference</td>
+<td>changes not allowed</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>properties.storageProfile.osDisk&hellip;&hellip;&hellip;..</td>
+<td></td>
+<td>YES - check details</td>
+<td></td>
+</tr>
+<tr>
+<td>properties.storageProfile.osDisk.caching</td>
+<td>OK</td>
+<td>YES</td>
+<td>YES (check)</td>
+</tr>
+<tr>
+<td>properties.storageProfile.osDisk.name</td>
+<td>not allowed</td>
+<td>YES</td>
+<td>YES (check)</td>
+</tr>
+<tr>
+<td>properties.storageProfile.osDisk.diskSizeGB</td>
+<td>deallocated only</td>
+<td>YES</td>
+<td>YES (check)</td>
+</tr>
+<tr>
+<td>properties.storageProfile.osDisk.writeAcceleratorEnabled</td>
+<td>managed only</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>properties.storageProfile.osDisk.osType</td>
+<td>changes not allowed</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>properties.storageProfile.osDisk.createOption</td>
+<td>changes not allowed</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>tags</td>
+<td></td>
+<td>YES</td>
+<td></td>
+</tr>
+<tr>
+<td>zones</td>
+<td></td>
+<td>NO</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+
+<p>In addition REST API provides several APIs, some of them are supported, but some are not:</p>
+
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Support In Ansible</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Capture</td>
+<td>NO</td>
+</tr>
+<tr>
+<td>Convert to Managed Disks</td>
+<td></td>
+</tr>
+<tr>
+<td>Deallocate</td>
+<td>YES</td>
+</tr>
+<tr>
+<td>Generalize</td>
+<td>YES (2.8)</td>
+</tr>
+<tr>
+<td>Perform Maintenance</td>
+<td>NO</td>
+</tr>
+<tr>
+<td>Power Off</td>
+<td>YES</td>
+</tr>
+<tr>
+<td>Redeploy</td>
+<td>NO</td>
+</tr>
+<tr>
+<td>Reimage</td>
+<td>NO</td>
+</tr>
+<tr>
+<td>Restart</td>
+<td>YES</td>
+</tr>
+<tr>
+<td>Start</td>
+<td>YES</td>
+</tr>
+</tbody>
+</table>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Just a First Post]]></title>
     <link href="http://zikalino.github.io/blog/2019/01/15/azure-devtest-labs-rest-examples-in-ansible/"/>
     <updated>2019-01-15T10:14:39+08:00</updated>
     <id>http://zikalino.github.io/blog/2019/01/15/azure-devtest-labs-rest-examples-in-ansible</id>
-    <content type="html"><![CDATA[<p>So this is first post&hellip;.</p>
+    <content type="html"><![CDATA[<p>Nothing much in here. I have written a lot of notes mostly related to Ansible, but also to Azure REST API, and it&rsquo;s time to publish it them somewhere and made available to wider public.
+So, Hello World!</p>
 ]]></content>
   </entry>
   
