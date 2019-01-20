@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
+
   <title><![CDATA[Zim's Notes]]></title>
   <link href="http://zikalino.github.io/atom.xml" rel="self"/>
   <link href="http://zikalino.github.io/"/>
-  <updated>2019-01-20T16:53:01+08:00</updated>
+  <updated>2019-01-20T16:59:41+08:00</updated>
   <id>http://zikalino.github.io/</id>
   <author>
     <name><![CDATA[Your Name]]></name>
@@ -13,7 +14,7 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Module azure_rm_virtualmachine - delta]]></title>
+    <title type="html"><![CDATA[Module Azure_rm_virtualmachine - Delta]]></title>
     <link href="http://zikalino.github.io/blog/2019/01/20/module-azure-rm-virtualmachine-delta/"/>
     <updated>2019-01-20T10:26:39+08:00</updated>
     <id>http://zikalino.github.io/blog/2019/01/20/module-azure-rm-virtualmachine-delta</id>
@@ -275,7 +276,7 @@
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Just a first post]]></title>
+    <title type="html"><![CDATA[Just a First Post]]></title>
     <link href="http://zikalino.github.io/blog/2019/01/15/azure-devtest-labs-rest-examples-in-ansible/"/>
     <updated>2019-01-15T10:14:39+08:00</updated>
     <id>http://zikalino.github.io/blog/2019/01/15/azure-devtest-labs-rest-examples-in-ansible</id>
