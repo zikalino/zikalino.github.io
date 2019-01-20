@@ -4,7 +4,7 @@
   <title><![CDATA[Zim's Notes]]></title>
   <link href="http://zikalino.github.io/atom.xml" rel="self"/>
   <link href="http://zikalino.github.io/"/>
-  <updated>2019-01-20T16:35:45+08:00</updated>
+  <updated>2019-01-20T16:41:34+08:00</updated>
   <id>http://zikalino.github.io/</id>
   <author>
     <name><![CDATA[Your Name]]></name>
@@ -14,10 +14,13 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Module Azure_rm_virtualmachine - Delta]]></title>
+    
+    <title type="html"><![CDATA[Module azure_rm_virtualmachine - delta]]></title>
     <link href="http://zikalino.github.io/blog/2019/01/20/module-azure-rm-virtualmachine-delta/"/>
+    
     <updated>2019-01-20T10:26:39+08:00</updated>
     <id>http://zikalino.github.io/blog/2019/01/20/module-azure-rm-virtualmachine-delta</id>
+    
     <content type="html"><![CDATA[<p>I have done some research on <strong>azure_rm_virtualmachine</strong> module. It&rsquo;s one of the oldest modules. I went through all the properties supported by Azure REST API and compared with support available via module. I paid attention to:
 - what is currently supported
 - tested all the properties, whether they are updatable
@@ -273,16 +276,21 @@
 </table>
 
 ]]></content>
+    
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Just a First Post]]></title>
+    
+    <title type="html"><![CDATA[Just a first post]]></title>
     <link href="http://zikalino.github.io/blog/2019/01/15/azure-devtest-labs-rest-examples-in-ansible/"/>
+    
     <updated>2019-01-15T10:14:39+08:00</updated>
     <id>http://zikalino.github.io/blog/2019/01/15/azure-devtest-labs-rest-examples-in-ansible</id>
+    
     <content type="html"><![CDATA[<p>Nothing much in here. I have written a lot of notes mostly related to Ansible, but also to Azure REST API, and it&rsquo;s time to publish it them somewhere and made available to wider public.
 So, Hello World!</p>
 ]]></content>
+    
   </entry>
   
 </feed>
