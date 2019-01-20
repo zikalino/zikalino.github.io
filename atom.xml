@@ -4,7 +4,7 @@
   <title><![CDATA[Zim's Notes]]></title>
   <link href="http://zikalino.github.io/atom.xml" rel="self"/>
   <link href="http://zikalino.github.io/"/>
-  <updated>2019-01-20T18:24:43+08:00</updated>
+  <updated>2019-01-20T18:30:56+08:00</updated>
   <id>http://zikalino.github.io/</id>
   <author>
     <name><![CDATA[Your Name]]></name>
@@ -34,11 +34,15 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Please note that it will create all the necessary dependencies:
-- resource group
-- network interface
-- public IP address
-- virtual network with subnet</p>
+<p>Please note that it will create all the necessary dependencies:</p>
+
+<ul>
+<li>resource group</li>
+<li>network interface</li>
+<li>public IP address</li>
+<li>virtual network with subnet</li>
+</ul>
+
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
