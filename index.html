@@ -18,43 +18,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://zikalino.github.io">
+  <link rel="canonical" href="http://zikalino.github.io/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <link href="/atom.xml" rel="alternate" title="Zim's Notes" type="application/atom+xml">
   <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/ender.js"></script>
   <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Zim's Notes" type="application/atom+xml">
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
-<link href="//fonts.googleapis.com/css?family=Open+Sans:400,700&subset=latin" rel="stylesheet" type="text/css" />
-<link href='http://fonts.googleapis.com/css?family=Noto+Serif:400,700' rel='stylesheet' type='text/css'>
-
-
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700,400italic' rel='stylesheet' type='text/css'>
 
   
 
 </head>
 
 <body   >
-  <nav id="main-nav" role="navigation">
-<ul class="main-navigation">
-  <li><a href="/" class="nav-link">Blog</a></li>
-  <li><a href="/blog/archives" class="nav-link">Archives</a></li>
-  <li><a href="/atom.xml" class="nav-link">RSS</a></li>
-</ul>
-
-</nav>
   <header role="banner"><hgroup>
-	
+  <img src="/images/ah_frame_transparent.svg" />
   <h1><a href="/">Zim's Notes</a></h1>
-  
-    <h2>Just work related notes.</h2>
-  
 </hgroup>
 
-</header> 
-  
+</header>
   <div id="main">
     <div id="content">
       <div class="blog-index">
@@ -67,9 +52,12 @@
     
       <h1 class="entry-title"><a href="/blog/2019/01/20/module-azure-rm-virtualmachine-delta/">Module Azure_rm_virtualmachine - Delta</a></h1>
     
-    
-      <p class="meta">
-        
+  </header>
+
+
+  
+    <p class="meta">
+      
 
 
 
@@ -82,10 +70,10 @@
 
 
 <time datetime="2019-01-20T10:26:39+08:00" pubdate data-updated="true"></time>
-        
-      </p>
-    
-  </header>
+      
+    </p>
+  
+  
 
 
   <div class="entry-content"><p>I have done some research on <strong>azure_rm_virtualmachine</strong> module. It&rsquo;s one of the oldest modules. I went through all the properties supported by Azure REST API and compared with support available via module. I paid attention to:
@@ -356,9 +344,12 @@
     
       <h1 class="entry-title"><a href="/blog/2019/01/15/azure-devtest-labs-rest-examples-in-ansible/">Just a First Post</a></h1>
     
-    
-      <p class="meta">
-        
+  </header>
+
+
+  
+    <p class="meta">
+      
 
 
 
@@ -371,10 +362,10 @@
 
 
 <time datetime="2019-01-15T10:14:39+08:00" pubdate data-updated="true"></time>
-        
-      </p>
-    
-  </header>
+      
+    </p>
+  
+  
 
 
   <div class="entry-content"><p>Nothing much in here. I have written a lot of notes mostly related to Ansible, but also to Azure REST API, and it&rsquo;s time to publish it them somewhere and made available to wider public.
@@ -394,16 +385,24 @@ So, Hello World!</p>
 </div>
 <aside class="sidebar">
   
+    <form action="https://www.google.com/search" method="get">
+      <fieldset role="search">
+        <input type="hidden" name="q" value="site:zikalino.github.io" />
+        <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+      </fieldset>
+    </form>
+  
+  
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2019/01/20/module-azure-rm-virtualmachine-delta/">Module Azure_rm_virtualmachine - Delta</a>
+        <a href="/blog/2019/01/20/module-azure-rm-virtualmachine-delta/">Module azure_rm_virtualmachine - delta</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2019/01/15/azure-devtest-labs-rest-examples-in-ansible/">Just a First Post</a>
+        <a href="/blog/2019/01/15/azure-devtest-labs-rest-examples-in-ansible/">Just a first post</a>
       </li>
     
   </ul>
@@ -415,6 +414,7 @@ So, Hello World!</p>
 
   
 </aside>
+
 
     </div>
   </div>
@@ -437,7 +437,7 @@ So, Hello World!</p>
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>
@@ -445,6 +445,9 @@ So, Hello World!</p>
 
 
 
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="js/vendor/jquery-1.9.1.min.js"><\/script>')</script>
+<script src="/javascripts/aharris.js"></script>
 
 </body>
 </html>
