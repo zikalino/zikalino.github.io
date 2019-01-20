@@ -4,7 +4,7 @@
   <title><![CDATA[Zim's Notes]]></title>
   <link href="http://zikalino.github.io/atom.xml" rel="self"/>
   <link href="http://zikalino.github.io/"/>
-  <updated>2019-01-20T16:59:41+08:00</updated>
+  <updated>2019-01-20T18:24:43+08:00</updated>
   <id>http://zikalino.github.io/</id>
   <author>
     <name><![CDATA[Your Name]]></name>
@@ -14,263 +14,127 @@
 
   
   <entry>
+    <title type="html"><![CDATA[Creating Azure Virtual Machines With Ansible and REST API]]></title>
+    <link href="http://zikalino.github.io/blog/2019/01/20/creating-azure-virtual-machines-with-ansible-and-rest-api/"/>
+    <updated>2019-01-20T18:09:56+08:00</updated>
+    <id>http://zikalino.github.io/blog/2019/01/20/creating-azure-virtual-machines-with-ansible-and-rest-api</id>
+    <content type="html"><![CDATA[
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[Module Azure_rm_virtualmachine - Delta]]></title>
     <link href="http://zikalino.github.io/blog/2019/01/20/module-azure-rm-virtualmachine-delta/"/>
     <updated>2019-01-20T10:26:39+08:00</updated>
     <id>http://zikalino.github.io/blog/2019/01/20/module-azure-rm-virtualmachine-delta</id>
-    <content type="html"><![CDATA[<p>I have done some research on <strong>azure_rm_virtualmachine</strong> module. It&rsquo;s one of the oldest modules. I went through all the properties supported by Azure REST API and compared with support available via module. I paid attention to:
-- what is currently supported
-- tested all the properties, whether they are updatable
-- checked idempotency supprt in the module</p>
+    <content type="html"><![CDATA[<p>Just go to <strong>examples</strong> folder and run following playbook:</p>
 
-<p>Below is a quick compilation and comparison:</p>
-
-<table>
-<thead>
-<tr>
-<th>Feature</th>
-<th>Idempotence</th>
-<th>Support In Ansible</th>
-<th>Idempotence in Ansible</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>identity</td>
-<td></td>
-<td>NO</td>
-<td></td>
-</tr>
-<tr>
-<td>location</td>
-<td></td>
-<td>YES</td>
-<td></td>
-</tr>
-<tr>
-<td>plan</td>
-<td></td>
-<td>YES</td>
-<td></td>
-</tr>
-<tr>
-<td>properties.additionalCapabilities.ultraSSDEnabled</td>
-<td>deallocated only</td>
-<td>NO</td>
-<td></td>
-</tr>
-<tr>
-<td>properties.availabilitySet.id</td>
-<td>changes not allowed</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>properties.diagnosticsProfile.bootDiagnostics.enabled</td>
-<td></td>
-<td>NO</td>
-<td></td>
-</tr>
-<tr>
-<td>properties.diagnosticsProfile.bootDiagnostics.storageUri</td>
-<td></td>
-<td>NO</td>
-<td></td>
-</tr>
-<tr>
-<td>properties.hardwareProfile.vmSize</td>
-<td></td>
-<td>YES</td>
-<td>YES (check)</td>
-</tr>
-<tr>
-<td>properties.licenseType</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>properties.networkProfile.networkInterfaces[].id</td>
-<td></td>
-<td>YES</td>
-<td>YES (check)</td>
-</tr>
-<tr>
-<td>properties.osProfile.adminPassword</td>
-<td>OK</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>properties.osProfile.adminUsername</td>
-<td>not allowed</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>properties.osProfile.allowExtensionOperations</td>
-<td>OK</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>properties.osProfile.computerName</td>
-<td>not allowed</td>
-<td>YES</td>
-<td>YES (check)</td>
-</tr>
-<tr>
-<td>properties.osProfile.customData</td>
-<td>not allowed</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>properties.osProfile.linuxConfiguration&hellip;&hellip;.</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>properties.osProfile.secrets</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>properties.osProfile.windowsConfiguration&hellip;&hellip;.</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>properties.osProfile.</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>properties.storageProfile.dataDisks[]&hellip;&hellip;&hellip;</td>
-<td></td>
-<td>YES - check details</td>
-<td></td>
-</tr>
-<tr>
-<td>properties.storageProfile.imageReference</td>
-<td>changes not allowed</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>properties.storageProfile.osDisk&hellip;&hellip;&hellip;..</td>
-<td></td>
-<td>YES - check details</td>
-<td></td>
-</tr>
-<tr>
-<td>properties.storageProfile.osDisk.caching</td>
-<td>OK</td>
-<td>YES</td>
-<td>YES (check)</td>
-</tr>
-<tr>
-<td>properties.storageProfile.osDisk.name</td>
-<td>not allowed</td>
-<td>YES</td>
-<td>YES (check)</td>
-</tr>
-<tr>
-<td>properties.storageProfile.osDisk.diskSizeGB</td>
-<td>deallocated only</td>
-<td>YES</td>
-<td>YES (check)</td>
-</tr>
-<tr>
-<td>properties.storageProfile.osDisk.writeAcceleratorEnabled</td>
-<td>managed only</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>properties.storageProfile.osDisk.osType</td>
-<td>changes not allowed</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>properties.storageProfile.osDisk.createOption</td>
-<td>changes not allowed</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>tags</td>
-<td></td>
-<td>YES</td>
-<td></td>
-</tr>
-<tr>
-<td>zones</td>
-<td></td>
-<td>NO</td>
-<td></td>
-</tr>
-</tbody>
-</table>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ansible-playbook compute_virtualmachines_put.yml
+</span></code></pre></td></tr></table></div></figure>
 
 
-<p>In addition REST API provides several APIs, some of them are supported, but some are not:</p>
+<p>Please note that it will create all the necessary dependencies:
+- resource group
+- network interface
+- public IP address
+- virtual network with subnet</p>
 
-<table>
-<thead>
-<tr>
-<th>Feature</th>
-<th>Support In Ansible</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Capture</td>
-<td>NO</td>
-</tr>
-<tr>
-<td>Convert to Managed Disks</td>
-<td></td>
-</tr>
-<tr>
-<td>Deallocate</td>
-<td>YES</td>
-</tr>
-<tr>
-<td>Generalize</td>
-<td>YES (2.8)</td>
-</tr>
-<tr>
-<td>Perform Maintenance</td>
-<td>NO</td>
-</tr>
-<tr>
-<td>Power Off</td>
-<td>YES</td>
-</tr>
-<tr>
-<td>Redeploy</td>
-<td>NO</td>
-</tr>
-<tr>
-<td>Reimage</td>
-<td>NO</td>
-</tr>
-<tr>
-<td>Restart</td>
-<td>YES</td>
-</tr>
-<tr>
-<td>Start</td>
-<td>YES</td>
-</tr>
-</tbody>
-</table>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">import_playbook</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">network_networkinterfaces_put.yml</span>
+</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">hosts</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">localhost</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">roles</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">../modules</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">vars</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">subscription_id</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">myResourceGroup</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">virtual_machine_name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">myVirtualMachine</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">network_interface_name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">myNetworkInterface</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">tasks</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create a vm with password authentication.</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">azure_rm_resource</span><span class="p-Indicator">:</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">idempotency</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">yes</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">api_version</span><span class="p-Indicator">:</span> <span class="s">&#39;2018-10-01&#39;</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">polling_timeout</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">600</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">polling_interval</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">30</span>
+</span><span class='line'>        <span class="c1"># url: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&#39;&#39;</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">provider</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Compute</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">resource_type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">virtualMachines</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">resource_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">body</span><span class="p-Indicator">:</span>
+</span><span class='line'>          <span class="l-Scalar-Plain">location</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">eastus</span>
+</span><span class='line'>          <span class="l-Scalar-Plain">properties</span><span class="p-Indicator">:</span>
+</span><span class='line'>            <span class="l-Scalar-Plain">hardwareProfile</span><span class="p-Indicator">:</span>
+</span><span class='line'>              <span class="l-Scalar-Plain">vmSize</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Standard_D3_v2</span>
+</span><span class='line'>            <span class="l-Scalar-Plain">storageProfile</span><span class="p-Indicator">:</span>
+</span><span class='line'>              <span class="l-Scalar-Plain">imageReference</span><span class="p-Indicator">:</span>
+</span><span class='line'>                <span class="l-Scalar-Plain">sku</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">2016-Datacenter</span>
+</span><span class='line'>                <span class="l-Scalar-Plain">publisher</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">MicrosoftWindowsServer</span>
+</span><span class='line'>                <span class="l-Scalar-Plain">version</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">latest</span>
+</span><span class='line'>                <span class="l-Scalar-Plain">offer</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">WindowsServer</span>
+</span><span class='line'>              <span class="l-Scalar-Plain">osDisk</span><span class="p-Indicator">:</span>
+</span><span class='line'>                <span class="l-Scalar-Plain">caching</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">ReadWrite</span>
+</span><span class='line'>                <span class="l-Scalar-Plain">managedDisk</span><span class="p-Indicator">:</span>
+</span><span class='line'>                  <span class="l-Scalar-Plain">storageAccountType</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Standard_LRS</span>
+</span><span class='line'>                <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">myVMosdisk</span>
+</span><span class='line'>                <span class="l-Scalar-Plain">createOption</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">FromImage</span>
+</span><span class='line'>            <span class="l-Scalar-Plain">osProfile</span><span class="p-Indicator">:</span>
+</span><span class='line'>              <span class="l-Scalar-Plain">adminUsername</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">adminxyz</span>
+</span><span class='line'>              <span class="l-Scalar-Plain">computerName</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">myVM</span>
+</span><span class='line'>              <span class="l-Scalar-Plain">adminPassword</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">MooMoo123!!!!</span>
+</span><span class='line'>            <span class="l-Scalar-Plain">networkProfile</span><span class="p-Indicator">:</span>
+</span><span class='line'>              <span class="l-Scalar-Plain">networkInterfaces</span><span class="p-Indicator">:</span>
+</span><span class='line'>                <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">id</span><span class="p-Indicator">:</span> <span class="s">&quot;/subscriptions//resourceGroups//providers/Microsoft.Network/networkInterfaces/&quot;</span>
+</span><span class='line'>                  <span class="l-Scalar-Plain">properties</span><span class="p-Indicator">:</span>
+</span><span class='line'>                    <span class="l-Scalar-Plain">primary</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">True</span>
+</span></code></pre></td></tr></table></div></figure>
 
 ]]></content>
   </entry>
