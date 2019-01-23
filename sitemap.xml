@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://zikalino.github.io/blog/2019/01/23/updating-vmss-images-using-ansible/</loc>
+<lastmod>2019-01-23T11:46:27+08:00</lastmod>
+</url>
+<url>
+<loc>http://zikalino.github.io/blog/2019/01/21/some-notes-on-inconsistencies-in-examples/</loc>
+<lastmod>2019-01-21T15:39:32+08:00</lastmod>
+</url>
+<url>
 <loc>http://zikalino.github.io/blog/2019/01/20/creating-azure-virtual-machines-with-ansible-and-rest-api/</loc>
 <lastmod>2019-01-20T18:09:56+08:00</lastmod>
 </url>
