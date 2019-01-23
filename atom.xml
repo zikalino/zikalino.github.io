@@ -4,7 +4,7 @@
   <title><![CDATA[Zim's Notes]]></title>
   <link href="http://zikalino.github.io/atom.xml" rel="self"/>
   <link href="http://zikalino.github.io/"/>
-  <updated>2019-01-23T12:01:49+08:00</updated>
+  <updated>2019-01-23T12:04:10+08:00</updated>
   <id>http://zikalino.github.io/</id>
   <author>
     <name><![CDATA[Your Name]]></name>
@@ -14,7 +14,7 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Updating VMSS Images Using Ansible]]></title>
+    <title type="html"><![CDATA[Updating Azure Virtual Machine Scale Set Images Using Ansible]]></title>
     <link href="http://zikalino.github.io/blog/2019/01/23/updating-vmss-images-using-ansible/"/>
     <updated>2019-01-23T11:46:27+08:00</updated>
     <id>http://zikalino.github.io/blog/2019/01/23/updating-vmss-images-using-ansible</id>
