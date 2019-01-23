@@ -4,7 +4,7 @@
   <title><![CDATA[Zim's Notes]]></title>
   <link href="http://zikalino.github.io/atom.xml" rel="self"/>
   <link href="http://zikalino.github.io/"/>
-  <updated>2019-01-23T11:58:59+08:00</updated>
+  <updated>2019-01-23T12:01:49+08:00</updated>
   <id>http://zikalino.github.io/</id>
   <author>
     <name><![CDATA[Your Name]]></name>
@@ -55,15 +55,15 @@
 
 <p>Copy and paste IP addresses of both VMs to the browser:</p>
 
-<p><img src="images/vmss-update-vms-ip-addresses.png" alt="Public IP Address" /></p>
+<p><img src="http://zikalino.github.io/images/vmss-update-vms-ip-addresses.png" alt="Public IP Address" /></p>
 
 <p>You should see two different versions of VM:</p>
 
-<p><img src="images/vmss-update-browser-vma.png" alt="VM A" /></p>
+<p><img src="http://zikalino.github.io/images/vmss-update-browser-vma.png" alt="VM A" /></p>
 
 <p>and</p>
 
-<p><img src="images/vmss-update-browser-vmb.png" alt="VM B" /></p>
+<p><img src="http://zikalino.github.io/images/vmss-update-browser-vmb.png" alt="VM B" /></p>
 
 <h2>Step Two - Capture Images from both Virtual Machines</h2>
 
@@ -90,11 +90,11 @@
 
 <p>Check the IP address printed out at the end:</p>
 
-<p><img src="images/vmss-update-vmss-public-ip.png" alt="Public IP Address" /></p>
+<p><img src="http://zikalino.github.io/images/vmss-update-vmss-public-ip.png" alt="Public IP Address" /></p>
 
 <p>check that it works in the browser:</p>
 
-<p><img src="images/vmss-update-browser-initial-vmss.png" alt="VMSS Image A" /></p>
+<p><img src="http://zikalino.github.io/images/vmss-update-browser-initial-vmss.png" alt="VMSS Image A" /></p>
 
 <h2>Step Four - Update Image Reference in VMSS and Upgrade Instances</h2>
 
@@ -107,7 +107,7 @@
 
 <p>Now press <strong>F5</strong> in the browser to reload page and see that image gas changed:</p>
 
-<p><img src="images/vmss-update-browser-updated-vmss.png" alt="VMSS Image B" /></p>
+<p><img src="http://zikalino.github.io/images/vmss-update-browser-updated-vmss.png" alt="VMSS Image B" /></p>
 ]]></content>
   </entry>
   
