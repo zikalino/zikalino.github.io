@@ -4,7 +4,7 @@
   <title><![CDATA[Zim's Notes]]></title>
   <link href="http://zikalino.github.io/atom.xml" rel="self"/>
   <link href="http://zikalino.github.io/"/>
-  <updated>2019-01-23T11:51:11+08:00</updated>
+  <updated>2019-01-23T11:58:59+08:00</updated>
   <id>http://zikalino.github.io/</id>
   <author>
     <name><![CDATA[Your Name]]></name>
@@ -18,7 +18,19 @@
     <link href="http://zikalino.github.io/blog/2019/01/23/updating-vmss-images-using-ansible/"/>
     <updated>2019-01-23T11:46:27+08:00</updated>
     <id>http://zikalino.github.io/blog/2019/01/23/updating-vmss-images-using-ansible</id>
-    <content type="html"><![CDATA[<p>All the playbooks used in this demo can be found <strong>Ansible Playbooks for Azure</strong> samples repo:</p>
+    <content type="html"><![CDATA[<p>This is a new Virtual Machine Scale Set demo I have just released to official <strong>Ansible Playbooks for Azure</strong>.</p>
+
+<p>I have updated Ansible modules to enable:</p>
+
+<ul>
+<li>creating images from existing Azure Virtual Machines</li>
+<li>updating custom image in Azure Virtual Machine Scale Set</li>
+</ul>
+
+
+<p>This demo is divided into a few steps. First it demonstrates how to create two custom images (A and B), and we will create VMSS with image A, and finally we will dynamically change image A to image B.</p>
+
+<p>Before trying the playbooks, clone following repository:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
