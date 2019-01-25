@@ -4,7 +4,7 @@
   <title><![CDATA[Zim's Notes]]></title>
   <link href="http://zikalino.github.io/atom.xml" rel="self"/>
   <link href="http://zikalino.github.io/"/>
-  <updated>2019-01-23T12:04:10+08:00</updated>
+  <updated>2019-01-25T08:06:02+08:00</updated>
   <id>http://zikalino.github.io/</id>
   <author>
     <name><![CDATA[Your Name]]></name>
@@ -12,6 +12,156 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Waiting for Resources in Ansible]]></title>
+    <link href="http://zikalino.github.io/blog/2019/01/25/waiting-for-resources-in-ansible/"/>
+    <updated>2019-01-25T07:08:54+08:00</updated>
+    <id>http://zikalino.github.io/blog/2019/01/25/waiting-for-resources-in-ansible</id>
+    <content type="html"><![CDATA[<p>Some resources may be not in a desired state after running a playbook. Especially when using Azure REST API, resource may be in <strong>Creating</strong> or <strong>Provisioning</strong> state. Sometimes it&rsquo;s necessary to wait unll provisioning state becomes <strong>Succeeded</strong>.</p>
+
+<p>The best way to do this is to use <strong>facts</strong> module to periodically query the resource and exit the loop when desired state is achieved. Here&rsquo;s how to do it.</p>
+
+<p>After the task that creates your virtual machine (or later), put following tasks. Actually only <strong>Wait for Virtual Machine to be ready</strong> is essential here. All the other tasks are just for demo purposes.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Get VM facts</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_resource_facts</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">api_version</span><span class="p-Indicator">:</span> <span class="s">&#39;2018-10-01&#39;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&#39;&#39;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">provider</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Compute</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">virtualMachines</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">register</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+</span><span class='line'>
+</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">debug</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">var</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output.response[0].properties.provisioningState</span>
+</span><span class='line'>
+</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Wait for Virtual Machine to be ready</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_resource_facts</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">api_version</span><span class="p-Indicator">:</span> <span class="s">&#39;2018-10-01&#39;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&#39;&#39;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">provider</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Compute</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">virtualMachines</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">register</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">until</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output.response[0].properties.provisioningState == &#39;Succeeded&#39;</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">delay</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">60</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">retries</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">5</span>
+</span><span class='line'>
+</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">debug</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">var</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output.response[0].properties.provisioningState</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You should see following output:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="l-Scalar-Plain">TASK [Create a vm with password authentication.] *******************************************</span>
+</span><span class='line'><span class="l-Scalar-Plain">changed</span><span class="p-Indicator">:</span> <span class="p-Indicator">[</span><span class="nv">localhost</span><span class="p-Indicator">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="l-Scalar-Plain">TASK [Get VM facts] ************************************************************************</span>
+</span><span class='line'><span class="l-Scalar-Plain">ok</span><span class="p-Indicator">:</span> <span class="p-Indicator">[</span><span class="nv">localhost</span><span class="p-Indicator">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="l-Scalar-Plain">TASK [debug] ******************************************************************************</span>
+</span><span class='line'><span class="l-Scalar-Plain">ok</span><span class="p-Indicator">:</span> <span class="p-Indicator">[</span><span class="nv">localhost</span><span class="p-Indicator">]</span> <span class="l-Scalar-Plain">=&gt; {</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">&quot;output.response[0].properties.provisioningState&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;Creating&quot;</span>
+</span><span class='line'><span class="err">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="l-Scalar-Plain">TASK [Wait for Virtual Machine to be ready] *****************************************************</span>
+</span><span class='line'><span class="l-Scalar-Plain">FAILED - RETRYING</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Wait for Virtual Machine to be ready (5 retries left).</span>
+</span><span class='line'><span class="l-Scalar-Plain">FAILED - RETRYING</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Wait for Virtual Machine to be ready (4 retries left).</span>
+</span><span class='line'><span class="l-Scalar-Plain">ok</span><span class="p-Indicator">:</span> <span class="p-Indicator">[</span><span class="nv">localhost</span><span class="p-Indicator">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="l-Scalar-Plain">TASK [debug] ******************************************************************************</span>
+</span><span class='line'><span class="l-Scalar-Plain">ok</span><span class="p-Indicator">:</span> <span class="p-Indicator">[</span><span class="nv">localhost</span><span class="p-Indicator">]</span> <span class="l-Scalar-Plain">=&gt; {</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">&quot;output.response[0].properties.provisioningState&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;Succeeded&quot;</span>
+</span><span class='line'><span class="err">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="l-Scalar-Plain">PLAY RECAP ********************************************************************************</span>
+</span><span class='line'><span class="l-Scalar-Plain">localhost</span>                  <span class="p-Indicator">:</span> <span class="l-Scalar-Plain">ok=18   changed=1    unreachable=0    failed=0    skipped=0</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>References:</p>
+
+<p>Ansible documentation on do-until loops:
+<a href="https://docs.ansible.com/ansible/latest/user_guide/playbooks_loops.html#do-until-loops">https://docs.ansible.com/ansible/latest/user_guide/playbooks_loops.html#do-until-loops</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Installing HTTPD on VMSS Using VMSS Extension]]></title>
+    <link href="http://zikalino.github.io/blog/2019/01/24/installing-httpd-on-vmss-using-vmss-extension/"/>
+    <updated>2019-01-24T09:33:49+08:00</updated>
+    <id>http://zikalino.github.io/blog/2019/01/24/installing-httpd-on-vmss-using-vmss-extension</id>
+    <content type="html"><![CDATA[<p>There are two (or three) proper ways of updating Virtual Machine Scale Set instances:</p>
+
+<ul>
+<li>use custom images and update instances whenever something changes</li>
+<li>use VMSS Extension to install additional software on all the VM instances</li>
+<li>combine both</li>
+</ul>
+
+
+<p>Possibly there&rsquo;s a fourth way, but I haven&rsquo;t investigated that yet. I am thinking of updating VMSS data disks on the fly, but I haven&rsquo;t tried that yet. Let&rsquo;s focus on using VMSS Extension. In this article I will show how to use new <strong>azure_rm_virtualmachinescalesetextension</strong> module. It&rsquo;s already available in <strong>azure_preview_modules</strong> and will be released in <strong>Ansible 2.8</strong>.</p>
+
+<h2>Prerequisites</h2>
+
+<h2>Step 1: Create VMSS using Ubuntu 16.04 Image</h2>
+
+<h2>Step 2: Install VMSS extension</h2>
+
+<h2>Step 3: Update all the instances</h2>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Updating Azure Virtual Machine Scale Set Images Using Ansible]]></title>

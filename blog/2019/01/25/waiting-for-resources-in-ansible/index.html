@@ -1,0 +1,303 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Waiting for Resources in Ansible - Zim's Notes</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="Some resources may be not in a desired state after running a playbook. Especially when using Azure REST API, resource may be in Creating or &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://zikalino.github.io/blog/2019/01/25/waiting-for-resources-in-ansible">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Zim's Notes" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Fjalla+One" rel="stylesheet" type="text/css">
+<!--- MathJax Configuration -->
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Zim's Notes</a></h1>
+  
+    <h2>Just work related notes.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscribe" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS" target="_blank"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="25" height="25" viewbox="0 0 100 100"><path class="social" d="M 13.310204,73.332654 C 5.967347,73.332654 0,79.322448 0,86.621428 c 0,7.338776 5.967347,13.262246 13.310204,13.262246 7.370408,0 13.328572,-5.92245 13.328572,-13.262246 0,-7.29898 -5.958164,-13.288774 -13.328572,-13.288774 z M 0.01530612,33.978572 V 53.143878 C 12.493878,53.143878 24.229592,58.02347 33.068368,66.865306 41.894898,75.685714 46.767346,87.47449 46.767346,100 h 19.25 C 66.017346,63.592858 36.4,33.979592 0.01530612,33.978572 l 0,0 z M 0.03877552,0 V 19.17449 C 44.54796,19.17551 80.77551,55.437756 80.77551,100 H 100 C 100,44.87653 55.15102,0 0.03877552,0 z"></path></svg></a></li>
+  
+</ul>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    
+      <form action="https://www.google.com/search" method="get">
+        <fieldset role="search">
+          <input type="hidden" name="sitesearch" value="zikalino.github.io" />
+    
+          <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+        </fieldset>
+      </form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      
+        <h1 class="entry-title">Waiting for Resources in Ansible</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2019-01-25T07:08:54+08:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>25</span><span class='date-suffix'>th</span>, <span class='date-year'>2019</span></span> <span class='time'>7:08 am</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Some resources may be not in a desired state after running a playbook. Especially when using Azure REST API, resource may be in <strong>Creating</strong> or <strong>Provisioning</strong> state. Sometimes it&rsquo;s necessary to wait unll provisioning state becomes <strong>Succeeded</strong>.</p>
+
+<p>The best way to do this is to use <strong>facts</strong> module to periodically query the resource and exit the loop when desired state is achieved. Here&rsquo;s how to do it.</p>
+
+<p>After the task that creates your virtual machine (or later), put following tasks. Actually only <strong>Wait for Virtual Machine to be ready</strong> is essential here. All the other tasks are just for demo purposes.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Get VM facts</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_resource_facts</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">api_version</span><span class="p-Indicator">:</span> <span class="s">&#39;2018-10-01&#39;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&#39;&#39;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">provider</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Compute</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">virtualMachines</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">register</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+</span><span class='line'>
+</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">debug</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">var</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output.response[0].properties.provisioningState</span>
+</span><span class='line'>
+</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Wait for Virtual Machine to be ready</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_resource_facts</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">api_version</span><span class="p-Indicator">:</span> <span class="s">&#39;2018-10-01&#39;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&#39;&#39;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">provider</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Compute</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">virtualMachines</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">register</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">until</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output.response[0].properties.provisioningState == &#39;Succeeded&#39;</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">delay</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">60</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">retries</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">5</span>
+</span><span class='line'>
+</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">debug</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">var</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output.response[0].properties.provisioningState</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You should see following output:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="l-Scalar-Plain">TASK [Create a vm with password authentication.] *******************************************</span>
+</span><span class='line'><span class="l-Scalar-Plain">changed</span><span class="p-Indicator">:</span> <span class="p-Indicator">[</span><span class="nv">localhost</span><span class="p-Indicator">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="l-Scalar-Plain">TASK [Get VM facts] ************************************************************************</span>
+</span><span class='line'><span class="l-Scalar-Plain">ok</span><span class="p-Indicator">:</span> <span class="p-Indicator">[</span><span class="nv">localhost</span><span class="p-Indicator">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="l-Scalar-Plain">TASK [debug] ******************************************************************************</span>
+</span><span class='line'><span class="l-Scalar-Plain">ok</span><span class="p-Indicator">:</span> <span class="p-Indicator">[</span><span class="nv">localhost</span><span class="p-Indicator">]</span> <span class="l-Scalar-Plain">=&gt; {</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">&quot;output.response[0].properties.provisioningState&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;Creating&quot;</span>
+</span><span class='line'><span class="err">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="l-Scalar-Plain">TASK [Wait for Virtual Machine to be ready] *****************************************************</span>
+</span><span class='line'><span class="l-Scalar-Plain">FAILED - RETRYING</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Wait for Virtual Machine to be ready (5 retries left).</span>
+</span><span class='line'><span class="l-Scalar-Plain">FAILED - RETRYING</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Wait for Virtual Machine to be ready (4 retries left).</span>
+</span><span class='line'><span class="l-Scalar-Plain">ok</span><span class="p-Indicator">:</span> <span class="p-Indicator">[</span><span class="nv">localhost</span><span class="p-Indicator">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="l-Scalar-Plain">TASK [debug] ******************************************************************************</span>
+</span><span class='line'><span class="l-Scalar-Plain">ok</span><span class="p-Indicator">:</span> <span class="p-Indicator">[</span><span class="nv">localhost</span><span class="p-Indicator">]</span> <span class="l-Scalar-Plain">=&gt; {</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">&quot;output.response[0].properties.provisioningState&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;Succeeded&quot;</span>
+</span><span class='line'><span class="err">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="l-Scalar-Plain">PLAY RECAP ********************************************************************************</span>
+</span><span class='line'><span class="l-Scalar-Plain">localhost</span>                  <span class="p-Indicator">:</span> <span class="l-Scalar-Plain">ok=18   changed=1    unreachable=0    failed=0    skipped=0</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>References:</p>
+
+<p>Ansible documentation on do-until loops:
+<a href="https://docs.ansible.com/ansible/latest/user_guide/playbooks_loops.html#do-until-loops">https://docs.ansible.com/ansible/latest/user_guide/playbooks_loops.html#do-until-loops</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+
+
+  <span class="byline author vcard">Authored by <span class="fn">
+  
+    Your Name
+  
+  </span></span>
+
+
+      
+
+
+
+
+<time class='entry-date' datetime='2019-01-25T07:08:54+08:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>25</span><span class='date-suffix'>th</span>, <span class='date-year'>2019</span></span> <span class='time'>7:08 am</span></time>
+      
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://zikalino.github.io/blog/2019/01/25/waiting-for-resources-in-ansible/" data-via="" data-counturl="http://zikalino.github.io/blog/2019/01/25/waiting-for-resources-in-ansible/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2019/01/24/installing-httpd-on-vmss-using-vmss-extension/" title="Previous Post: Installing HTTPD on VMSS using VMSS Extension">&laquo; Installing HTTPD on VMSS using VMSS Extension</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+
+</div>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2019 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a> | Themed with <a href="https://github.com/lucaslew/whitespace">Whitespace</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

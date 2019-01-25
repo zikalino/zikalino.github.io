@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://zikalino.github.io/blog/2019/01/25/waiting-for-resources-in-ansible/</loc>
+<lastmod>2019-01-25T07:08:54+08:00</lastmod>
+</url>
+<url>
+<loc>http://zikalino.github.io/blog/2019/01/24/installing-httpd-on-vmss-using-vmss-extension/</loc>
+<lastmod>2019-01-24T09:33:49+08:00</lastmod>
+</url>
+<url>
 <loc>http://zikalino.github.io/blog/2019/01/23/updating-vmss-images-using-ansible/</loc>
 <lastmod>2019-01-23T11:46:27+08:00</lastmod>
 </url>
