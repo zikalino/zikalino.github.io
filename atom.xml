@@ -4,7 +4,7 @@
   <title><![CDATA[Zim's Notes]]></title>
   <link href="http://zikalino.github.io/atom.xml" rel="self"/>
   <link href="http://zikalino.github.io/"/>
-  <updated>2019-01-25T08:06:02+08:00</updated>
+  <updated>2019-01-27T21:31:34+08:00</updated>
   <id>http://zikalino.github.io/</id>
   <author>
     <name><![CDATA[Your Name]]></name>
@@ -155,11 +155,122 @@
 
 <h2>Prerequisites</h2>
 
+<p>Before trying the playbooks, clone following repository:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>git clone https://github.com/Azure-Samples/ansible-playbooks.git
+</span><span class='line'><span class="nb">cd </span>ansible-playbooks/vmss_extension
+</span></code></pre></td></tr></table></div></figure>
+
+
 <h2>Step 1: Create VMSS using Ubuntu 16.04 Image</h2>
+
+<p>In this step we will just create Azure Virtual Machine Scaleset based using standard Ubuntu 16.04 image and all prerequisites.</p>
+
+<p>Run following playbook:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ansible-playbook 01-create-vmss.yml --extra-vars <span class="s2">&quot;resource_group=myrg&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>After this playbook is executed you will see an IP addres. Copy it to the browser. The page should fail to open as initial Ubuntu 16.04 image doesn&rsquo;t have web server installed.</p>
+
+<p>You can also go to Azure Portal and check the status of VMSS instances:</p>
+
+<p><img src="http://zikalino.github.io/images/vmss-extension-1.png" alt="VMSS Instances 1" /></p>
 
 <h2>Step 2: Install VMSS extension</h2>
 
+<p>In second step we will install a <strong>Custom Script</strong> VMSS extension that will install <strong>httpd</strong>.</p>
+
+<p>Run following playbook:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ansible-playbook 02-setup-httpd.yml --extra-vars <span class="s2">&quot;resource_group=myrg&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In this step we use <strong>azure_rm_virtualmachinescalesetextension</strong> module:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>- name: Create VM Extension - HTTPD
+</span><span class='line'>  azure_rm_virtualmachinescalesetextension:
+</span><span class='line'>    resource_group: <span class="s2">&quot;&quot;</span>
+</span><span class='line'>    vmss_name: <span class="s2">&quot;&quot;</span>
+</span><span class='line'>    name: testVMExtension
+</span><span class='line'>    publisher: Microsoft.Azure.Extensions
+</span><span class='line'>    <span class="nb">type</span>: CustomScript
+</span><span class='line'>    type_handler_version: 2.0
+</span><span class='line'>    auto_upgrade_minor_version: <span class="nb">true</span>
+</span><span class='line'><span class="nb">    </span>settings: <span class="o">{</span><span class="s2">&quot;commandToExecute&quot;</span>: <span class="s2">&quot;sudo apt-get -y install apache2&quot;</span><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Please note that creating extension didn&rsquo;t update existing instances. You can check how it looks in the portal again - as you see all the instances are not up to date:</p>
+
+<p><img src="http://zikalino.github.io/images/vmss-extension-2.png" alt="VMSS Instances 2" /></p>
+
 <h2>Step 3: Update all the instances</h2>
+
+<p>In this step we will actually upgrade all VM instances. Run following script:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ansible-playbook 03-update-instances.yml --extra-vars <span class="s2">&quot;resource_group=myrg&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>First <strong>azure_rm_virtualmachinescalesetinstance_facts</strong> module is used to get list of instances:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>- name: List all of the instances
+</span><span class='line'>  azure_rm_virtualmachinescalesetinstance_facts:
+</span><span class='line'>    resource_group: <span class="s2">&quot;&quot;</span>
+</span><span class='line'>    vmss_name: <span class="s2">&quot;&quot;</span>
+</span><span class='line'>  register: instances
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And then <strong>azure_rm_virtualmachinescalesetinstance</strong> module to set <strong>latest_version</strong> to <strong>yes</strong>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>- name: manually upgrade all the instances
+</span><span class='line'>  azure_rm_virtualmachinescalesetinstance:
+</span><span class='line'>    resource_group: <span class="s2">&quot;&quot;</span>
+</span><span class='line'>    vmss_name: <span class="s2">&quot;&quot;</span>
+</span><span class='line'>    instance_id: <span class="s2">&quot;&quot;</span>
+</span><span class='line'>    latest_model: yes
+</span><span class='line'>  with_items: <span class="s2">&quot;&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Again, you can see in the portal how instances are being updated one by one:</p>
+
+<p><img src="http://zikalino.github.io/images/vmss-extension-3.png" alt="VMSS Instances 3" /></p>
+
+<p>When update is completed reload the page, and you should see that this time default Apache index page is displayed:</p>
+
+<p><img src="http://zikalino.github.io/images/vmss-extension-4.png" alt="VMSS Instances 4" /></p>
 ]]></content>
   </entry>
   
