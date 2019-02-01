@@ -9,7 +9,8 @@
   <meta name="author" content="Your Name">
 
   
-  <meta name="description" content="Some resources may be not in a desired state after running a playbook. Especially when using Azure REST API, resource may be in Creating or &hellip;">
+  <meta name="description" content="Recently was playing with cloud-init a bit, and it seems like a great and consistent way of setting up Ansible VMs.
+Here&rsquo;s an example of &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -78,6 +79,75 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2019/02/01/installing-ansible-using-cloud-init/">Installing Ansible Using Cloud-init</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2019-02-01T11:25:16+08:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>1</span><span class='date-suffix'>st</span>, <span class='date-year'>2019</span></span> <span class='time'>11:25 am</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Recently was playing with <strong>cloud-init</strong> a bit, and it seems like a great and consistent way of setting up Ansible VMs.
+Here&rsquo;s an example of creating a virtual machine via Azure portal and installing Ansible at once.</p>
+
+<p>What you need to do is to go to <strong>Guest Config</strong> tag and add appropriate <strong>cloud-config</strong> playbook:</p>
+
+<p><img src="/images/cloud-init-ansible.png" alt="Guest Config" /></p>
+
+<p>In this example I am using following code:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="c1">#cloud-config</span>
+</span><span class='line'><span class="l-Scalar-Plain">packages</span><span class="p-Indicator">:</span>
+</span><span class='line'>  <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">python-pip</span>
+</span><span class='line'><span class="l-Scalar-Plain">runcmd</span><span class="p-Indicator">:</span>
+</span><span class='line'>  <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">sudo pip install ansible</span>
+</span><span class='line'>  <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">sudo ansible-galaxy install azure.azure_preview_modules</span>
+</span><span class='line'>  <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">sudo pip install -r ~/.ansible/roles/azure.azure_preview_modules/files/requirements-azure.txt</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>It can be even shorted if you don&rsquo;t need Azure preview modules:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="c1">#cloud-config</span>
+</span><span class='line'><span class="l-Scalar-Plain">packages</span><span class="p-Indicator">:</span>
+</span><span class='line'>  <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">python-pip</span>
+</span><span class='line'><span class="l-Scalar-Plain">runcmd</span><span class="p-Indicator">:</span>
+</span><span class='line'>  <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">sudo pip install ansible[azure]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>

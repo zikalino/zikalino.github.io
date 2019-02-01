@@ -4,7 +4,7 @@
   <title><![CDATA[Zim's Notes]]></title>
   <link href="http://zikalino.github.io/atom.xml" rel="self"/>
   <link href="http://zikalino.github.io/"/>
-  <updated>2019-01-27T21:39:31+08:00</updated>
+  <updated>2019-02-01T11:43:34+08:00</updated>
   <id>http://zikalino.github.io/</id>
   <author>
     <name><![CDATA[Your Name]]></name>
@@ -12,6 +12,54 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Installing Ansible Using Cloud-init]]></title>
+    <link href="http://zikalino.github.io/blog/2019/02/01/installing-ansible-using-cloud-init/"/>
+    <updated>2019-02-01T11:25:16+08:00</updated>
+    <id>http://zikalino.github.io/blog/2019/02/01/installing-ansible-using-cloud-init</id>
+    <content type="html"><![CDATA[<p>Recently was playing with <strong>cloud-init</strong> a bit, and it seems like a great and consistent way of setting up Ansible VMs.
+Here&rsquo;s an example of creating a virtual machine via Azure portal and installing Ansible at once.</p>
+
+<p>What you need to do is to go to <strong>Guest Config</strong> tag and add appropriate <strong>cloud-config</strong> playbook:</p>
+
+<p><img src="http://zikalino.github.io/images/cloud-init-ansible.png" alt="Guest Config" /></p>
+
+<p>In this example I am using following code:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="c1">#cloud-config</span>
+</span><span class='line'><span class="l-Scalar-Plain">packages</span><span class="p-Indicator">:</span>
+</span><span class='line'>  <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">python-pip</span>
+</span><span class='line'><span class="l-Scalar-Plain">runcmd</span><span class="p-Indicator">:</span>
+</span><span class='line'>  <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">sudo pip install ansible</span>
+</span><span class='line'>  <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">sudo ansible-galaxy install azure.azure_preview_modules</span>
+</span><span class='line'>  <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">sudo pip install -r ~/.ansible/roles/azure.azure_preview_modules/files/requirements-azure.txt</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>It can be even shorted if you don&rsquo;t need Azure preview modules:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="c1">#cloud-config</span>
+</span><span class='line'><span class="l-Scalar-Plain">packages</span><span class="p-Indicator">:</span>
+</span><span class='line'>  <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">python-pip</span>
+</span><span class='line'><span class="l-Scalar-Plain">runcmd</span><span class="p-Indicator">:</span>
+</span><span class='line'>  <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">sudo pip install ansible[azure]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Waiting for Resources in Ansible]]></title>

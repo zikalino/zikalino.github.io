@@ -5,11 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Just a First Post - Zim's Notes</title>
+  <title>Installing Ansible Using Cloud-init - Zim's Notes</title>
   <meta name="author" content="Your Name">
 
   
-  <meta name="description" content="Nothing much in here. I have written a lot of notes mostly related to Ansible, but also to Azure REST API, and it&rsquo;s time to publish it them &hellip;">
+  <meta name="description" content="Recently was playing with cloud-init a bit, and it seems like a great and consistent way of setting up Ansible VMs.
+Here&rsquo;s an example of &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://zikalino.github.io/blog/2019/01/15/azure-devtest-labs-rest-examples-in-ansible">
+  <link rel="canonical" href="http://zikalino.github.io/blog/2019/02/01/installing-ansible-using-cloud-init">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="Zim's Notes" type="application/atom+xml">
@@ -82,7 +83,7 @@
   <header>
     
       
-        <h1 class="entry-title">Just a First Post</h1>
+        <h1 class="entry-title">Installing Ansible Using Cloud-init</h1>
       
     
     
@@ -92,7 +93,7 @@
 
 
 
-<time class='entry-date' datetime='2019-01-15T10:14:39+08:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>15</span><span class='date-suffix'>th</span>, <span class='date-year'>2019</span></span> <span class='time'>10:14 am</span></time>
+<time class='entry-date' datetime='2019-02-01T11:25:16+08:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>1</span><span class='date-suffix'>st</span>, <span class='date-year'>2019</span></span> <span class='time'>11:25 am</span></time>
         
         
       </p>
@@ -100,8 +101,46 @@
   </header>
 
 
-<div class="entry-content"><p>Nothing much in here. I have written a lot of notes mostly related to Ansible, but also to Azure REST API, and it&rsquo;s time to publish it them somewhere and made available to wider public.
-So, Hello World!</p>
+<div class="entry-content"><p>Recently was playing with <strong>cloud-init</strong> a bit, and it seems like a great and consistent way of setting up Ansible VMs.
+Here&rsquo;s an example of creating a virtual machine via Azure portal and installing Ansible at once.</p>
+
+<p>What you need to do is to go to <strong>Guest Config</strong> tag and add appropriate <strong>cloud-config</strong> playbook:</p>
+
+<p><img src="/images/cloud-init-ansible.png" alt="Guest Config" /></p>
+
+<p>In this example I am using following code:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="c1">#cloud-config</span>
+</span><span class='line'><span class="l-Scalar-Plain">packages</span><span class="p-Indicator">:</span>
+</span><span class='line'>  <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">python-pip</span>
+</span><span class='line'><span class="l-Scalar-Plain">runcmd</span><span class="p-Indicator">:</span>
+</span><span class='line'>  <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">sudo pip install ansible</span>
+</span><span class='line'>  <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">sudo ansible-galaxy install azure.azure_preview_modules</span>
+</span><span class='line'>  <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">sudo pip install -r ~/.ansible/roles/azure.azure_preview_modules/files/requirements-azure.txt</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>It can be even shorted if you don&rsquo;t need Azure preview modules:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="c1">#cloud-config</span>
+</span><span class='line'><span class="l-Scalar-Plain">packages</span><span class="p-Indicator">:</span>
+</span><span class='line'>  <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">python-pip</span>
+</span><span class='line'><span class="l-Scalar-Plain">runcmd</span><span class="p-Indicator">:</span>
+</span><span class='line'>  <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">sudo pip install ansible[azure]</span>
+</span></code></pre></td></tr></table></div></figure>
+
 </div>
 
 
@@ -124,7 +163,7 @@ So, Hello World!</p>
 
 
 
-<time class='entry-date' datetime='2019-01-15T10:14:39+08:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>15</span><span class='date-suffix'>th</span>, <span class='date-year'>2019</span></span> <span class='time'>10:14 am</span></time>
+<time class='entry-date' datetime='2019-02-01T11:25:16+08:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>1</span><span class='date-suffix'>st</span>, <span class='date-year'>2019</span></span> <span class='time'>11:25 am</span></time>
       
       
 
@@ -133,7 +172,7 @@ So, Hello World!</p>
     
       <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://zikalino.github.io/blog/2019/01/15/azure-devtest-labs-rest-examples-in-ansible/" data-via="" data-counturl="http://zikalino.github.io/blog/2019/01/15/azure-devtest-labs-rest-examples-in-ansible/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://zikalino.github.io/blog/2019/02/01/installing-ansible-using-cloud-init/" data-via="" data-counturl="http://zikalino.github.io/blog/2019/02/01/installing-ansible-using-cloud-init/" >Tweet</a>
   
   
   
@@ -142,8 +181,8 @@ So, Hello World!</p>
     
     <p class="meta">
       
+        <a class="basic-alignment left" href="/blog/2019/01/25/waiting-for-resources-in-ansible/" title="Previous Post: Waiting for Resources in Ansible">&laquo; Waiting for Resources in Ansible</a>
       
-        <a class="basic-alignment right" href="/blog/2019/01/20/module-azure-rm-virtualmachine-delta/" title="Next Post: Module azure_rm_virtualmachine - delta">Module azure_rm_virtualmachine - delta &raquo;</a>
       
     </p>
   </footer>
