@@ -1,24 +1,106 @@
-<?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Zim's Notes]]></title>
-  <link href="http://zikalino.github.io/atom.xml" rel="self"/>
-  <link href="http://zikalino.github.io/"/>
-  <updated>2019-02-21T13:38:48+08:00</updated>
-  <id>http://zikalino.github.io/</id>
-  <author>
-    <name><![CDATA[Your Name]]></name>
-    
-  </author>
-  <generator uri="http://octopress.org/">Octopress</generator>
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Ansible Module Anatomy - Zim's Notes</title>
+  <meta name="author" content="Your Name">
 
   
-  <entry>
-    <title type="html"><![CDATA[Ansible Module Anatomy]]></title>
-    <link href="http://zikalino.github.io/blog/2019/02/21/ansible-module-anatomy/"/>
-    <updated>2019-02-21T12:27:21+08:00</updated>
-    <id>http://zikalino.github.io/blog/2019/02/21/ansible-module-anatomy</id>
-    <content type="html"><![CDATA[<p>This post describes what and where needs to be added in order to create a new module.</p>
+  <meta name="description" content="This post describes what and where needs to be added in order to create a new module. File Locations Let&rsquo;s say you want to create modules for a &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://zikalino.github.io/blog/2019/02/21/ansible-module-anatomy">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Zim's Notes" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Fjalla+One" rel="stylesheet" type="text/css">
+<!--- MathJax Configuration -->
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Zim's Notes</a></h1>
+  
+    <h2>Just work related notes.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscribe" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS" target="_blank"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="25" height="25" viewbox="0 0 100 100"><path class="social" d="M 13.310204,73.332654 C 5.967347,73.332654 0,79.322448 0,86.621428 c 0,7.338776 5.967347,13.262246 13.310204,13.262246 7.370408,0 13.328572,-5.92245 13.328572,-13.262246 0,-7.29898 -5.958164,-13.288774 -13.328572,-13.288774 z M 0.01530612,33.978572 V 53.143878 C 12.493878,53.143878 24.229592,58.02347 33.068368,66.865306 41.894898,75.685714 46.767346,87.47449 46.767346,100 h 19.25 C 66.017346,63.592858 36.4,33.979592 0.01530612,33.978572 l 0,0 z M 0.03877552,0 V 19.17449 C 44.54796,19.17551 80.77551,55.437756 80.77551,100 H 100 C 100,44.87653 55.15102,0 0.03877552,0 z"></path></svg></a></li>
+  
+</ul>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    
+      <form action="https://www.google.com/search" method="get">
+        <fieldset role="search">
+          <input type="hidden" name="sitesearch" value="zikalino.github.io" />
+    
+          <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+        </fieldset>
+      </form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      
+        <h1 class="entry-title">Ansible Module Anatomy</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2019-02-21T12:27:21+08:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>21</span><span class='date-suffix'>st</span>, <span class='date-year'>2019</span></span> <span class='time'>12:27 pm</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>This post describes what and where needs to be added in order to create a new module.</p>
 
 <h3>File Locations</h3>
 
@@ -864,816 +946,88 @@ In order to do that you will have to create following files:</p>
 </span><span class='line'>    <span class="n">main</span><span class="p">()</span>
 </span></code></pre></td></tr></table></div></figure>
 
-]]></content>
-  </entry>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
   
-  <entry>
-    <title type="html"><![CDATA[Installing Ansible Using Cloud-init]]></title>
-    <link href="http://zikalino.github.io/blog/2019/02/01/installing-ansible-using-cloud-init/"/>
-    <updated>2019-02-01T11:25:16+08:00</updated>
-    <id>http://zikalino.github.io/blog/2019/02/01/installing-ansible-using-cloud-init</id>
-    <content type="html"><![CDATA[<p>Recently was playing with <strong>cloud-init</strong> a bit, and it seems like a great and consistent way of setting up Ansible VMs.
-Here&rsquo;s an example of creating a virtual machine via Azure portal and installing Ansible at once.</p>
-
-<p>What you need to do is to go to <strong>Guest Config</strong> tag and add appropriate <strong>cloud-config</strong> playbook:</p>
-
-<p><img src="http://zikalino.github.io/images/cloud-init-ansible.png" alt="Guest Config" /></p>
-
-<p>In this example I am using following code:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="c1">#cloud-config</span>
-</span><span class='line'><span class="l-Scalar-Plain">packages</span><span class="p-Indicator">:</span>
-</span><span class='line'>  <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">python-pip</span>
-</span><span class='line'><span class="l-Scalar-Plain">runcmd</span><span class="p-Indicator">:</span>
-</span><span class='line'>  <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">sudo pip install ansible</span>
-</span><span class='line'>  <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">sudo ansible-galaxy install azure.azure_preview_modules</span>
-</span><span class='line'>  <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">sudo pip install -r ~/.ansible/roles/azure.azure_preview_modules/files/requirements-azure.txt</span>
-</span></code></pre></td></tr></table></div></figure>
 
 
-<p>It can be even shorted if you don&rsquo;t need Azure preview modules:</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="c1">#cloud-config</span>
-</span><span class='line'><span class="l-Scalar-Plain">packages</span><span class="p-Indicator">:</span>
-</span><span class='line'>  <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">python-pip</span>
-</span><span class='line'><span class="l-Scalar-Plain">runcmd</span><span class="p-Indicator">:</span>
-</span><span class='line'>  <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">sudo pip install ansible[azure]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-]]></content>
-  </entry>
+  <span class="byline author vcard">Authored by <span class="fn">
   
-  <entry>
-    <title type="html"><![CDATA[Waiting for Resources in Ansible]]></title>
-    <link href="http://zikalino.github.io/blog/2019/01/25/waiting-for-resources-in-ansible/"/>
-    <updated>2019-01-25T07:08:54+08:00</updated>
-    <id>http://zikalino.github.io/blog/2019/01/25/waiting-for-resources-in-ansible</id>
-    <content type="html"><![CDATA[<p>Some resources may be not in a desired state after running a playbook. Especially when using Azure REST API, resource may be in <strong>Creating</strong> or <strong>Provisioning</strong> state. Sometimes it&rsquo;s necessary to wait unll provisioning state becomes <strong>Succeeded</strong>.</p>
-
-<p>The best way to do this is to use <strong>facts</strong> module to periodically query the resource and exit the loop when desired state is achieved. Here&rsquo;s how to do it.</p>
-
-<p>After the task that creates your virtual machine (or later), put following tasks. Actually only <strong>Wait for Virtual Machine to be ready</strong> is essential here. All the other tasks are just for demo purposes.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Get VM facts</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_resource_facts</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">api_version</span><span class="p-Indicator">:</span> <span class="s">&#39;2018-10-01&#39;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&#39;&#39;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">provider</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Compute</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">resource_type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">virtualMachines</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">resource_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">register</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
-</span><span class='line'>
-</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">debug</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">var</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output.response[0].properties.provisioningState</span>
-</span><span class='line'>
-</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Wait for Virtual Machine to be ready</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_resource_facts</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">api_version</span><span class="p-Indicator">:</span> <span class="s">&#39;2018-10-01&#39;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&#39;&#39;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">provider</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Compute</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">resource_type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">virtualMachines</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">resource_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">register</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">until</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output.response[0].properties.provisioningState == &#39;Succeeded&#39;</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">delay</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">60</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">retries</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">5</span>
-</span><span class='line'>
-</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">debug</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">var</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output.response[0].properties.provisioningState</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>You should see following output:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="l-Scalar-Plain">TASK [Create a vm with password authentication.] *******************************************</span>
-</span><span class='line'><span class="l-Scalar-Plain">changed</span><span class="p-Indicator">:</span> <span class="p-Indicator">[</span><span class="nv">localhost</span><span class="p-Indicator">]</span>
-</span><span class='line'>
-</span><span class='line'><span class="l-Scalar-Plain">TASK [Get VM facts] ************************************************************************</span>
-</span><span class='line'><span class="l-Scalar-Plain">ok</span><span class="p-Indicator">:</span> <span class="p-Indicator">[</span><span class="nv">localhost</span><span class="p-Indicator">]</span>
-</span><span class='line'>
-</span><span class='line'><span class="l-Scalar-Plain">TASK [debug] ******************************************************************************</span>
-</span><span class='line'><span class="l-Scalar-Plain">ok</span><span class="p-Indicator">:</span> <span class="p-Indicator">[</span><span class="nv">localhost</span><span class="p-Indicator">]</span> <span class="l-Scalar-Plain">=&gt; {</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">&quot;output.response[0].properties.provisioningState&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;Creating&quot;</span>
-</span><span class='line'><span class="err">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="l-Scalar-Plain">TASK [Wait for Virtual Machine to be ready] *****************************************************</span>
-</span><span class='line'><span class="l-Scalar-Plain">FAILED - RETRYING</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Wait for Virtual Machine to be ready (5 retries left).</span>
-</span><span class='line'><span class="l-Scalar-Plain">FAILED - RETRYING</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Wait for Virtual Machine to be ready (4 retries left).</span>
-</span><span class='line'><span class="l-Scalar-Plain">ok</span><span class="p-Indicator">:</span> <span class="p-Indicator">[</span><span class="nv">localhost</span><span class="p-Indicator">]</span>
-</span><span class='line'>
-</span><span class='line'><span class="l-Scalar-Plain">TASK [debug] ******************************************************************************</span>
-</span><span class='line'><span class="l-Scalar-Plain">ok</span><span class="p-Indicator">:</span> <span class="p-Indicator">[</span><span class="nv">localhost</span><span class="p-Indicator">]</span> <span class="l-Scalar-Plain">=&gt; {</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">&quot;output.response[0].properties.provisioningState&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;Succeeded&quot;</span>
-</span><span class='line'><span class="err">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="l-Scalar-Plain">PLAY RECAP ********************************************************************************</span>
-</span><span class='line'><span class="l-Scalar-Plain">localhost</span>                  <span class="p-Indicator">:</span> <span class="l-Scalar-Plain">ok=18   changed=1    unreachable=0    failed=0    skipped=0</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>References:</p>
-
-<p>Ansible documentation on do-until loops:
-<a href="https://docs.ansible.com/ansible/latest/user_guide/playbooks_loops.html#do-until-loops">https://docs.ansible.com/ansible/latest/user_guide/playbooks_loops.html#do-until-loops</a></p>
-]]></content>
-  </entry>
+    Your Name
   
-  <entry>
-    <title type="html"><![CDATA[Installing HTTPD on VMSS Using VMSS Extension]]></title>
-    <link href="http://zikalino.github.io/blog/2019/01/24/installing-httpd-on-vmss-using-vmss-extension/"/>
-    <updated>2019-01-24T09:33:49+08:00</updated>
-    <id>http://zikalino.github.io/blog/2019/01/24/installing-httpd-on-vmss-using-vmss-extension</id>
-    <content type="html"><![CDATA[<p>There are two (or three) proper ways of updating Virtual Machine Scale Set instances:</p>
-
-<ul>
-<li>use custom images and update instances whenever something changes</li>
-<li>use VMSS Extension to install additional software on all the VM instances</li>
-<li>combine both</li>
-</ul>
+  </span></span>
 
 
-<p>Possibly there&rsquo;s a fourth way, but I haven&rsquo;t investigated that yet. I am thinking of updating VMSS data disks on the fly, but I haven&rsquo;t tried that yet. Let&rsquo;s focus on using VMSS Extension. In this article I will show how to use new <strong>azure_rm_virtualmachinescalesetextension</strong> module. It&rsquo;s already available in <strong>azure_preview_modules</strong> and will be released in <strong>Ansible 2.8</strong>.</p>
-
-<h2>Prerequisites</h2>
-
-<p>Before trying the playbooks, clone following repository:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>git clone https://github.com/Azure-Samples/ansible-playbooks.git
-</span><span class='line'><span class="nb">cd </span>ansible-playbooks/vmss_extension
-</span></code></pre></td></tr></table></div></figure>
+      
 
 
-<h2>Step 1: Create VMSS using Ubuntu 16.04 Image</h2>
-
-<p>In this step we will just create Azure Virtual Machine Scaleset based using standard Ubuntu 16.04 image and all prerequisites.</p>
-
-<p>Run following playbook:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>ansible-playbook 01-create-vmss.yml --extra-vars <span class="s2">&quot;resource_group=myrg&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
 
 
-<p>After this playbook is executed you will see an IP addres. Copy it to the browser. The page should fail to open as initial Ubuntu 16.04 image doesn&rsquo;t have web server installed.</p>
-
-<p>You can also go to Azure Portal and check the status of VMSS instances:</p>
-
-<p><img src="http://zikalino.github.io/images/vmss-extension-01.png" alt="VMSS Instances 1" /></p>
-
-<h2>Step 2: Install VMSS extension</h2>
-
-<p>In second step we will install a <strong>Custom Script</strong> VMSS extension that will install <strong>httpd</strong>.</p>
-
-<p>Run following playbook:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>ansible-playbook 02-setup-httpd.yml --extra-vars <span class="s2">&quot;resource_group=myrg&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
+<time class='entry-date' datetime='2019-02-21T12:27:21+08:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>21</span><span class='date-suffix'>st</span>, <span class='date-year'>2019</span></span> <span class='time'>12:27 pm</span></time>
+      
+      
 
 
-<p>In this step we use <strong>azure_rm_virtualmachinescalesetextension</strong> module:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create VM Extension - HTTPD</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_virtualmachinescalesetextension</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">vmss_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">testVMExtension</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">publisher</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Microsoft.Azure.Extensions</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">CustomScript</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">type_handler_version</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">2.0</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">auto_upgrade_minor_version</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">true</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">settings</span><span class="p-Indicator">:</span> <span class="p-Indicator">{</span><span class="s">&quot;commandToExecute&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;sudo</span><span class="nv"> </span><span class="s">apt-get</span><span class="nv"> </span><span class="s">-y</span><span class="nv"> </span><span class="s">install</span><span class="nv"> </span><span class="s">apache2&quot;</span><span class="p-Indicator">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Please note that creating extension didn&rsquo;t update existing instances. You can check how it looks in the portal again - as you see all the instances are not up to date:</p>
-
-<p><img src="http://zikalino.github.io/images/vmss-extension-02.png" alt="VMSS Instances 2" /></p>
-
-<h2>Step 3: Update all the instances</h2>
-
-<p>In this step we will actually upgrade all VM instances. Run following script:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="l-Scalar-Plain">ansible-playbook 03-update-instances.yml --extra-vars &quot;resource_group=myrg&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>First <strong>azure_rm_virtualmachinescalesetinstance_facts</strong> module is used to get list of instances:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">List all of the instances</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_virtualmachinescalesetinstance_facts</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">vmss_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">register</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">instances</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>And then <strong>azure_rm_virtualmachinescalesetinstance</strong> module to set <strong>latest_version</strong> to <strong>yes</strong>:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">manually upgrade all the instances</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_virtualmachinescalesetinstance</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">vmss_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">instance_id</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">latest_model</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">yes</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">with_items</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Again, you can see in the portal how instances are being updated one by one:</p>
-
-<p><img src="http://zikalino.github.io/images/vmss-extension-03.png" alt="VMSS Instances 3" /></p>
-
-<p>When update is completed reload the page, and you should see that this time default Apache index page is displayed:</p>
-
-<p><img src="http://zikalino.github.io/images/vmss-extension-04.png" alt="VMSS Instances 4" /></p>
-]]></content>
-  </entry>
+    </p>
+    
+      <div class="sharing">
   
-  <entry>
-    <title type="html"><![CDATA[Updating Azure Virtual Machine Scale Set Images Using Ansible]]></title>
-    <link href="http://zikalino.github.io/blog/2019/01/23/updating-vmss-images-using-ansible/"/>
-    <updated>2019-01-23T11:46:27+08:00</updated>
-    <id>http://zikalino.github.io/blog/2019/01/23/updating-vmss-images-using-ansible</id>
-    <content type="html"><![CDATA[<p>This is a new Virtual Machine Scale Set demo I have just released to official <strong>Ansible Playbooks for Azure</strong>.</p>
-
-<p>I have updated Ansible modules to enable:</p>
-
-<ul>
-<li>creating images from existing Azure Virtual Machines</li>
-<li>updating custom image in Azure Virtual Machine Scale Set</li>
-</ul>
-
-
-<p>This demo is divided into a few steps. First it demonstrates how to create two custom images (A and B), and we will create VMSS with image A, and finally we will dynamically change image A to image B.</p>
-
-<p>Before trying the playbooks, clone following repository:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>git clone https://github.com/Azure-Samples/ansible-playbooks.git
-</span><span class='line'><span class="nb">cd </span>ansible-playbooks/vmss_images
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Step One - Create two virtual machines and install HTTPD</h2>
-
-<p>Run following playbook:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>ansible-playbook 01-create-vms.yml --extra-vars <span class="s2">&quot;resource_group=myrg&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>It will:
-- create 2 virtual machines
-- install HTTPD on both of them
-- change index.html to contain <strong>Image A</strong> and <strong>Image B</strong> respectively</p>
-
-<p>Copy and paste IP addresses of both VMs to the browser:</p>
-
-<p><img src="http://zikalino.github.io/images/vmss-update-vms-ip-addresses.png" alt="Public IP Address" /></p>
-
-<p>You should see two different versions of VM:</p>
-
-<p><img src="http://zikalino.github.io/images/vmss-update-browser-vma.png" alt="VM A" /></p>
-
-<p>and</p>
-
-<p><img src="http://zikalino.github.io/images/vmss-update-browser-vmb.png" alt="VM B" /></p>
-
-<h2>Step Two - Capture Images from both Virtual Machines</h2>
-
-<p>Run second playbook to capture the images:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>ansible-playbook 02-capture-images.yml --extra-vars <span class="s2">&quot;resource_group=myrg&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Step Three - Create VMSS using Image A</h2>
-
-<p>In this step we will create following components:
-- public IP address
-- load balancer
-- VMSS referring image A</p>
-
-<p>Run following playbook:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>ansible-playbook 03-create-vmss.yml --extra-vars <span class="s2">&quot;resource_group=myrg&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Check the IP address printed out at the end:</p>
-
-<p><img src="http://zikalino.github.io/images/vmss-update-vmss-public-ip.png" alt="Public IP Address" /></p>
-
-<p>check that it works in the browser:</p>
-
-<p><img src="http://zikalino.github.io/images/vmss-update-browser-initial-vmss.png" alt="VMSS Image A" /></p>
-
-<h2>Step Four - Update Image Reference in VMSS and Upgrade Instances</h2>
-
-<p>Run final playbook to replace image A with image B:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>ansible-playbook 04-update-vmss-image.yml --extra-vars <span class="s2">&quot;resource_group=myrg&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Now press <strong>F5</strong> in the browser to reload page and see that image gas changed:</p>
-
-<p><img src="http://zikalino.github.io/images/vmss-update-browser-updated-vmss.png" alt="VMSS Image B" /></p>
-]]></content>
-  </entry>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://zikalino.github.io/blog/2019/02/21/ansible-module-anatomy/" data-via="" data-counturl="http://zikalino.github.io/blog/2019/02/21/ansible-module-anatomy/" >Tweet</a>
   
-  <entry>
-    <title type="html"><![CDATA[Some Notes on Inconsistencies in Examples]]></title>
-    <link href="http://zikalino.github.io/blog/2019/01/21/some-notes-on-inconsistencies-in-examples/"/>
-    <updated>2019-01-21T15:39:32+08:00</updated>
-    <id>http://zikalino.github.io/blog/2019/01/21/some-notes-on-inconsistencies-in-examples</id>
-    <content type="html"><![CDATA[<p>Compute, VirtualMachines - &ldquo;name&rdquo; parameter in body can&rsquo;t be different than one in the URL</p>
-
-<p>adminUsername -> &ldquo;{your-username}&rdquo;
-adminPassword -> &ldquo;{your-password}&rdquo;</p>
-]]></content>
-  </entry>
   
-  <entry>
-    <title type="html"><![CDATA[Creating Azure Virtual Machines With Ansible and REST API]]></title>
-    <link href="http://zikalino.github.io/blog/2019/01/20/creating-azure-virtual-machines-with-ansible-and-rest-api/"/>
-    <updated>2019-01-20T18:09:56+08:00</updated>
-    <id>http://zikalino.github.io/blog/2019/01/20/creating-azure-virtual-machines-with-ansible-and-rest-api</id>
-    <content type="html"><![CDATA[<p>Just go to <strong>examples</strong> folder and run following playbook:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>ansible-playbook compute_virtualmachines_put.yml
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Please note that it will create all the necessary dependencies:</p>
-
-<ul>
-<li>resource group</li>
-<li>network interface</li>
-<li>public IP address</li>
-<li>virtual network with subnet</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">import_playbook</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">network_networkinterfaces_put.yml</span>
-</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">hosts</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">localhost</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">roles</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">../modules</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">vars</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">subscription_id</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">myResourceGroup</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">virtual_machine_name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">myVirtualMachine</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">network_interface_name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">myNetworkInterface</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">tasks</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create a vm with password authentication.</span>
-</span><span class='line'>      <span class="l-Scalar-Plain">azure_rm_resource</span><span class="p-Indicator">:</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">idempotency</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">yes</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">api_version</span><span class="p-Indicator">:</span> <span class="s">&#39;2018-10-01&#39;</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">polling_timeout</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">600</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">polling_interval</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">30</span>
-</span><span class='line'>        <span class="c1"># url: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&#39;&#39;</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">provider</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Compute</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">resource_type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">virtualMachines</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">resource_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">body</span><span class="p-Indicator">:</span>
-</span><span class='line'>          <span class="l-Scalar-Plain">location</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">eastus</span>
-</span><span class='line'>          <span class="l-Scalar-Plain">properties</span><span class="p-Indicator">:</span>
-</span><span class='line'>            <span class="l-Scalar-Plain">hardwareProfile</span><span class="p-Indicator">:</span>
-</span><span class='line'>              <span class="l-Scalar-Plain">vmSize</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Standard_D3_v2</span>
-</span><span class='line'>            <span class="l-Scalar-Plain">storageProfile</span><span class="p-Indicator">:</span>
-</span><span class='line'>              <span class="l-Scalar-Plain">imageReference</span><span class="p-Indicator">:</span>
-</span><span class='line'>                <span class="l-Scalar-Plain">sku</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">2016-Datacenter</span>
-</span><span class='line'>                <span class="l-Scalar-Plain">publisher</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">MicrosoftWindowsServer</span>
-</span><span class='line'>                <span class="l-Scalar-Plain">version</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">latest</span>
-</span><span class='line'>                <span class="l-Scalar-Plain">offer</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">WindowsServer</span>
-</span><span class='line'>              <span class="l-Scalar-Plain">osDisk</span><span class="p-Indicator">:</span>
-</span><span class='line'>                <span class="l-Scalar-Plain">caching</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">ReadWrite</span>
-</span><span class='line'>                <span class="l-Scalar-Plain">managedDisk</span><span class="p-Indicator">:</span>
-</span><span class='line'>                  <span class="l-Scalar-Plain">storageAccountType</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Standard_LRS</span>
-</span><span class='line'>                <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">myVMosdisk</span>
-</span><span class='line'>                <span class="l-Scalar-Plain">createOption</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">FromImage</span>
-</span><span class='line'>            <span class="l-Scalar-Plain">osProfile</span><span class="p-Indicator">:</span>
-</span><span class='line'>              <span class="l-Scalar-Plain">adminUsername</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">adminxyz</span>
-</span><span class='line'>              <span class="l-Scalar-Plain">computerName</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">myVM</span>
-</span><span class='line'>              <span class="l-Scalar-Plain">adminPassword</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">MooMoo123!!!!</span>
-</span><span class='line'>            <span class="l-Scalar-Plain">networkProfile</span><span class="p-Indicator">:</span>
-</span><span class='line'>              <span class="l-Scalar-Plain">networkInterfaces</span><span class="p-Indicator">:</span>
-</span><span class='line'>                <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">id</span><span class="p-Indicator">:</span> <span class="s">&quot;/subscriptions//resourceGroups//providers/Microsoft.Network/networkInterfaces/&quot;</span>
-</span><span class='line'>                  <span class="l-Scalar-Plain">properties</span><span class="p-Indicator">:</span>
-</span><span class='line'>                    <span class="l-Scalar-Plain">primary</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">True</span>
-</span></code></pre></td></tr></table></div></figure>
-
-]]></content>
-  </entry>
   
-  <entry>
-    <title type="html"><![CDATA[Module Azure_rm_virtualmachine - Delta]]></title>
-    <link href="http://zikalino.github.io/blog/2019/01/20/module-azure-rm-virtualmachine-delta/"/>
-    <updated>2019-01-20T10:26:39+08:00</updated>
-    <id>http://zikalino.github.io/blog/2019/01/20/module-azure-rm-virtualmachine-delta</id>
-    <content type="html"><![CDATA[<p>A</p>
+</div>
 
-<p>Below is a quick compilation and comparison:</p>
-
-<table>
-<thead>
-<tr>
-<th>Feature</th>
-<th>Idempotence</th>
-<th>Support In Ansible</th>
-<th>Idempotence in Ansible</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>identity</td>
-<td></td>
-<td>NO</td>
-<td></td>
-</tr>
-<tr>
-<td>location</td>
-<td></td>
-<td>YES</td>
-<td></td>
-</tr>
-<tr>
-<td>plan</td>
-<td></td>
-<td>YES</td>
-<td></td>
-</tr>
-<tr>
-<td>properties.additionalCapabilities.ultraSSDEnabled</td>
-<td>deallocated only</td>
-<td>NO</td>
-<td></td>
-</tr>
-<tr>
-<td>properties.availabilitySet.id</td>
-<td>changes not allowed</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>properties.diagnosticsProfile.bootDiagnostics.enabled</td>
-<td></td>
-<td>NO</td>
-<td></td>
-</tr>
-<tr>
-<td>properties.diagnosticsProfile.bootDiagnostics.storageUri</td>
-<td></td>
-<td>NO</td>
-<td></td>
-</tr>
-<tr>
-<td>properties.hardwareProfile.vmSize</td>
-<td></td>
-<td>YES</td>
-<td>YES (check)</td>
-</tr>
-<tr>
-<td>properties.licenseType</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>properties.networkProfile.networkInterfaces[].id</td>
-<td></td>
-<td>YES</td>
-<td>YES (check)</td>
-</tr>
-<tr>
-<td>properties.osProfile.adminPassword</td>
-<td>OK</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>properties.osProfile.adminUsername</td>
-<td>not allowed</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>properties.osProfile.allowExtensionOperations</td>
-<td>OK</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>properties.osProfile.computerName</td>
-<td>not allowed</td>
-<td>YES</td>
-<td>YES (check)</td>
-</tr>
-<tr>
-<td>properties.osProfile.customData</td>
-<td>not allowed</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>properties.osProfile.linuxConfiguration&hellip;&hellip;.</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>properties.osProfile.secrets</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>properties.osProfile.windowsConfiguration&hellip;&hellip;.</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>properties.osProfile.</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>properties.storageProfile.dataDisks[]&hellip;&hellip;&hellip;</td>
-<td></td>
-<td>YES - check details</td>
-<td></td>
-</tr>
-<tr>
-<td>properties.storageProfile.imageReference</td>
-<td>changes not allowed</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>properties.storageProfile.osDisk&hellip;&hellip;&hellip;..</td>
-<td></td>
-<td>YES - check details</td>
-<td></td>
-</tr>
-<tr>
-<td>properties.storageProfile.osDisk.caching</td>
-<td>OK</td>
-<td>YES</td>
-<td>YES (check)</td>
-</tr>
-<tr>
-<td>properties.storageProfile.osDisk.name</td>
-<td>not allowed</td>
-<td>YES</td>
-<td>YES (check)</td>
-</tr>
-<tr>
-<td>properties.storageProfile.osDisk.diskSizeGB</td>
-<td>deallocated only</td>
-<td>YES</td>
-<td>YES (check)</td>
-</tr>
-<tr>
-<td>properties.storageProfile.osDisk.writeAcceleratorEnabled</td>
-<td>managed only</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>properties.storageProfile.osDisk.osType</td>
-<td>changes not allowed</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>properties.storageProfile.osDisk.createOption</td>
-<td>changes not allowed</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>tags</td>
-<td></td>
-<td>YES</td>
-<td></td>
-</tr>
-<tr>
-<td>zones</td>
-<td></td>
-<td>NO</td>
-<td></td>
-</tr>
-</tbody>
-</table>
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2019/02/01/installing-ansible-using-cloud-init/" title="Previous Post: Installing Ansible using cloud-init">&laquo; Installing Ansible using cloud-init</a>
+      
+      
+    </p>
+  </footer>
+</article>
 
 
-<p>In addition REST API provides several APIs, some of them are supported, but some are not:</p>
+</div>
 
-<table>
-<thead>
-<tr>
-<th>Feature</th>
-<th>Support In Ansible</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Capture</td>
-<td>NO</td>
-</tr>
-<tr>
-<td>Convert to Managed Disks</td>
-<td></td>
-</tr>
-<tr>
-<td>Deallocate</td>
-<td>YES</td>
-</tr>
-<tr>
-<td>Generalize</td>
-<td>YES (2.8)</td>
-</tr>
-<tr>
-<td>Perform Maintenance</td>
-<td>NO</td>
-</tr>
-<tr>
-<td>Power Off</td>
-<td>YES</td>
-</tr>
-<tr>
-<td>Redeploy</td>
-<td>NO</td>
-</tr>
-<tr>
-<td>Reimage</td>
-<td>NO</td>
-</tr>
-<tr>
-<td>Restart</td>
-<td>YES</td>
-</tr>
-<tr>
-<td>Start</td>
-<td>YES</td>
-</tr>
-</tbody>
-</table>
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2019 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a> | Themed with <a href="https://github.com/lucaslew/whitespace">Whitespace</a></span>
+</p>
 
-]]></content>
-  </entry>
+</footer>
   
-  <entry>
-    <title type="html"><![CDATA[Just a First Post]]></title>
-    <link href="http://zikalino.github.io/blog/2019/01/15/azure-devtest-labs-rest-examples-in-ansible/"/>
-    <updated>2019-01-15T10:14:39+08:00</updated>
-    <id>http://zikalino.github.io/blog/2019/01/15/azure-devtest-labs-rest-examples-in-ansible</id>
-    <content type="html"><![CDATA[<p>Nothing much in here. I have written a lot of notes mostly related to Ansible, but also to Azure REST API, and it&rsquo;s time to publish it them somewhere and made available to wider public.
-So, Hello World!</p>
-]]></content>
-  </entry>
-  
-</feed>
+
+
+
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
