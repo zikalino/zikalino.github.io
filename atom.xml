@@ -4,7 +4,7 @@
   <title><![CDATA[Zim's Notes]]></title>
   <link href="http://zikalino.github.io/atom.xml" rel="self"/>
   <link href="http://zikalino.github.io/"/>
-  <updated>2019-02-21T13:38:48+08:00</updated>
+  <updated>2019-03-06T10:15:24+08:00</updated>
   <id>http://zikalino.github.io/</id>
   <author>
     <name><![CDATA[Your Name]]></name>
@@ -12,6 +12,151 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Ansible Modules - Proposed Improvements]]></title>
+    <link href="http://zikalino.github.io/blog/2019/03/06/ansible-modules-proposed-improvements/"/>
+    <updated>2019-03-06T08:03:07+08:00</updated>
+    <id>http://zikalino.github.io/blog/2019/03/06/ansible-modules-proposed-improvements</id>
+    <content type="html"><![CDATA[<p>I have done a lot of experiments with Ansible module idempotence and here&rsquo;s a summary and a proposal of generic solution.</p>
+
+<p>Let&rsquo;s start with problems we have:
+- every module has their own idempotency checks so the behaviour is not consistent
+- we agreed to display warning when change is detected but can&rsquo;t be applied. This is not implemented yet in majority in the modules.</p>
+
+<h2>Manual Idempotence Check</h2>
+
+<ul>
+<li>error prone</li>
+<li>time consuming</li>
+<li>no consistency between modules</li>
+</ul>
+
+
+<h2>Generic Compare Function</h2>
+
+<ul>
+<li>quite effective</li>
+<li>robust</li>
+<li>difficult to handle exceptions</li>
+</ul>
+
+
+<h3>Comparison Types</h3>
+
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>exact</td>
+<td>This kind of comparison should work for most of the properties.</td>
+</tr>
+<tr>
+<td>case insensitive</td>
+<td>for instance resource id may need this type of comparison</td>
+</tr>
+<tr>
+<td>location</td>
+<td> location may be returned in different formats, for instance <strong>east us</strong> or <strong>East US</strong></td>
+</tr>
+<tr>
+<td>ignore</td>
+<td>for properties that are not returned by GET, for instance passwords, secrets, or any other fields that we can&rsquo;t perform comparison</td>
+</tr>
+</tbody>
+</table>
+
+
+<h3>Exceptions</h3>
+
+<ul>
+<li>sometimes (quite rarely) structure returned by GET is different from PUT</li>
+<li>some properties are not returned by GET, so can&rsquo;t compare</li>
+<li>sometimes comparison method needs to be adjusted to particular scenario</li>
+</ul>
+
+
+<h2>Proposed Approach: Global Compare Function + Metadata in module_arg_spec</h2>
+
+<p>I have done appropriate tests and:
+- it&rsquo;s possible to add custom metadata to <strong>module_arg_spec</strong> without disturbing Ansible sanity checks</p>
+
+<p>Therefore we could have Azure specific metadata defined as follows, to provide auxilliary information for modules about:
+- updatability of the field
+- field relationship to structures obtained from <strong>Get</strong> and <strong>CreateOrUpdate</strong>
+- idempotence comparison method</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="bp">self</span><span class="o">.</span><span class="n">module_arg_spec</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+</span><span class='line'>    <span class="c"># ...</span>
+</span><span class='line'>    <span class="n">option_a</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+</span><span class='line'>        <span class="nb">type</span><span class="o">=</span><span class="s">&#39;str&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="n">required</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+</span><span class='line'>        <span class="c"># Azure Module Specific Metadata</span>
+</span><span class='line'>        <span class="n">updatable</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+</span><span class='line'>        <span class="n">disposition</span><span class="o">=</span><span class="s">&#39;parameters/option_a&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="n">comparison</span><span class="o">=</span><span class="s">&#39;insensitive&#39;</span>
+</span><span class='line'>    <span class="p">),</span>
+</span><span class='line'><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>updatable</td>
+<td><strong>True</strong></td>
+<td>Set to <strong>False</strong> if property cannot be updated. Warning will be automatically generated if change is detected.</td>
+</tr>
+<tr>
+<td>disposition</td>
+<td>-</td>
+<td>Different name or path if property in different location after expanding options</td>
+</tr>
+<tr>
+<td>comparison</td>
+<td><strong>exact</strong></td>
+<td>Comparison method, use one of: <strong>exact</strong>, <strong>insensitive</strong>, <strong>location</strong>, <strong>ignore</strong></td>
+</tr>
+</tbody>
+</table>
+
+
+<p>Module base will provide function:</p>
+
+<p><strong>map_and_compare(old_properties)</strong></p>
+
+<p><strong>old_properties</strong> is a dictionary returned by <strong>Get</strong> or empty dictionary <strong>{}</strong>.</p>
+
+<p>Function will map new property values into existing dictionary or populate empty dictionary.</p>
+
+<p>Function will return <strong>True</strong> if any change is detected.</p>
+
+<p>Function will generate appropriate warnings if change of non-updatable fields is detected.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Ansible Module Anatomy]]></title>
