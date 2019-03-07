@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://zikalino.github.io/blog/2019/03/07/diving-into-azure-rm-deployment/</loc>
+<lastmod>2019-03-07T10:40:24+08:00</lastmod>
+</url>
+<url>
 <loc>http://zikalino.github.io/blog/2019/03/06/ansible-modules-proposed-improvements/</loc>
 <lastmod>2019-03-06T08:03:07+08:00</lastmod>
 </url>
