@@ -9,7 +9,7 @@
   <meta name="author" content="Your Name">
 
   
-  <meta name="description" content="It&rsquo;s time to refresh azure_rm_deployment, as I just started looking into one of the very old issues submitted to Ansible GitHub: https://github &hellip;">
+  <meta name="description" content="It&rsquo;s time to refresh azure_rm_deployment. Currently we have following problems with azure_rm_deployment it&rsquo;s a kind of VM oriented only &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -101,13 +101,27 @@
   </header>
 
 
-  <div class="entry-content"><p>It&rsquo;s time to refresh <strong>azure_rm_deployment</strong>, as I just started looking into one of the very old issues submitted to Ansible GitHub:</p>
+  <div class="entry-content"><p>It&rsquo;s time to refresh <strong>azure_rm_deployment</strong>.</p>
 
-<p><a href="https://github.com/ansible/ansible/issues/31967">https://github.com/ansible/ansible/issues/31967</a></p>
+<p>Currently we have following problems with <strong>azure_rm_deployment</strong></p>
 
-<p>It&rsquo;s very old, and I am ashamed I didn&rsquo;t have time to attend to it before.</p>
+<ul>
+<li>it&rsquo;s a kind of VM oriented only</li>
+<li>no proper facts module, no proper information about created resources, so it&rsquo;s difficult to build on the top of resources created by ARM deployment</li>
+<li>deleting deployment actually deletes entire resource group, so no convenient way to have any additional resources in the same resource group</li>
+<li>default deployment name (user can optionally specify) is confusing and inconsistent with other resources</li>
+</ul>
+
+
+<p>What we can fix, and it&rsquo;s quite easy:
+- facts module that lists all the resource ids in dictionary by resource type
+- properly deleting resources created by deployment, enabling users to have more than one deployment in a resource group</p>
 
 <p>Let&rsquo;s start with a simple playbook. I have just taken it from integration tests:</p>
+
+<h2>How it currently works?</h2>
+
+<p>Just a simple playbook that creates a virtual machine:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -150,7 +164,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>so the output appears to be correct:</p>
+<p>and the output looks like this:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -223,122 +237,6 @@
 </span><span class='line'>                <span class="nt">&quot;sshCommand&quot;</span><span class="p">:</span> <span class="p">{</span>
 </span><span class='line'>                    <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;String&quot;</span><span class="p">,</span>
 </span><span class='line'>                    <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;ssh chouseknecht@zimsdeployment.eastus2.cloudapp.azure.com&quot;</span>
-</span><span class='line'>                <span class="p">}</span>
-</span><span class='line'>            <span class="p">}</span>
-</span><span class='line'>        <span class="p">},</span>
-</span><span class='line'>        <span class="nt">&quot;failed&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
-</span><span class='line'>        <span class="nt">&quot;msg&quot;</span><span class="p">:</span> <span class="s2">&quot;deployment succeeded&quot;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>So I am changing the template do deploy Windows server:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create Azure Deploy</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">azure_rm_deployment</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">location</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">eastus2</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">template_link</span><span class="p-Indicator">:</span> <span class="s">&#39;https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/101-vm-simple-windows/azuredeploy.json&#39;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">deployment_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">parameters</span><span class="p-Indicator">:</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">adminUsername</span><span class="p-Indicator">:</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">value</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">chouseknecht</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">adminPassword</span><span class="p-Indicator">:</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">value</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">password123!</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">dnsLabelPrefix</span><span class="p-Indicator">:</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">value</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">windowsOSVersion</span><span class="p-Indicator">:</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">value</span><span class="p-Indicator">:</span> <span class="s">&quot;2016-Datacenter&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">register</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
-</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">debug</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">var</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>and also the output looks rather correct:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-</pre></td><td class='code'><pre><code class='json'><span class='line'> <span class="p">{</span>
-</span><span class='line'>    <span class="nt">&quot;output&quot;</span><span class="p">:</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nt">&quot;changed&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
-</span><span class='line'>        <span class="nt">&quot;deployment&quot;</span><span class="p">:</span> <span class="p">{</span>
-</span><span class='line'>            <span class="nt">&quot;group_name&quot;</span><span class="p">:</span> <span class="s2">&quot;zimsanotherdeployment&quot;</span><span class="p">,</span>
-</span><span class='line'>            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/zimsanotherdeployment/providers/Microsoft.Resources/deployments/zimsdplxxxx&quot;</span><span class="p">,</span>
-</span><span class='line'>            <span class="nt">&quot;instances&quot;</span><span class="p">:</span> <span class="p">[</span>
-</span><span class='line'>                <span class="p">{</span>
-</span><span class='line'>                    <span class="nt">&quot;ips&quot;</span><span class="p">:</span> <span class="p">[</span>
-</span><span class='line'>                        <span class="p">{</span>
-</span><span class='line'>                            <span class="nt">&quot;dns_settings&quot;</span><span class="p">:</span> <span class="p">{</span>
-</span><span class='line'>                                <span class="nt">&quot;domain_name_label&quot;</span><span class="p">:</span> <span class="s2">&quot;zimsdplxxxx&quot;</span><span class="p">,</span>
-</span><span class='line'>                                <span class="nt">&quot;fqdn&quot;</span><span class="p">:</span> <span class="s2">&quot;zimsdplxxxx.eastus2.cloudapp.azure.com&quot;</span>
-</span><span class='line'>                            <span class="p">},</span>
-</span><span class='line'>                            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/zimsanotherdeployment/providers/Microsoft.Network/publicIPAddresses/myPublicIP&quot;</span><span class="p">,</span>
-</span><span class='line'>                            <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;myPublicIP&quot;</span><span class="p">,</span>
-</span><span class='line'>                            <span class="nt">&quot;public_ip&quot;</span><span class="p">:</span> <span class="s2">&quot;104.209.244.123&quot;</span><span class="p">,</span>
-</span><span class='line'>                            <span class="nt">&quot;public_ip_allocation_method&quot;</span><span class="p">:</span> <span class="s2">&quot;Dynamic&quot;</span>
-</span><span class='line'>                        <span class="p">}</span>
-</span><span class='line'>                    <span class="p">],</span>
-</span><span class='line'>                    <span class="nt">&quot;vm_name&quot;</span><span class="p">:</span> <span class="s2">&quot;SimpleWinVM&quot;</span>
-</span><span class='line'>                <span class="p">}</span>
-</span><span class='line'>            <span class="p">],</span>
-</span><span class='line'>            <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;zimsdplxxxx&quot;</span><span class="p">,</span>
-</span><span class='line'>            <span class="nt">&quot;outputs&quot;</span><span class="p">:</span> <span class="p">{</span>
-</span><span class='line'>                <span class="nt">&quot;hostname&quot;</span><span class="p">:</span> <span class="p">{</span>
-</span><span class='line'>                    <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;String&quot;</span><span class="p">,</span>
-</span><span class='line'>                    <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;zimsdplxxxx.eastus2.cloudapp.azure.com&quot;</span>
 </span><span class='line'>                <span class="p">}</span>
 </span><span class='line'>            <span class="p">}</span>
 </span><span class='line'>        <span class="p">},</span>
