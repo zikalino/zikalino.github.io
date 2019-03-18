@@ -1,0 +1,492 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Ansible and Azure Function Apps - Zim's Notes</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="This is something I was planning to investigate for some time. We have azure_rm_functionapp module, but it seems to be very limited. Actually I don& &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://zikalino.github.io/blog/2019/03/07/ansible-and-azure-function-apps">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Zim's Notes" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Fjalla+One" rel="stylesheet" type="text/css">
+<!--- MathJax Configuration -->
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Zim's Notes</a></h1>
+  
+    <h2>Just work related notes.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscribe" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS" target="_blank"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="25" height="25" viewbox="0 0 100 100"><path class="social" d="M 13.310204,73.332654 C 5.967347,73.332654 0,79.322448 0,86.621428 c 0,7.338776 5.967347,13.262246 13.310204,13.262246 7.370408,0 13.328572,-5.92245 13.328572,-13.262246 0,-7.29898 -5.958164,-13.288774 -13.328572,-13.288774 z M 0.01530612,33.978572 V 53.143878 C 12.493878,53.143878 24.229592,58.02347 33.068368,66.865306 41.894898,75.685714 46.767346,87.47449 46.767346,100 h 19.25 C 66.017346,63.592858 36.4,33.979592 0.01530612,33.978572 l 0,0 z M 0.03877552,0 V 19.17449 C 44.54796,19.17551 80.77551,55.437756 80.77551,100 H 100 C 100,44.87653 55.15102,0 0.03877552,0 z"></path></svg></a></li>
+  
+</ul>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    
+      <form action="https://www.google.com/search" method="get">
+        <fieldset role="search">
+          <input type="hidden" name="sitesearch" value="zikalino.github.io" />
+    
+          <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+        </fieldset>
+      </form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      
+        <h1 class="entry-title">Ansible and Azure Function Apps</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2019-03-07T22:07:46+08:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>7</span><span class='date-suffix'>th</span>, <span class='date-year'>2019</span></span> <span class='time'>10:07 pm</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>This is something I was planning to investigate for some time. We have <strong>azure_rm_functionapp</strong> module, but it seems to be very limited. Actually I don&rsquo;t really know what it creates.</p>
+
+<p>I decided to reverse engineer a very simple scenario - creating a container based function app through Azure Portal.</p>
+
+<p>The best way to figure out what was created is to use following playbook to list all the resources in the resource group:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">List all the resources in the resource group</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_resource_facts</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">api_version</span><span class="p-Indicator">:</span> <span class="s">&#39;2018-05-01&#39;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">zimsfunctionapp</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">resources</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">register</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">debug</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">var</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Inside response I found following list of resources:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="p">[</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;/subscriptions/1c5b82ee-9294-4568-b0c0-b9c523bc0d86/resourceGroups/zimsfunctionapp/providers/Microsoft.Web/sites/zimsfunctionapp&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;kind&quot;</span><span class="p">:</span> <span class="s2">&quot;functionapp,linux,container&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;location&quot;</span><span class="p">:</span> <span class="s2">&quot;westus&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;zimsfunctionapp&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Microsoft.Web/sites&quot;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now I can do another query to get more details:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Get WebApp information</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_resource_facts</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">api_version</span><span class="p-Indicator">:</span> <span class="s">&#39;2016-08-01&#39;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">provider</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">web</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">zimsfunctionapp</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">sites</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">zimsfunctionapp</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">register</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">debug</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">var</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And that returs following large structure:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="p">[</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;/subscriptions/1c5b82ee-9294-4568-b0c0-b9c523bc0d86/resourceGroups/zimsfunctionapp/providers/Microsoft.Web/sites/zimsfunctionapp&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;kind&quot;</span><span class="p">:</span> <span class="s2">&quot;functionapp,linux,container&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;location&quot;</span><span class="p">:</span> <span class="s2">&quot;West US&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;zimsfunctionapp&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>            <span class="nt">&quot;adminEnabled&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;availabilityState&quot;</span><span class="p">:</span> <span class="s2">&quot;Normal&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;cers&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;clientAffinityEnabled&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;clientCertEnabled&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;clientCertExclusionPaths&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;cloningInfo&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;computeMode&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;containerSize&quot;</span><span class="p">:</span> <span class="mi">1536</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;contentAvailabilityState&quot;</span><span class="p">:</span> <span class="s2">&quot;Normal&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;csrs&quot;</span><span class="p">:</span> <span class="p">[],</span>
+</span><span class='line'>            <span class="nt">&quot;dailyMemoryTimeQuota&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;defaultHostName&quot;</span><span class="p">:</span> <span class="s2">&quot;zimsfunctionapp.azurewebsites.net&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;deploymentId&quot;</span><span class="p">:</span> <span class="s2">&quot;zimsfunctionapp&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;domainVerificationIdentifiers&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;enabled&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;enabledHostNames&quot;</span><span class="p">:</span> <span class="p">[</span>
+</span><span class='line'>                <span class="s2">&quot;zimsfunctionapp.azurewebsites.net&quot;</span><span class="p">,</span>
+</span><span class='line'>                <span class="s2">&quot;zimsfunctionapp.scm.azurewebsites.net&quot;</span>
+</span><span class='line'>            <span class="p">],</span>
+</span><span class='line'>            <span class="nt">&quot;functionExecutionUnitsCache&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;geoDistributions&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;homeStamp&quot;</span><span class="p">:</span> <span class="s2">&quot;waws-prod-bay-081&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;hostNameSslStates&quot;</span><span class="p">:</span> <span class="p">[</span>
+</span><span class='line'>                <span class="p">{</span>
+</span><span class='line'>                    <span class="nt">&quot;hostType&quot;</span><span class="p">:</span> <span class="s2">&quot;Standard&quot;</span><span class="p">,</span>
+</span><span class='line'>                    <span class="nt">&quot;ipBasedSslResult&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>                    <span class="nt">&quot;ipBasedSslState&quot;</span><span class="p">:</span> <span class="s2">&quot;NotConfigured&quot;</span><span class="p">,</span>
+</span><span class='line'>                    <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;zimsfunctionapp.azurewebsites.net&quot;</span><span class="p">,</span>
+</span><span class='line'>                    <span class="nt">&quot;sslState&quot;</span><span class="p">:</span> <span class="s2">&quot;Disabled&quot;</span><span class="p">,</span>
+</span><span class='line'>                    <span class="nt">&quot;thumbprint&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>                    <span class="nt">&quot;toUpdate&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>                    <span class="nt">&quot;toUpdateIpBasedSsl&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>                    <span class="nt">&quot;virtualIP&quot;</span><span class="p">:</span> <span class="kc">null</span>
+</span><span class='line'>                <span class="p">},</span>
+</span><span class='line'>                <span class="p">{</span>
+</span><span class='line'>                    <span class="nt">&quot;hostType&quot;</span><span class="p">:</span> <span class="s2">&quot;Repository&quot;</span><span class="p">,</span>
+</span><span class='line'>                    <span class="nt">&quot;ipBasedSslResult&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>                    <span class="nt">&quot;ipBasedSslState&quot;</span><span class="p">:</span> <span class="s2">&quot;NotConfigured&quot;</span><span class="p">,</span>
+</span><span class='line'>                    <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;zimsfunctionapp.scm.azurewebsites.net&quot;</span><span class="p">,</span>
+</span><span class='line'>                    <span class="nt">&quot;sslState&quot;</span><span class="p">:</span> <span class="s2">&quot;Disabled&quot;</span><span class="p">,</span>
+</span><span class='line'>                    <span class="nt">&quot;thumbprint&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>                    <span class="nt">&quot;toUpdate&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>                    <span class="nt">&quot;toUpdateIpBasedSsl&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>                    <span class="nt">&quot;virtualIP&quot;</span><span class="p">:</span> <span class="kc">null</span>
+</span><span class='line'>                <span class="p">}</span>
+</span><span class='line'>            <span class="p">],</span>
+</span><span class='line'>            <span class="nt">&quot;hostNames&quot;</span><span class="p">:</span> <span class="p">[</span>
+</span><span class='line'>                <span class="s2">&quot;zimsfunctionapp.azurewebsites.net&quot;</span>
+</span><span class='line'>            <span class="p">],</span>
+</span><span class='line'>            <span class="nt">&quot;hostNamesDisabled&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;hostingEnvironment&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;hostingEnvironmentId&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;hostingEnvironmentProfile&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;httpsOnly&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;hyperV&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;inProgressOperationId&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;isXenon&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;kind&quot;</span><span class="p">:</span> <span class="s2">&quot;functionapp,linux,container&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;lastModifiedTimeUtc&quot;</span><span class="p">:</span> <span class="s2">&quot;2019-03-07T13:52:14.7033333&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;maxNumberOfWorkers&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;zimsfunctionapp&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;outboundIpAddresses&quot;</span><span class="p">:</span> <span class="s2">&quot;13.64.73.110,40.118.133.8,40.118.169.141,40.118.253.162,13.64.147.140&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;owner&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;possibleOutboundIpAddresses&quot;</span><span class="p">:</span> <span class="s2">&quot;13.64.73.110,40.118.133.8,40.118.169.141,40.118.253.162,13.64.147.140,52.160.85.217,13.93.238.69&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;redundancyMode&quot;</span><span class="p">:</span> <span class="s2">&quot;None&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;repositorySiteName&quot;</span><span class="p">:</span> <span class="s2">&quot;zimsfunctionapp&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;reserved&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;resourceGroup&quot;</span><span class="p">:</span> <span class="s2">&quot;zimsfunctionapp&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;runtimeAvailabilityState&quot;</span><span class="p">:</span> <span class="s2">&quot;Normal&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;scmSiteAlsoStopped&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;selfLink&quot;</span><span class="p">:</span> <span class="s2">&quot;https://waws-prod-bay-081.api.azurewebsites.windows.net:454/subscriptions/1c5b82ee-9294-4568-b0c0-b9c523bc0d86/webspaces/jw-webapp-linux-nginx-06-WestUSwebspace/sites/zimsfunctionapp&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;serverFarm&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;serverFarmId&quot;</span><span class="p">:</span> <span class="s2">&quot;/subscriptions/1c5b82ee-9294-4568-b0c0-b9c523bc0d86/resourceGroups/jw-webapp-linux-nginx-06/providers/Microsoft.Web/serverfarms/jw-webapp-linux-plan-01&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;siteConfig&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;siteDisabledReason&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;siteMode&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;siteProperties&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>                <span class="nt">&quot;appSettings&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>                <span class="nt">&quot;metadata&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>                <span class="nt">&quot;properties&quot;</span><span class="p">:</span> <span class="p">[</span>
+</span><span class='line'>                    <span class="p">{</span>
+</span><span class='line'>                        <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;LinuxFxVersion&quot;</span><span class="p">,</span>
+</span><span class='line'>                        <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;DOCKER|httpd&quot;</span>
+</span><span class='line'>                    <span class="p">},</span>
+</span><span class='line'>                    <span class="p">{</span>
+</span><span class='line'>                        <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;WindowsFxVersion&quot;</span><span class="p">,</span>
+</span><span class='line'>                        <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="kc">null</span>
+</span><span class='line'>                    <span class="p">}</span>
+</span><span class='line'>                <span class="p">]</span>
+</span><span class='line'>            <span class="p">},</span>
+</span><span class='line'>            <span class="nt">&quot;sku&quot;</span><span class="p">:</span> <span class="s2">&quot;Standard&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;slotSwapStatus&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;sslCertificates&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;state&quot;</span><span class="p">:</span> <span class="s2">&quot;Running&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;storageRecoveryDefaultState&quot;</span><span class="p">:</span> <span class="s2">&quot;Running&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;suspendedTill&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;tags&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;targetSwapSlot&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;trafficManagerHostNames&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;usageState&quot;</span><span class="p">:</span> <span class="s2">&quot;Normal&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;webSpace&quot;</span><span class="p">:</span> <span class="s2">&quot;jw-webapp-linux-nginx-06-WestUSwebspace&quot;</span>
+</span><span class='line'>        <span class="p">},</span>
+</span><span class='line'>        <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Microsoft.Web/sites&quot;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+
+
+  <span class="byline author vcard">Authored by <span class="fn">
+  
+    Your Name
+  
+  </span></span>
+
+
+      
+
+
+
+
+<time class='entry-date' datetime='2019-03-07T22:07:46+08:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>7</span><span class='date-suffix'>th</span>, <span class='date-year'>2019</span></span> <span class='time'>10:07 pm</span></time>
+      
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://zikalino.github.io/blog/2019/03/07/ansible-and-azure-function-apps/" data-via="" data-counturl="http://zikalino.github.io/blog/2019/03/07/ansible-and-azure-function-apps/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2019/03/07/diving-into-azure-rm-deployment/" title="Previous Post: Diving into azure_rm_deployment">&laquo; Diving into azure_rm_deployment</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2019/03/18/removing-resource-locks-using-ansible-and-azure-rest-api/" title="Next Post: Removing resource locks using Ansible and Azure REST API">Removing resource locks using Ansible and Azure REST API &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+
+</div>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2019 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a> | Themed with <a href="https://github.com/lucaslew/whitespace">Whitespace</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

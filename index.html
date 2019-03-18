@@ -9,7 +9,7 @@
   <meta name="author" content="Your Name">
 
   
-  <meta name="description" content="It&rsquo;s time to refresh azure_rm_deployment. Currently we have following problems with azure_rm_deployment it&rsquo;s a kind of VM oriented only &hellip;">
+  <meta name="description" content="This is one of the topic I had to look into. Removing locks appeared to be an issue while performing automatic clean up of the resources. Currently &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -78,6 +78,509 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2019/03/18/removing-resource-locks-using-ansible-and-azure-rest-api/">Removing Resource Locks Using Ansible and Azure REST API</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2019-03-18T14:51:20+08:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2019</span></span> <span class='time'>2:51 pm</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>This is one of the topic I had to look into. Removing locks appeared to be an issue while performing automatic clean up of the resources.</p>
+
+<p>Currently there&rsquo;s no support for locks in Ansible, but I have tried to use <strong>azure_rm_resource_facts</strong> module to list locks on both resource group and subscription level, and then delete locks using <strong>azure_rm_resource</strong>.</p>
+
+<p>To list all the locks in the resource group:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'>  <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">List all the locks in the resource group</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">azure_rm_resource_facts</span><span class="p-Indicator">:</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">api_version</span><span class="p-Indicator">:</span> <span class="s">&#39;2016-09-01&#39;</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">provider</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">authorization</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">resource_type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">locks</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">register</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">debug</span><span class="p-Indicator">:</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">var</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>or all resources in the subscription, just remove <strong>resource_group</strong> parameter:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'>  <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">List all the locks in the resource group</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">azure_rm_resource_facts</span><span class="p-Indicator">:</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">api_version</span><span class="p-Indicator">:</span> <span class="s">&#39;2016-09-01&#39;</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">provider</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">authorization</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">resource_type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">locks</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">register</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">debug</span><span class="p-Indicator">:</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">var</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Output will look as follows:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="nt">&quot;output&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nt">&quot;changed&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;failed&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;response&quot;</span><span class="p">:</span> <span class="p">[</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;/subscriptions/1c5b82ee-9294-4568-b0c0-b9c523bc0d86/resourceGroups/zimslockedrg/providers/Microsoft.Network/virtualNetworks/zimslockedvb/providers/Microsoft.Authorization/locks/justalock&quot;</span><span class="p">,</span>
+</span><span class='line'>                <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;justalock&quot;</span><span class="p">,</span>
+</span><span class='line'>                <span class="nt">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>                    <span class="nt">&quot;level&quot;</span><span class="p">:</span> <span class="s2">&quot;CanNotDelete&quot;</span><span class="p">,</span>
+</span><span class='line'>                    <span class="nt">&quot;notes&quot;</span><span class="p">:</span> <span class="s2">&quot;blabla&quot;</span>
+</span><span class='line'>                <span class="p">},</span>
+</span><span class='line'>                <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Microsoft.Authorization/locks&quot;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="p">],</span>
+</span><span class='line'>        <span class="nt">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;/subscriptions/1c5b82ee-9294-4568-b0c0-b9c523bc0d86/resourceGroups/zimslockedrg/providers/Microsoft.authorization/locks&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;warnings&quot;</span><span class="p">:</span> <span class="p">[</span>
+</span><span class='line'>            <span class="s2">&quot;Azure API profile latest does not define an entry for GenericRestClient&quot;</span>
+</span><span class='line'>        <span class="p">]</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Based on this output you can just delete all the locks one by one using <strong>azure_rm_resource</strong> module:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'>  <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Delete locks one by one</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">azure_rm_resource</span><span class="p-Indicator">:</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">api_version</span><span class="p-Indicator">:</span> <span class="s">&#39;2016-09-01&#39;</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">url</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">provider</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">authorization</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">resource_type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">locks</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">state</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">absent</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">with_items</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Please note that there&rsquo;s a bug in the versions of Ansible earlier than 2.8, and the last playbook needs small modification:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'>  <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Delete locks one by one</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">azure_rm_resource</span><span class="p-Indicator">:</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">api_version</span><span class="p-Indicator">:</span> <span class="s">&#39;2016-09-01&#39;</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">url</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">provider</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">authorization</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">resource_type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">locks</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">state</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">absent</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">with_items</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2019/03/07/ansible-and-azure-function-apps/">Ansible and Azure Function Apps</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2019-03-07T22:07:46+08:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>7</span><span class='date-suffix'>th</span>, <span class='date-year'>2019</span></span> <span class='time'>10:07 pm</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>This is something I was planning to investigate for some time. We have <strong>azure_rm_functionapp</strong> module, but it seems to be very limited. Actually I don&rsquo;t really know what it creates.</p>
+
+<p>I decided to reverse engineer a very simple scenario - creating a container based function app through Azure Portal.</p>
+
+<p>The best way to figure out what was created is to use following playbook to list all the resources in the resource group:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">List all the resources in the resource group</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_resource_facts</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">api_version</span><span class="p-Indicator">:</span> <span class="s">&#39;2018-05-01&#39;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">zimsfunctionapp</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">resources</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">register</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">debug</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">var</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Inside response I found following list of resources:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="p">[</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;/subscriptions/1c5b82ee-9294-4568-b0c0-b9c523bc0d86/resourceGroups/zimsfunctionapp/providers/Microsoft.Web/sites/zimsfunctionapp&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;kind&quot;</span><span class="p">:</span> <span class="s2">&quot;functionapp,linux,container&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;location&quot;</span><span class="p">:</span> <span class="s2">&quot;westus&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;zimsfunctionapp&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Microsoft.Web/sites&quot;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now I can do another query to get more details:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Get WebApp information</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_resource_facts</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">api_version</span><span class="p-Indicator">:</span> <span class="s">&#39;2016-08-01&#39;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">provider</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">web</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">zimsfunctionapp</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">sites</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">zimsfunctionapp</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">register</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">debug</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">var</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And that returs following large structure:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="p">[</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;/subscriptions/1c5b82ee-9294-4568-b0c0-b9c523bc0d86/resourceGroups/zimsfunctionapp/providers/Microsoft.Web/sites/zimsfunctionapp&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;kind&quot;</span><span class="p">:</span> <span class="s2">&quot;functionapp,linux,container&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;location&quot;</span><span class="p">:</span> <span class="s2">&quot;West US&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;zimsfunctionapp&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>            <span class="nt">&quot;adminEnabled&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;availabilityState&quot;</span><span class="p">:</span> <span class="s2">&quot;Normal&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;cers&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;clientAffinityEnabled&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;clientCertEnabled&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;clientCertExclusionPaths&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;cloningInfo&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;computeMode&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;containerSize&quot;</span><span class="p">:</span> <span class="mi">1536</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;contentAvailabilityState&quot;</span><span class="p">:</span> <span class="s2">&quot;Normal&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;csrs&quot;</span><span class="p">:</span> <span class="p">[],</span>
+</span><span class='line'>            <span class="nt">&quot;dailyMemoryTimeQuota&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;defaultHostName&quot;</span><span class="p">:</span> <span class="s2">&quot;zimsfunctionapp.azurewebsites.net&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;deploymentId&quot;</span><span class="p">:</span> <span class="s2">&quot;zimsfunctionapp&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;domainVerificationIdentifiers&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;enabled&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;enabledHostNames&quot;</span><span class="p">:</span> <span class="p">[</span>
+</span><span class='line'>                <span class="s2">&quot;zimsfunctionapp.azurewebsites.net&quot;</span><span class="p">,</span>
+</span><span class='line'>                <span class="s2">&quot;zimsfunctionapp.scm.azurewebsites.net&quot;</span>
+</span><span class='line'>            <span class="p">],</span>
+</span><span class='line'>            <span class="nt">&quot;functionExecutionUnitsCache&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;geoDistributions&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;homeStamp&quot;</span><span class="p">:</span> <span class="s2">&quot;waws-prod-bay-081&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;hostNameSslStates&quot;</span><span class="p">:</span> <span class="p">[</span>
+</span><span class='line'>                <span class="p">{</span>
+</span><span class='line'>                    <span class="nt">&quot;hostType&quot;</span><span class="p">:</span> <span class="s2">&quot;Standard&quot;</span><span class="p">,</span>
+</span><span class='line'>                    <span class="nt">&quot;ipBasedSslResult&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>                    <span class="nt">&quot;ipBasedSslState&quot;</span><span class="p">:</span> <span class="s2">&quot;NotConfigured&quot;</span><span class="p">,</span>
+</span><span class='line'>                    <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;zimsfunctionapp.azurewebsites.net&quot;</span><span class="p">,</span>
+</span><span class='line'>                    <span class="nt">&quot;sslState&quot;</span><span class="p">:</span> <span class="s2">&quot;Disabled&quot;</span><span class="p">,</span>
+</span><span class='line'>                    <span class="nt">&quot;thumbprint&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>                    <span class="nt">&quot;toUpdate&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>                    <span class="nt">&quot;toUpdateIpBasedSsl&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>                    <span class="nt">&quot;virtualIP&quot;</span><span class="p">:</span> <span class="kc">null</span>
+</span><span class='line'>                <span class="p">},</span>
+</span><span class='line'>                <span class="p">{</span>
+</span><span class='line'>                    <span class="nt">&quot;hostType&quot;</span><span class="p">:</span> <span class="s2">&quot;Repository&quot;</span><span class="p">,</span>
+</span><span class='line'>                    <span class="nt">&quot;ipBasedSslResult&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>                    <span class="nt">&quot;ipBasedSslState&quot;</span><span class="p">:</span> <span class="s2">&quot;NotConfigured&quot;</span><span class="p">,</span>
+</span><span class='line'>                    <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;zimsfunctionapp.scm.azurewebsites.net&quot;</span><span class="p">,</span>
+</span><span class='line'>                    <span class="nt">&quot;sslState&quot;</span><span class="p">:</span> <span class="s2">&quot;Disabled&quot;</span><span class="p">,</span>
+</span><span class='line'>                    <span class="nt">&quot;thumbprint&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>                    <span class="nt">&quot;toUpdate&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>                    <span class="nt">&quot;toUpdateIpBasedSsl&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>                    <span class="nt">&quot;virtualIP&quot;</span><span class="p">:</span> <span class="kc">null</span>
+</span><span class='line'>                <span class="p">}</span>
+</span><span class='line'>            <span class="p">],</span>
+</span><span class='line'>            <span class="nt">&quot;hostNames&quot;</span><span class="p">:</span> <span class="p">[</span>
+</span><span class='line'>                <span class="s2">&quot;zimsfunctionapp.azurewebsites.net&quot;</span>
+</span><span class='line'>            <span class="p">],</span>
+</span><span class='line'>            <span class="nt">&quot;hostNamesDisabled&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;hostingEnvironment&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;hostingEnvironmentId&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;hostingEnvironmentProfile&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;httpsOnly&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;hyperV&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;inProgressOperationId&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;isXenon&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;kind&quot;</span><span class="p">:</span> <span class="s2">&quot;functionapp,linux,container&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;lastModifiedTimeUtc&quot;</span><span class="p">:</span> <span class="s2">&quot;2019-03-07T13:52:14.7033333&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;maxNumberOfWorkers&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;zimsfunctionapp&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;outboundIpAddresses&quot;</span><span class="p">:</span> <span class="s2">&quot;13.64.73.110,40.118.133.8,40.118.169.141,40.118.253.162,13.64.147.140&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;owner&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;possibleOutboundIpAddresses&quot;</span><span class="p">:</span> <span class="s2">&quot;13.64.73.110,40.118.133.8,40.118.169.141,40.118.253.162,13.64.147.140,52.160.85.217,13.93.238.69&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;redundancyMode&quot;</span><span class="p">:</span> <span class="s2">&quot;None&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;repositorySiteName&quot;</span><span class="p">:</span> <span class="s2">&quot;zimsfunctionapp&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;reserved&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;resourceGroup&quot;</span><span class="p">:</span> <span class="s2">&quot;zimsfunctionapp&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;runtimeAvailabilityState&quot;</span><span class="p">:</span> <span class="s2">&quot;Normal&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;scmSiteAlsoStopped&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;selfLink&quot;</span><span class="p">:</span> <span class="s2">&quot;https://waws-prod-bay-081.api.azurewebsites.windows.net:454/subscriptions/1c5b82ee-9294-4568-b0c0-b9c523bc0d86/webspaces/jw-webapp-linux-nginx-06-WestUSwebspace/sites/zimsfunctionapp&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;serverFarm&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;serverFarmId&quot;</span><span class="p">:</span> <span class="s2">&quot;/subscriptions/1c5b82ee-9294-4568-b0c0-b9c523bc0d86/resourceGroups/jw-webapp-linux-nginx-06/providers/Microsoft.Web/serverfarms/jw-webapp-linux-plan-01&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;siteConfig&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;siteDisabledReason&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;siteMode&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;siteProperties&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>                <span class="nt">&quot;appSettings&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>                <span class="nt">&quot;metadata&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>                <span class="nt">&quot;properties&quot;</span><span class="p">:</span> <span class="p">[</span>
+</span><span class='line'>                    <span class="p">{</span>
+</span><span class='line'>                        <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;LinuxFxVersion&quot;</span><span class="p">,</span>
+</span><span class='line'>                        <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;DOCKER|httpd&quot;</span>
+</span><span class='line'>                    <span class="p">},</span>
+</span><span class='line'>                    <span class="p">{</span>
+</span><span class='line'>                        <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;WindowsFxVersion&quot;</span><span class="p">,</span>
+</span><span class='line'>                        <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="kc">null</span>
+</span><span class='line'>                    <span class="p">}</span>
+</span><span class='line'>                <span class="p">]</span>
+</span><span class='line'>            <span class="p">},</span>
+</span><span class='line'>            <span class="nt">&quot;sku&quot;</span><span class="p">:</span> <span class="s2">&quot;Standard&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;slotSwapStatus&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;sslCertificates&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;state&quot;</span><span class="p">:</span> <span class="s2">&quot;Running&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;storageRecoveryDefaultState&quot;</span><span class="p">:</span> <span class="s2">&quot;Running&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;suspendedTill&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;tags&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;targetSwapSlot&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;trafficManagerHostNames&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;usageState&quot;</span><span class="p">:</span> <span class="s2">&quot;Normal&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;webSpace&quot;</span><span class="p">:</span> <span class="s2">&quot;jw-webapp-linux-nginx-06-WestUSwebspace&quot;</span>
+</span><span class='line'>        <span class="p">},</span>
+</span><span class='line'>        <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Microsoft.Web/sites&quot;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2157,428 +2660,6 @@ Here&rsquo;s an example of creating a virtual machine via Azure portal and insta
 
 <p>adminUsername -> &ldquo;{your-username}&rdquo;
 adminPassword -> &ldquo;{your-password}&rdquo;</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2019/01/20/creating-azure-virtual-machines-with-ansible-and-rest-api/">Creating Azure Virtual Machines With Ansible and REST API</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2019-01-20T18:09:56+08:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>20</span><span class='date-suffix'>th</span>, <span class='date-year'>2019</span></span> <span class='time'>6:09 pm</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Just go to <strong>examples</strong> folder and run following playbook:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>ansible-playbook compute_virtualmachines_put.yml
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Please note that it will create all the necessary dependencies:</p>
-
-<ul>
-<li>resource group</li>
-<li>network interface</li>
-<li>public IP address</li>
-<li>virtual network with subnet</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">import_playbook</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">network_networkinterfaces_put.yml</span>
-</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">hosts</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">localhost</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">roles</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">../modules</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">vars</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">subscription_id</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">myResourceGroup</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">virtual_machine_name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">myVirtualMachine</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">network_interface_name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">myNetworkInterface</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">tasks</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create a vm with password authentication.</span>
-</span><span class='line'>      <span class="l-Scalar-Plain">azure_rm_resource</span><span class="p-Indicator">:</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">idempotency</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">yes</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">api_version</span><span class="p-Indicator">:</span> <span class="s">&#39;2018-10-01&#39;</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">polling_timeout</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">600</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">polling_interval</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">30</span>
-</span><span class='line'>        <span class="c1"># url: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&#39;&#39;</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">provider</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Compute</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">resource_type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">virtualMachines</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">resource_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">body</span><span class="p-Indicator">:</span>
-</span><span class='line'>          <span class="l-Scalar-Plain">location</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">eastus</span>
-</span><span class='line'>          <span class="l-Scalar-Plain">properties</span><span class="p-Indicator">:</span>
-</span><span class='line'>            <span class="l-Scalar-Plain">hardwareProfile</span><span class="p-Indicator">:</span>
-</span><span class='line'>              <span class="l-Scalar-Plain">vmSize</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Standard_D3_v2</span>
-</span><span class='line'>            <span class="l-Scalar-Plain">storageProfile</span><span class="p-Indicator">:</span>
-</span><span class='line'>              <span class="l-Scalar-Plain">imageReference</span><span class="p-Indicator">:</span>
-</span><span class='line'>                <span class="l-Scalar-Plain">sku</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">2016-Datacenter</span>
-</span><span class='line'>                <span class="l-Scalar-Plain">publisher</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">MicrosoftWindowsServer</span>
-</span><span class='line'>                <span class="l-Scalar-Plain">version</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">latest</span>
-</span><span class='line'>                <span class="l-Scalar-Plain">offer</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">WindowsServer</span>
-</span><span class='line'>              <span class="l-Scalar-Plain">osDisk</span><span class="p-Indicator">:</span>
-</span><span class='line'>                <span class="l-Scalar-Plain">caching</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">ReadWrite</span>
-</span><span class='line'>                <span class="l-Scalar-Plain">managedDisk</span><span class="p-Indicator">:</span>
-</span><span class='line'>                  <span class="l-Scalar-Plain">storageAccountType</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Standard_LRS</span>
-</span><span class='line'>                <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">myVMosdisk</span>
-</span><span class='line'>                <span class="l-Scalar-Plain">createOption</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">FromImage</span>
-</span><span class='line'>            <span class="l-Scalar-Plain">osProfile</span><span class="p-Indicator">:</span>
-</span><span class='line'>              <span class="l-Scalar-Plain">adminUsername</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">adminxyz</span>
-</span><span class='line'>              <span class="l-Scalar-Plain">computerName</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">myVM</span>
-</span><span class='line'>              <span class="l-Scalar-Plain">adminPassword</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">MooMoo123!!!!</span>
-</span><span class='line'>            <span class="l-Scalar-Plain">networkProfile</span><span class="p-Indicator">:</span>
-</span><span class='line'>              <span class="l-Scalar-Plain">networkInterfaces</span><span class="p-Indicator">:</span>
-</span><span class='line'>                <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">id</span><span class="p-Indicator">:</span> <span class="s">&quot;/subscriptions//resourceGroups//providers/Microsoft.Network/networkInterfaces/&quot;</span>
-</span><span class='line'>                  <span class="l-Scalar-Plain">properties</span><span class="p-Indicator">:</span>
-</span><span class='line'>                    <span class="l-Scalar-Plain">primary</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">True</span>
-</span></code></pre></td></tr></table></div></figure>
-
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2019/01/20/module-azure-rm-virtualmachine-delta/">Module Azure_rm_virtualmachine - Delta</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2019-01-20T10:26:39+08:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>20</span><span class='date-suffix'>th</span>, <span class='date-year'>2019</span></span> <span class='time'>10:26 am</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>A</p>
-
-<p>Below is a quick compilation and comparison:</p>
-
-<table>
-<thead>
-<tr>
-<th>Feature</th>
-<th>Idempotence</th>
-<th>Support In Ansible</th>
-<th>Idempotence in Ansible</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>identity</td>
-<td></td>
-<td>NO</td>
-<td></td>
-</tr>
-<tr>
-<td>location</td>
-<td></td>
-<td>YES</td>
-<td></td>
-</tr>
-<tr>
-<td>plan</td>
-<td></td>
-<td>YES</td>
-<td></td>
-</tr>
-<tr>
-<td>properties.additionalCapabilities.ultraSSDEnabled</td>
-<td>deallocated only</td>
-<td>NO</td>
-<td></td>
-</tr>
-<tr>
-<td>properties.availabilitySet.id</td>
-<td>changes not allowed</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>properties.diagnosticsProfile.bootDiagnostics.enabled</td>
-<td></td>
-<td>NO</td>
-<td></td>
-</tr>
-<tr>
-<td>properties.diagnosticsProfile.bootDiagnostics.storageUri</td>
-<td></td>
-<td>NO</td>
-<td></td>
-</tr>
-<tr>
-<td>properties.hardwareProfile.vmSize</td>
-<td></td>
-<td>YES</td>
-<td>YES (check)</td>
-</tr>
-<tr>
-<td>properties.licenseType</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>properties.networkProfile.networkInterfaces[].id</td>
-<td></td>
-<td>YES</td>
-<td>YES (check)</td>
-</tr>
-<tr>
-<td>properties.osProfile.adminPassword</td>
-<td>OK</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>properties.osProfile.adminUsername</td>
-<td>not allowed</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>properties.osProfile.allowExtensionOperations</td>
-<td>OK</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>properties.osProfile.computerName</td>
-<td>not allowed</td>
-<td>YES</td>
-<td>YES (check)</td>
-</tr>
-<tr>
-<td>properties.osProfile.customData</td>
-<td>not allowed</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>properties.osProfile.linuxConfiguration&hellip;&hellip;.</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>properties.osProfile.secrets</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>properties.osProfile.windowsConfiguration&hellip;&hellip;.</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>properties.osProfile.</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>properties.storageProfile.dataDisks[]&hellip;&hellip;&hellip;</td>
-<td></td>
-<td>YES - check details</td>
-<td></td>
-</tr>
-<tr>
-<td>properties.storageProfile.imageReference</td>
-<td>changes not allowed</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>properties.storageProfile.osDisk&hellip;&hellip;&hellip;..</td>
-<td></td>
-<td>YES - check details</td>
-<td></td>
-</tr>
-<tr>
-<td>properties.storageProfile.osDisk.caching</td>
-<td>OK</td>
-<td>YES</td>
-<td>YES (check)</td>
-</tr>
-<tr>
-<td>properties.storageProfile.osDisk.name</td>
-<td>not allowed</td>
-<td>YES</td>
-<td>YES (check)</td>
-</tr>
-<tr>
-<td>properties.storageProfile.osDisk.diskSizeGB</td>
-<td>deallocated only</td>
-<td>YES</td>
-<td>YES (check)</td>
-</tr>
-<tr>
-<td>properties.storageProfile.osDisk.writeAcceleratorEnabled</td>
-<td>managed only</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>properties.storageProfile.osDisk.osType</td>
-<td>changes not allowed</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>properties.storageProfile.osDisk.createOption</td>
-<td>changes not allowed</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>tags</td>
-<td></td>
-<td>YES</td>
-<td></td>
-</tr>
-<tr>
-<td>zones</td>
-<td></td>
-<td>NO</td>
-<td></td>
-</tr>
-</tbody>
-</table>
-
-
-<p>In addition REST API provides several APIs, some of them are supported, but some are not:</p>
-
-<table>
-<thead>
-<tr>
-<th>Feature</th>
-<th>Support In Ansible</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Capture</td>
-<td>NO</td>
-</tr>
-<tr>
-<td>Convert to Managed Disks</td>
-<td></td>
-</tr>
-<tr>
-<td>Deallocate</td>
-<td>YES</td>
-</tr>
-<tr>
-<td>Generalize</td>
-<td>YES (2.8)</td>
-</tr>
-<tr>
-<td>Perform Maintenance</td>
-<td>NO</td>
-</tr>
-<tr>
-<td>Power Off</td>
-<td>YES</td>
-</tr>
-<tr>
-<td>Redeploy</td>
-<td>NO</td>
-</tr>
-<tr>
-<td>Reimage</td>
-<td>NO</td>
-</tr>
-<tr>
-<td>Restart</td>
-<td>YES</td>
-</tr>
-<tr>
-<td>Start</td>
-<td>YES</td>
-</tr>
-</tbody>
-</table>
-
 </div>
   
   
