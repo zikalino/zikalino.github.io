@@ -1,6 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://zikalino.github.io/blog/2019/03/22/new-azure-virtual-machine-scale-set-features-support-in-ansible/</loc>
+<lastmod>2019-03-22T09:02:01+08:00</lastmod>
+</url>
+<url>
+<loc>http://zikalino.github.io/blog/2019/03/22/new-ansible-modules-to-manage-azure-devtest-lab/</loc>
+<lastmod>2019-03-22T09:01:02+08:00</lastmod>
+</url>
+<url>
+<loc>http://zikalino.github.io/blog/2019/03/22/new-ansible-module-azure-rm-hdinsightcluster/</loc>
+<lastmod>2019-03-22T09:00:35+08:00</lastmod>
+</url>
+<url>
+<loc>http://zikalino.github.io/blog/2019/03/22/new-ansible-module-azure-rm-cosmosdbaccount/</loc>
+<lastmod>2019-03-22T09:00:13+08:00</lastmod>
+</url>
+<url>
+<loc>http://zikalino.github.io/blog/2019/03/19/note-on-ansible-examples/</loc>
+<lastmod>2019-03-19T06:42:26+08:00</lastmod>
+</url>
+<url>
 <loc>http://zikalino.github.io/blog/2019/03/18/removing-resource-locks-using-ansible-and-azure-rest-api/</loc>
 <lastmod>2019-03-18T14:51:20+08:00</lastmod>
 </url>

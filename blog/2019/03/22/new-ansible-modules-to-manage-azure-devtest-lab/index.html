@@ -1,0 +1,523 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>New Ansible Modules to Manage Azure DevTest Lab - Zim's Notes</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="The new sample containing tasks to create and manage Azure DevTest Lab is available here: https://github.com/Azure-Samples/ansible-playbooks/blob/ &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://zikalino.github.io/blog/2019/03/22/new-ansible-modules-to-manage-azure-devtest-lab">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Zim's Notes" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Fjalla+One" rel="stylesheet" type="text/css">
+<!--- MathJax Configuration -->
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Zim's Notes</a></h1>
+  
+    <h2>Just work related notes.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscribe" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS" target="_blank"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="25" height="25" viewbox="0 0 100 100"><path class="social" d="M 13.310204,73.332654 C 5.967347,73.332654 0,79.322448 0,86.621428 c 0,7.338776 5.967347,13.262246 13.310204,13.262246 7.370408,0 13.328572,-5.92245 13.328572,-13.262246 0,-7.29898 -5.958164,-13.288774 -13.328572,-13.288774 z M 0.01530612,33.978572 V 53.143878 C 12.493878,53.143878 24.229592,58.02347 33.068368,66.865306 41.894898,75.685714 46.767346,87.47449 46.767346,100 h 19.25 C 66.017346,63.592858 36.4,33.979592 0.01530612,33.978572 l 0,0 z M 0.03877552,0 V 19.17449 C 44.54796,19.17551 80.77551,55.437756 80.77551,100 H 100 C 100,44.87653 55.15102,0 0.03877552,0 z"></path></svg></a></li>
+  
+</ul>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    
+      <form action="https://www.google.com/search" method="get">
+        <fieldset role="search">
+          <input type="hidden" name="sitesearch" value="zikalino.github.io" />
+    
+          <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+        </fieldset>
+      </form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      
+        <h1 class="entry-title">New Ansible Modules to Manage Azure DevTest Lab</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2019-03-22T09:01:02+08:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>22</span><span class='date-suffix'>nd</span>, <span class='date-year'>2019</span></span> <span class='time'>9:01 am</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>The new sample containing tasks to create and manage Azure DevTest Lab is available here:</p>
+
+<p><a href="https://github.com/Azure-Samples/ansible-playbooks/blob/master/devtestlab-create.yml">https://github.com/Azure-Samples/ansible-playbooks/blob/master/devtestlab-create.yml</a></p>
+
+<p>This sample will:
+- create resource group
+- create DevTest Lab
+- create sample DevTest Lab policy
+- create sample DevTest Lab schedule
+- create sample DevTest Lab Virtual Network
+- create sample DevTest Lab artifact source
+- create instance of DTL Virtual Machine
+- list all artifact sources
+- get artifacts source facts
+- list ARM Template facts
+- get ARM Template facts
+- create instance of DevTest Lab Environment
+- create instance of DevTest Lab Image
+- delete instance of Lab</p>
+
+<h2>Running the sample</h2>
+
+<h2>Creating DevTest Lab</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create instance of Lab</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_devtestlab</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">location</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">eastus</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">storage_type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">standard</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">premium_data_disks</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">no</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">register</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output_lab</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>DevTest Lab Policies</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create instance of DevTest Lab Policy</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_devtestlabpolicy</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">lab_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">policy_set_name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">myDtlPolicySet</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">myDtlPolicy</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">fact_name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">user_owned_lab_vm_count</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">threshold</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">5</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>DevTest Lab Schedules</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create instance of DevTest Lab Schedule</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_devtestlabschedule</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">lab_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">lab_vms_shutdown</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">time</span><span class="p-Indicator">:</span> <span class="s">&quot;1030&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">time_zone_id</span><span class="p-Indicator">:</span> <span class="s">&quot;UTC+12&quot;</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">register</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>DevTest Lab Virtual Network</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create instance of DevTest Labs virtual network</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_devtestlabvirtualnetwork</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">lab_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">location</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">eastus</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">description</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">My DevTest Lab</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">register</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>DevTest Lab Artifact Source</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create instance of DevTest Labs artifacts source</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_devtestlabartifactsource</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">lab_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">uri</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">https://github.com/Azure/azure_preview_modules.git</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">source_type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">github</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">folder_path</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">/tasks</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">security_token</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>DevTest Lab Virtual Machine</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create instance of DTL Virtual Machine</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_devtestlabvirtualmachine</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">lab_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">notes</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Virtual machine notes, just something....</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">os_type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">linux</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">vm_size</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Standard_A2_v2</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">user_name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">dtladmin</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">password</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">ZSasfovobocu$$21!</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">lab_subnet</span><span class="p-Indicator">:</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">virtual_network_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="s">&quot;Subnet&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">disallow_public_ip_address</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">no</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">image</span><span class="p-Indicator">:</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">offer</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">UbuntuServer</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">publisher</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Canonical</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">sku</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">16.04-LTS</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">os_type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Linux</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">version</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">latest</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">artifacts</span><span class="p-Indicator">:</span>
+</span><span class='line'>      <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">source_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">source_path</span><span class="p-Indicator">:</span> <span class="s">&quot;/Artifacts/linux-install-mongodb&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">allow_claim</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">no</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">expiration_date</span><span class="p-Indicator">:</span> <span class="s">&quot;2029-02-22T01:49:12.117974Z&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Listing All Artifact Sources and Artifacts</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">List all artifact sources</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_devtestlabartifactsource_facts</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">lab_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">register</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">debug</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">var</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Get artifacts source facts</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_devtestlabartifactsource_facts</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">lab_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">public repo</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">register</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">debug</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">var</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Getting Information on ARM Templates in Artifact Source</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">List ARM Template facts</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_devtestlabarmtemplate_facts</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">lab_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">artifact_source_name</span><span class="p-Indicator">:</span> <span class="s">&quot;public</span><span class="nv"> </span><span class="s">environment</span><span class="nv"> </span><span class="s">repo&quot;</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">register</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">debug</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">var</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Get ARM Template facts</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_devtestlabarmtemplate_facts</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">lab_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">artifact_source_name</span><span class="p-Indicator">:</span> <span class="s">&quot;public</span><span class="nv"> </span><span class="s">environment</span><span class="nv"> </span><span class="s">repo&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">ServiceFabric-LabCluster</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">register</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">debug</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">var</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Creating DevTest Lab Environment</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create instance of DevTest Lab Environment</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_devtestlabenvironment</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">lab_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">user_name</span><span class="p-Indicator">:</span> <span class="s">&quot;@me&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">myEnvironment</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">location</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">eastus</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">deployment_template</span><span class="p-Indicator">:</span> <span class="s">&quot;/artifactSources/public</span><span class="nv"> </span><span class="s">environment</span><span class="nv"> </span><span class="s">repo/armTemplates/WebApp&quot;</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">register</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Creating DevTest Lab Image</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create instance of DevTest Lab Image</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_devtestlabcustomimage</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">lab_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">myImage</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">source_vm</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">linux_os_state</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">non_deprovisioned</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Deleting the Lab</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Delete instance of Lab</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_devtestlab</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">state</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">absent</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">register</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Assert the change was correctly reported</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">assert</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">that</span><span class="p-Indicator">:</span>
+</span><span class='line'>      <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">output.changed</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+
+
+  <span class="byline author vcard">Authored by <span class="fn">
+  
+    Your Name
+  
+  </span></span>
+
+
+      
+
+
+
+
+<time class='entry-date' datetime='2019-03-22T09:01:02+08:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>22</span><span class='date-suffix'>nd</span>, <span class='date-year'>2019</span></span> <span class='time'>9:01 am</span></time>
+      
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://zikalino.github.io/blog/2019/03/22/new-ansible-modules-to-manage-azure-devtest-lab/" data-via="" data-counturl="http://zikalino.github.io/blog/2019/03/22/new-ansible-modules-to-manage-azure-devtest-lab/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2019/03/22/new-ansible-module-azure-rm-hdinsightcluster/" title="Previous Post: New Ansible module azure_rm_hdinsightcluster">&laquo; New Ansible module azure_rm_hdinsightcluster</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2019/03/22/new-azure-virtual-machine-scale-set-features-support-in-ansible/" title="Next Post: New Azure Virtual Machine Scale Set features support in Ansible">New Azure Virtual Machine Scale Set features support in Ansible &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+
+</div>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2019 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a> | Themed with <a href="https://github.com/lucaslew/whitespace">Whitespace</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

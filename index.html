@@ -9,7 +9,8 @@
   <meta name="author" content="Your Name">
 
   
-  <meta name="description" content="This is one of the topic I had to look into. Removing locks appeared to be an issue while performing automatic clean up of the resources. Currently &hellip;">
+  <meta name="description" content="
+">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -78,6 +79,739 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2019/03/22/new-azure-virtual-machine-scale-set-features-support-in-ansible/">New Azure Virtual Machine Scale Set Features Support in Ansible</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2019-03-22T09:02:01+08:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>22</span><span class='date-suffix'>nd</span>, <span class='date-year'>2019</span></span> <span class='time'>9:02 am</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2019/03/22/new-ansible-modules-to-manage-azure-devtest-lab/">New Ansible Modules to Manage Azure DevTest Lab</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2019-03-22T09:01:02+08:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>22</span><span class='date-suffix'>nd</span>, <span class='date-year'>2019</span></span> <span class='time'>9:01 am</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>The new sample containing tasks to create and manage Azure DevTest Lab is available here:</p>
+
+<p><a href="https://github.com/Azure-Samples/ansible-playbooks/blob/master/devtestlab-create.yml">https://github.com/Azure-Samples/ansible-playbooks/blob/master/devtestlab-create.yml</a></p>
+
+<p>This sample will:
+- create resource group
+- create DevTest Lab
+- create sample DevTest Lab policy
+- create sample DevTest Lab schedule
+- create sample DevTest Lab Virtual Network
+- create sample DevTest Lab artifact source
+- create instance of DTL Virtual Machine
+- list all artifact sources
+- get artifacts source facts
+- list ARM Template facts
+- get ARM Template facts
+- create instance of DevTest Lab Environment
+- create instance of DevTest Lab Image
+- delete instance of Lab</p>
+
+<h2>Running the sample</h2>
+
+<h2>Creating DevTest Lab</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create instance of Lab</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_devtestlab</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">location</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">eastus</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">storage_type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">standard</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">premium_data_disks</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">no</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">register</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output_lab</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>DevTest Lab Policies</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create instance of DevTest Lab Policy</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_devtestlabpolicy</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">lab_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">policy_set_name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">myDtlPolicySet</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">myDtlPolicy</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">fact_name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">user_owned_lab_vm_count</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">threshold</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">5</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>DevTest Lab Schedules</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create instance of DevTest Lab Schedule</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_devtestlabschedule</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">lab_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">lab_vms_shutdown</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">time</span><span class="p-Indicator">:</span> <span class="s">&quot;1030&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">time_zone_id</span><span class="p-Indicator">:</span> <span class="s">&quot;UTC+12&quot;</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">register</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>DevTest Lab Virtual Network</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create instance of DevTest Labs virtual network</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_devtestlabvirtualnetwork</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">lab_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">location</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">eastus</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">description</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">My DevTest Lab</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">register</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>DevTest Lab Artifact Source</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create instance of DevTest Labs artifacts source</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_devtestlabartifactsource</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">lab_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">uri</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">https://github.com/Azure/azure_preview_modules.git</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">source_type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">github</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">folder_path</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">/tasks</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">security_token</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>DevTest Lab Virtual Machine</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create instance of DTL Virtual Machine</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_devtestlabvirtualmachine</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">lab_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">notes</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Virtual machine notes, just something....</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">os_type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">linux</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">vm_size</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Standard_A2_v2</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">user_name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">dtladmin</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">password</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">ZSasfovobocu$$21!</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">lab_subnet</span><span class="p-Indicator">:</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">virtual_network_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="s">&quot;Subnet&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">disallow_public_ip_address</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">no</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">image</span><span class="p-Indicator">:</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">offer</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">UbuntuServer</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">publisher</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Canonical</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">sku</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">16.04-LTS</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">os_type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Linux</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">version</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">latest</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">artifacts</span><span class="p-Indicator">:</span>
+</span><span class='line'>      <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">source_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">source_path</span><span class="p-Indicator">:</span> <span class="s">&quot;/Artifacts/linux-install-mongodb&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">allow_claim</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">no</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">expiration_date</span><span class="p-Indicator">:</span> <span class="s">&quot;2029-02-22T01:49:12.117974Z&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Listing All Artifact Sources and Artifacts</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">List all artifact sources</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_devtestlabartifactsource_facts</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">lab_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">register</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">debug</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">var</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Get artifacts source facts</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_devtestlabartifactsource_facts</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">lab_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">public repo</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">register</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">debug</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">var</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Getting Information on ARM Templates in Artifact Source</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">List ARM Template facts</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_devtestlabarmtemplate_facts</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">lab_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">artifact_source_name</span><span class="p-Indicator">:</span> <span class="s">&quot;public</span><span class="nv"> </span><span class="s">environment</span><span class="nv"> </span><span class="s">repo&quot;</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">register</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">debug</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">var</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Get ARM Template facts</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_devtestlabarmtemplate_facts</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">lab_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">artifact_source_name</span><span class="p-Indicator">:</span> <span class="s">&quot;public</span><span class="nv"> </span><span class="s">environment</span><span class="nv"> </span><span class="s">repo&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">ServiceFabric-LabCluster</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">register</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">debug</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">var</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Creating DevTest Lab Environment</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create instance of DevTest Lab Environment</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_devtestlabenvironment</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">lab_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">user_name</span><span class="p-Indicator">:</span> <span class="s">&quot;@me&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">myEnvironment</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">location</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">eastus</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">deployment_template</span><span class="p-Indicator">:</span> <span class="s">&quot;/artifactSources/public</span><span class="nv"> </span><span class="s">environment</span><span class="nv"> </span><span class="s">repo/armTemplates/WebApp&quot;</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">register</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Creating DevTest Lab Image</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create instance of DevTest Lab Image</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_devtestlabcustomimage</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">lab_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">myImage</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">source_vm</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">linux_os_state</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">non_deprovisioned</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Deleting the Lab</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Delete instance of Lab</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_devtestlab</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">state</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">absent</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">register</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Assert the change was correctly reported</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">assert</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">that</span><span class="p-Indicator">:</span>
+</span><span class='line'>      <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">output.changed</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2019/03/22/new-ansible-module-azure-rm-hdinsightcluster/">New Ansible Module Azure_rm_hdinsightcluster</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2019-03-22T09:00:35+08:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>22</span><span class='date-suffix'>nd</span>, <span class='date-year'>2019</span></span> <span class='time'>9:00 am</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2019/03/22/new-ansible-module-azure-rm-cosmosdbaccount/">New Ansible Module Azure_rm_cosmosdbaccount</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2019-03-22T09:00:13+08:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>22</span><span class='date-suffix'>nd</span>, <span class='date-year'>2019</span></span> <span class='time'>9:00 am</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>This sample:
+- creates random postfix to use in CosmosDB account name
+- creates resource group
+- creates virtual network
+- creates subnet
+- creates CosmosDB account
+- queries and prints CosmosDB keys</p>
+
+<h2>Create Random Postfix</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">hosts</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">localhost</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">tasks</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Prepare random postfix</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">set_fact</span><span class="p-Indicator">:</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">rpfx</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">run_once</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">yes</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Variables</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'>  <span class="l-Scalar-Plain">vars</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">location</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">eastus</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">vnet_name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">myVirtualNetwork</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">subnet_name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">mySubnet</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">cosmosdbaccount_name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">cosmos</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Create Resource Group</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create a resource group</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_resourcegroup</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">location</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Create Virtual Network and Subnet</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create virtual network</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_virtualnetwork</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">address_prefixes_cidr</span><span class="p-Indicator">:</span>
+</span><span class='line'>      <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">10.1.0.0/16</span>
+</span><span class='line'>      <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">172.100.0.0/16</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">dns_servers</span><span class="p-Indicator">:</span>
+</span><span class='line'>      <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">127.0.0.1</span>
+</span><span class='line'>      <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">127.0.0.3</span>
+</span><span class='line'>
+</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Add subnet</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_subnet</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">virtual_network_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">address_prefix_cidr</span><span class="p-Indicator">:</span> <span class="s">&quot;10.1.0.0/24&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Create CosmosDB Account</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create instance of Cosmos DB Account</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_cosmosdbaccount</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">location</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">eastus</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">geo_rep_locations</span><span class="p-Indicator">:</span>
+</span><span class='line'>      <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">eastus</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">failover_priority</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">0</span>
+</span><span class='line'>      <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">westus</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">failover_priority</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">1</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">database_account_offer_type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Standard</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">is_virtual_network_filter_enabled</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">yes</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">virtual_network_rules</span><span class="p-Indicator">:</span>
+</span><span class='line'>      <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">subnet</span><span class="p-Indicator">:</span>
+</span><span class='line'>          <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>          <span class="l-Scalar-Plain">virtual_network_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>          <span class="l-Scalar-Plain">subnet_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">ignore_missing_vnet_service_endpoint</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">yes</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">enable_automatic_failover</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">yes</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Retrieve Keys</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Get Cosmos DB Account facts with keys</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_cosmosdbaccount_facts</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">retrieve_keys</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">all</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">register</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+</span><span class='line'>
+</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Display Cosmos DB Acccount facts output</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">debug</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">var</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Use in your application</h2>
+
+<p>&hellip;</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2019/03/19/note-on-ansible-examples/">Note on Ansible Examples</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2019-03-19T06:42:26+08:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>19</span><span class='date-suffix'>th</span>, <span class='date-year'>2019</span></span> <span class='time'>6:42 am</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>When I started working with Ansible I wa</p>
+
+<p>Let&rsquo;s do following exercise. I want to create an Azure Virtual Machine using examples from documentation.</p>
+
+<p>Let&rsquo;s start with default virtual machine example (<a href="https://docs.ansible.com/ansible/latest/modules/azure_rm_virtualmachine_module.html">https://docs.ansible.com/ansible/latest/modules/azure_rm_virtualmachine_module.html</a>)</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create Azure VM using default samples</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">hosts</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">localhost</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">connection</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">local</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">tasks</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create VM with defaults</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">azure_rm_virtualmachine</span><span class="p-Indicator">:</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Testing</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">testvm10</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">admin_username</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">chouseknecht</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">admin_password</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">&lt;your password here&gt;</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">image</span><span class="p-Indicator">:</span>
+</span><span class='line'>          <span class="l-Scalar-Plain">offer</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">CentOS</span>
+</span><span class='line'>          <span class="l-Scalar-Plain">publisher</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">OpenLogic</span>
+</span><span class='line'>          <span class="l-Scalar-Plain">sku</span><span class="p-Indicator">:</span> <span class="s">&#39;7.1&#39;</span>
+</span><span class='line'>          <span class="l-Scalar-Plain">version</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">latest</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now, Ansible will complain that resource group <strong>Testing</strong> is not present, so I add resource group from here <a href="https://docs.ansible.com/ansible/latest/modules/azure_rm_resourcegroup_module.html:">https://docs.ansible.com/ansible/latest/modules/azure_rm_resourcegroup_module.html:</a></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create Azure VM using default samples</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">hosts</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">localhost</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">connection</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">local</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">tasks</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create a resource group</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">azure_rm_resourcegroup</span><span class="p-Indicator">:</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Testing</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">location</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">westus</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">tags</span><span class="p-Indicator">:</span>
+</span><span class='line'>          <span class="l-Scalar-Plain">testing</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">testing</span>
+</span><span class='line'>          <span class="l-Scalar-Plain">delete</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">never</span>
+</span><span class='line'>    <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create VM with defaults</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">azure_rm_virtualmachine</span><span class="p-Indicator">:</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Testing</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">testvm10</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">admin_username</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">chouseknecht</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">admin_password</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">&lt;your password here&gt;</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">image</span><span class="p-Indicator">:</span>
+</span><span class='line'>          <span class="l-Scalar-Plain">offer</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">CentOS</span>
+</span><span class='line'>          <span class="l-Scalar-Plain">publisher</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">OpenLogic</span>
+</span><span class='line'>          <span class="l-Scalar-Plain">sku</span><span class="p-Indicator">:</span> <span class="s">&#39;7.1&#39;</span>
+</span><span class='line'>          <span class="l-Scalar-Plain">version</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">latest</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2136,530 +2870,6 @@ In order to do that you will have to create following files:</p>
 </span><span class='line'>    <span class="n">main</span><span class="p">()</span>
 </span></code></pre></td></tr></table></div></figure>
 
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2019/02/01/installing-ansible-using-cloud-init/">Installing Ansible Using Cloud-init</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2019-02-01T11:25:16+08:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>1</span><span class='date-suffix'>st</span>, <span class='date-year'>2019</span></span> <span class='time'>11:25 am</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Recently was playing with <strong>cloud-init</strong> a bit, and it seems like a great and consistent way of setting up Ansible VMs.
-Here&rsquo;s an example of creating a virtual machine via Azure portal and installing Ansible at once.</p>
-
-<p>What you need to do is to go to <strong>Guest Config</strong> tag and add appropriate <strong>cloud-config</strong> playbook:</p>
-
-<p><img src="/images/cloud-init-ansible.png" alt="Guest Config" /></p>
-
-<p>In this example I am using following code:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="c1">#cloud-config</span>
-</span><span class='line'><span class="l-Scalar-Plain">packages</span><span class="p-Indicator">:</span>
-</span><span class='line'>  <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">python-pip</span>
-</span><span class='line'><span class="l-Scalar-Plain">runcmd</span><span class="p-Indicator">:</span>
-</span><span class='line'>  <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">sudo pip install ansible</span>
-</span><span class='line'>  <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">sudo ansible-galaxy install azure.azure_preview_modules</span>
-</span><span class='line'>  <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">sudo pip install -r ~/.ansible/roles/azure.azure_preview_modules/files/requirements-azure.txt</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>It can be even shorted if you don&rsquo;t need Azure preview modules:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="c1">#cloud-config</span>
-</span><span class='line'><span class="l-Scalar-Plain">packages</span><span class="p-Indicator">:</span>
-</span><span class='line'>  <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">python-pip</span>
-</span><span class='line'><span class="l-Scalar-Plain">runcmd</span><span class="p-Indicator">:</span>
-</span><span class='line'>  <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">sudo pip install ansible[azure]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2019/01/25/waiting-for-resources-in-ansible/">Waiting for Resources in Ansible</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2019-01-25T07:08:54+08:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>25</span><span class='date-suffix'>th</span>, <span class='date-year'>2019</span></span> <span class='time'>7:08 am</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Some resources may be not in a desired state after running a playbook. Especially when using Azure REST API, resource may be in <strong>Creating</strong> or <strong>Provisioning</strong> state. Sometimes it&rsquo;s necessary to wait unll provisioning state becomes <strong>Succeeded</strong>.</p>
-
-<p>The best way to do this is to use <strong>facts</strong> module to periodically query the resource and exit the loop when desired state is achieved. Here&rsquo;s how to do it.</p>
-
-<p>After the task that creates your virtual machine (or later), put following tasks. Actually only <strong>Wait for Virtual Machine to be ready</strong> is essential here. All the other tasks are just for demo purposes.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Get VM facts</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_resource_facts</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">api_version</span><span class="p-Indicator">:</span> <span class="s">&#39;2018-10-01&#39;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&#39;&#39;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">provider</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Compute</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">resource_type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">virtualMachines</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">resource_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">register</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
-</span><span class='line'>
-</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">debug</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">var</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output.response[0].properties.provisioningState</span>
-</span><span class='line'>
-</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Wait for Virtual Machine to be ready</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_resource_facts</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">api_version</span><span class="p-Indicator">:</span> <span class="s">&#39;2018-10-01&#39;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&#39;&#39;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">provider</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Compute</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">resource_type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">virtualMachines</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">resource_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">register</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">until</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output.response[0].properties.provisioningState == &#39;Succeeded&#39;</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">delay</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">60</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">retries</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">5</span>
-</span><span class='line'>
-</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">debug</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">var</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output.response[0].properties.provisioningState</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>You should see following output:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="l-Scalar-Plain">TASK [Create a vm with password authentication.] *******************************************</span>
-</span><span class='line'><span class="l-Scalar-Plain">changed</span><span class="p-Indicator">:</span> <span class="p-Indicator">[</span><span class="nv">localhost</span><span class="p-Indicator">]</span>
-</span><span class='line'>
-</span><span class='line'><span class="l-Scalar-Plain">TASK [Get VM facts] ************************************************************************</span>
-</span><span class='line'><span class="l-Scalar-Plain">ok</span><span class="p-Indicator">:</span> <span class="p-Indicator">[</span><span class="nv">localhost</span><span class="p-Indicator">]</span>
-</span><span class='line'>
-</span><span class='line'><span class="l-Scalar-Plain">TASK [debug] ******************************************************************************</span>
-</span><span class='line'><span class="l-Scalar-Plain">ok</span><span class="p-Indicator">:</span> <span class="p-Indicator">[</span><span class="nv">localhost</span><span class="p-Indicator">]</span> <span class="l-Scalar-Plain">=&gt; {</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">&quot;output.response[0].properties.provisioningState&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;Creating&quot;</span>
-</span><span class='line'><span class="err">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="l-Scalar-Plain">TASK [Wait for Virtual Machine to be ready] *****************************************************</span>
-</span><span class='line'><span class="l-Scalar-Plain">FAILED - RETRYING</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Wait for Virtual Machine to be ready (5 retries left).</span>
-</span><span class='line'><span class="l-Scalar-Plain">FAILED - RETRYING</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Wait for Virtual Machine to be ready (4 retries left).</span>
-</span><span class='line'><span class="l-Scalar-Plain">ok</span><span class="p-Indicator">:</span> <span class="p-Indicator">[</span><span class="nv">localhost</span><span class="p-Indicator">]</span>
-</span><span class='line'>
-</span><span class='line'><span class="l-Scalar-Plain">TASK [debug] ******************************************************************************</span>
-</span><span class='line'><span class="l-Scalar-Plain">ok</span><span class="p-Indicator">:</span> <span class="p-Indicator">[</span><span class="nv">localhost</span><span class="p-Indicator">]</span> <span class="l-Scalar-Plain">=&gt; {</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">&quot;output.response[0].properties.provisioningState&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;Succeeded&quot;</span>
-</span><span class='line'><span class="err">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="l-Scalar-Plain">PLAY RECAP ********************************************************************************</span>
-</span><span class='line'><span class="l-Scalar-Plain">localhost</span>                  <span class="p-Indicator">:</span> <span class="l-Scalar-Plain">ok=18   changed=1    unreachable=0    failed=0    skipped=0</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>References:</p>
-
-<p>Ansible documentation on do-until loops:
-<a href="https://docs.ansible.com/ansible/latest/user_guide/playbooks_loops.html#do-until-loops">https://docs.ansible.com/ansible/latest/user_guide/playbooks_loops.html#do-until-loops</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2019/01/24/installing-httpd-on-vmss-using-vmss-extension/">Installing HTTPD on VMSS Using VMSS Extension</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2019-01-24T09:33:49+08:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>24</span><span class='date-suffix'>th</span>, <span class='date-year'>2019</span></span> <span class='time'>9:33 am</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>There are two (or three) proper ways of updating Virtual Machine Scale Set instances:</p>
-
-<ul>
-<li>use custom images and update instances whenever something changes</li>
-<li>use VMSS Extension to install additional software on all the VM instances</li>
-<li>combine both</li>
-</ul>
-
-
-<p>Possibly there&rsquo;s a fourth way, but I haven&rsquo;t investigated that yet. I am thinking of updating VMSS data disks on the fly, but I haven&rsquo;t tried that yet. Let&rsquo;s focus on using VMSS Extension. In this article I will show how to use new <strong>azure_rm_virtualmachinescalesetextension</strong> module. It&rsquo;s already available in <strong>azure_preview_modules</strong> and will be released in <strong>Ansible 2.8</strong>.</p>
-
-<h2>Prerequisites</h2>
-
-<p>Before trying the playbooks, clone following repository:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>git clone https://github.com/Azure-Samples/ansible-playbooks.git
-</span><span class='line'><span class="nb">cd </span>ansible-playbooks/vmss_extension
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Step 1: Create VMSS using Ubuntu 16.04 Image</h2>
-
-<p>In this step we will just create Azure Virtual Machine Scaleset based using standard Ubuntu 16.04 image and all prerequisites.</p>
-
-<p>Run following playbook:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>ansible-playbook 01-create-vmss.yml --extra-vars <span class="s2">&quot;resource_group=myrg&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>After this playbook is executed you will see an IP addres. Copy it to the browser. The page should fail to open as initial Ubuntu 16.04 image doesn&rsquo;t have web server installed.</p>
-
-<p>You can also go to Azure Portal and check the status of VMSS instances:</p>
-
-<p><img src="/images/vmss-extension-01.png" alt="VMSS Instances 1" /></p>
-
-<h2>Step 2: Install VMSS extension</h2>
-
-<p>In second step we will install a <strong>Custom Script</strong> VMSS extension that will install <strong>httpd</strong>.</p>
-
-<p>Run following playbook:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>ansible-playbook 02-setup-httpd.yml --extra-vars <span class="s2">&quot;resource_group=myrg&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>In this step we use <strong>azure_rm_virtualmachinescalesetextension</strong> module:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create VM Extension - HTTPD</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_virtualmachinescalesetextension</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">vmss_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">testVMExtension</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">publisher</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Microsoft.Azure.Extensions</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">CustomScript</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">type_handler_version</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">2.0</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">auto_upgrade_minor_version</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">true</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">settings</span><span class="p-Indicator">:</span> <span class="p-Indicator">{</span><span class="s">&quot;commandToExecute&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;sudo</span><span class="nv"> </span><span class="s">apt-get</span><span class="nv"> </span><span class="s">-y</span><span class="nv"> </span><span class="s">install</span><span class="nv"> </span><span class="s">apache2&quot;</span><span class="p-Indicator">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Please note that creating extension didn&rsquo;t update existing instances. You can check how it looks in the portal again - as you see all the instances are not up to date:</p>
-
-<p><img src="/images/vmss-extension-02.png" alt="VMSS Instances 2" /></p>
-
-<h2>Step 3: Update all the instances</h2>
-
-<p>In this step we will actually upgrade all VM instances. Run following script:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="l-Scalar-Plain">ansible-playbook 03-update-instances.yml --extra-vars &quot;resource_group=myrg&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>First <strong>azure_rm_virtualmachinescalesetinstance_facts</strong> module is used to get list of instances:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">List all of the instances</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_virtualmachinescalesetinstance_facts</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">vmss_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">register</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">instances</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>And then <strong>azure_rm_virtualmachinescalesetinstance</strong> module to set <strong>latest_version</strong> to <strong>yes</strong>:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">manually upgrade all the instances</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_virtualmachinescalesetinstance</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">vmss_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">instance_id</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">latest_model</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">yes</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">with_items</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Again, you can see in the portal how instances are being updated one by one:</p>
-
-<p><img src="/images/vmss-extension-03.png" alt="VMSS Instances 3" /></p>
-
-<p>When update is completed reload the page, and you should see that this time default Apache index page is displayed:</p>
-
-<p><img src="/images/vmss-extension-04.png" alt="VMSS Instances 4" /></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2019/01/23/updating-vmss-images-using-ansible/">Updating Azure Virtual Machine Scale Set Images Using Ansible</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2019-01-23T11:46:27+08:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>23</span><span class='date-suffix'>rd</span>, <span class='date-year'>2019</span></span> <span class='time'>11:46 am</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>This is a new Virtual Machine Scale Set demo I have just released to official <strong>Ansible Playbooks for Azure</strong>.</p>
-
-<p>I have updated Ansible modules to enable:</p>
-
-<ul>
-<li>creating images from existing Azure Virtual Machines</li>
-<li>updating custom image in Azure Virtual Machine Scale Set</li>
-</ul>
-
-
-<p>This demo is divided into a few steps. First it demonstrates how to create two custom images (A and B), and we will create VMSS with image A, and finally we will dynamically change image A to image B.</p>
-
-<p>Before trying the playbooks, clone following repository:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>git clone https://github.com/Azure-Samples/ansible-playbooks.git
-</span><span class='line'><span class="nb">cd </span>ansible-playbooks/vmss_images
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Step One - Create two virtual machines and install HTTPD</h2>
-
-<p>Run following playbook:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>ansible-playbook 01-create-vms.yml --extra-vars <span class="s2">&quot;resource_group=myrg&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>It will:
-- create 2 virtual machines
-- install HTTPD on both of them
-- change index.html to contain <strong>Image A</strong> and <strong>Image B</strong> respectively</p>
-
-<p>Copy and paste IP addresses of both VMs to the browser:</p>
-
-<p><img src="/images/vmss-update-vms-ip-addresses.png" alt="Public IP Address" /></p>
-
-<p>You should see two different versions of VM:</p>
-
-<p><img src="/images/vmss-update-browser-vma.png" alt="VM A" /></p>
-
-<p>and</p>
-
-<p><img src="/images/vmss-update-browser-vmb.png" alt="VM B" /></p>
-
-<h2>Step Two - Capture Images from both Virtual Machines</h2>
-
-<p>Run second playbook to capture the images:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>ansible-playbook 02-capture-images.yml --extra-vars <span class="s2">&quot;resource_group=myrg&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Step Three - Create VMSS using Image A</h2>
-
-<p>In this step we will create following components:
-- public IP address
-- load balancer
-- VMSS referring image A</p>
-
-<p>Run following playbook:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>ansible-playbook 03-create-vmss.yml --extra-vars <span class="s2">&quot;resource_group=myrg&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Check the IP address printed out at the end:</p>
-
-<p><img src="/images/vmss-update-vmss-public-ip.png" alt="Public IP Address" /></p>
-
-<p>check that it works in the browser:</p>
-
-<p><img src="/images/vmss-update-browser-initial-vmss.png" alt="VMSS Image A" /></p>
-
-<h2>Step Four - Update Image Reference in VMSS and Upgrade Instances</h2>
-
-<p>Run final playbook to replace image A with image B:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>ansible-playbook 04-update-vmss-image.yml --extra-vars <span class="s2">&quot;resource_group=myrg&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Now press <strong>F5</strong> in the browser to reload page and see that image gas changed:</p>
-
-<p><img src="/images/vmss-update-browser-updated-vmss.png" alt="VMSS Image B" /></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2019/01/21/some-notes-on-inconsistencies-in-examples/">Some Notes on Inconsistencies in Examples</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2019-01-21T15:39:32+08:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>21</span><span class='date-suffix'>st</span>, <span class='date-year'>2019</span></span> <span class='time'>3:39 pm</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Compute, VirtualMachines - &ldquo;name&rdquo; parameter in body can&rsquo;t be different than one in the URL</p>
-
-<p>adminUsername -> &ldquo;{your-username}&rdquo;
-adminPassword -> &ldquo;{your-password}&rdquo;</p>
 </div>
   
   
