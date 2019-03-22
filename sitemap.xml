@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://zikalino.github.io/blog/2019/03/22/dumping-all-the-resources-in-resource-group-using-ansible/</loc>
+<lastmod>2019-03-22T15:25:37+08:00</lastmod>
+</url>
+<url>
 <loc>http://zikalino.github.io/blog/2019/03/22/new-azure-virtual-machine-scale-set-features-support-in-ansible/</loc>
 <lastmod>2019-03-22T09:02:01+08:00</lastmod>
 </url>
