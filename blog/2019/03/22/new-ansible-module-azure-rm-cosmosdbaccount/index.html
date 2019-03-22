@@ -9,12 +9,8 @@
   <meta name="author" content="Your Name">
 
   
-  <meta name="description" content="This sample:
-- creates random postfix to use in CosmosDB account name
-- creates resource group
-- creates virtual network
-- creates subnet
-- creates &hellip;">
+  <meta name="description" content="https://github.com/Azure-Samples/ansible-playbooks/blob/master/cosmosdb-create.yml This sample:
+- creates random postfix to use in CosmosDB account &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -105,7 +101,9 @@
   </header>
 
 
-<div class="entry-content"><p>This sample:
+<div class="entry-content"><p><a href="https://github.com/Azure-Samples/ansible-playbooks/blob/master/cosmosdb-create.yml">https://github.com/Azure-Samples/ansible-playbooks/blob/master/cosmosdb-create.yml</a></p>
+
+<p>This sample:
 - creates random postfix to use in CosmosDB account name
 - creates resource group
 - creates virtual network
@@ -125,7 +123,7 @@
 </span><span class='line'>  <span class="l-Scalar-Plain">tasks</span><span class="p-Indicator">:</span>
 </span><span class='line'>    <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Prepare random postfix</span>
 </span><span class='line'>      <span class="l-Scalar-Plain">set_fact</span><span class="p-Indicator">:</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">rpfx</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">rpfx</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">1000</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">random</span><span class="nv"> </span><span class="s">}}&quot;</span>
 </span><span class='line'>      <span class="l-Scalar-Plain">run_once</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">yes</span>
 </span></code></pre></td></tr></table></div></figure>
 
@@ -139,11 +137,11 @@
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
 </pre></td><td class='code'><pre><code class='yaml'><span class='line'>  <span class="l-Scalar-Plain">vars</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">resource_group_name</span><span class="nv"> </span><span class="s">}}&quot;</span>
 </span><span class='line'>    <span class="l-Scalar-Plain">location</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">eastus</span>
 </span><span class='line'>    <span class="l-Scalar-Plain">vnet_name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">myVirtualNetwork</span>
 </span><span class='line'>    <span class="l-Scalar-Plain">subnet_name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">mySubnet</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">cosmosdbaccount_name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">cosmos</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">cosmosdbaccount_name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">cosmos{{ rpfx }}</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -155,8 +153,8 @@
 <span class='line-number'>4</span>
 </pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create a resource group</span>
 </span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_resourcegroup</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">location</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">resource_group</span><span class="nv"> </span><span class="s">}}&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">location</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">location</span><span class="nv"> </span><span class="s">}}&quot;</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -181,8 +179,8 @@
 <span class='line-number'>17</span>
 </pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create virtual network</span>
 </span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_virtualnetwork</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">resource_group</span><span class="nv"> </span><span class="s">}}&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">vnet_name</span><span class="nv"> </span><span class="s">}}&quot;</span>
 </span><span class='line'>    <span class="l-Scalar-Plain">address_prefixes_cidr</span><span class="p-Indicator">:</span>
 </span><span class='line'>      <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">10.1.0.0/16</span>
 </span><span class='line'>      <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">172.100.0.0/16</span>
@@ -192,9 +190,9 @@
 </span><span class='line'>
 </span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Add subnet</span>
 </span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_subnet</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">virtual_network_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">subnet_name</span><span class="nv"> </span><span class="s">}}&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">virtual_network_name</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">vnet_name</span><span class="nv"> </span><span class="s">}}&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">resource_group</span><span class="nv"> </span><span class="s">}}&quot;</span>
 </span><span class='line'>    <span class="l-Scalar-Plain">address_prefix_cidr</span><span class="p-Indicator">:</span> <span class="s">&quot;10.1.0.0/24&quot;</span>
 </span></code></pre></td></tr></table></div></figure>
 
@@ -222,8 +220,8 @@
 <span class='line-number'>19</span>
 </pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create instance of Cosmos DB Account</span>
 </span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_cosmosdbaccount</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">resource_group</span><span class="nv"> </span><span class="s">}}&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">cosmosdbaccount_name</span><span class="nv"> </span><span class="s">}}&quot;</span>
 </span><span class='line'>    <span class="l-Scalar-Plain">location</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">eastus</span>
 </span><span class='line'>    <span class="l-Scalar-Plain">geo_rep_locations</span><span class="p-Indicator">:</span>
 </span><span class='line'>      <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">eastus</span>
@@ -234,9 +232,9 @@
 </span><span class='line'>    <span class="l-Scalar-Plain">is_virtual_network_filter_enabled</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">yes</span>
 </span><span class='line'>    <span class="l-Scalar-Plain">virtual_network_rules</span><span class="p-Indicator">:</span>
 </span><span class='line'>      <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">subnet</span><span class="p-Indicator">:</span>
-</span><span class='line'>          <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
-</span><span class='line'>          <span class="l-Scalar-Plain">virtual_network_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
-</span><span class='line'>          <span class="l-Scalar-Plain">subnet_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>          <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">resource_group</span><span class="nv"> </span><span class="s">}}&quot;</span>
+</span><span class='line'>          <span class="l-Scalar-Plain">virtual_network_name</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">vnet_name</span><span class="nv"> </span><span class="s">}}&quot;</span>
+</span><span class='line'>          <span class="l-Scalar-Plain">subnet_name</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">subnet_name</span><span class="nv"> </span><span class="s">}}&quot;</span>
 </span><span class='line'>        <span class="l-Scalar-Plain">ignore_missing_vnet_service_endpoint</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">yes</span>
 </span><span class='line'>    <span class="l-Scalar-Plain">enable_automatic_failover</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">yes</span>
 </span></code></pre></td></tr></table></div></figure>
@@ -256,8 +254,8 @@
 <span class='line-number'>10</span>
 </pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Get Cosmos DB Account facts with keys</span>
 </span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_cosmosdbaccount_facts</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">resource_group</span><span class="nv"> </span><span class="s">}}&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">cosmosdbaccount_name</span><span class="nv"> </span><span class="s">}}&quot;</span>
 </span><span class='line'>    <span class="l-Scalar-Plain">retrieve_keys</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">all</span>
 </span><span class='line'>  <span class="l-Scalar-Plain">register</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
 </span><span class='line'>
