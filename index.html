@@ -165,7 +165,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Second task iterates through the list and does generic query of every resource:</p>
+<p>First task gets a list of resource ids, which looks as follows:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -196,7 +196,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-
+<p>Second task iterates through the list and does generic query of every resource to get all the details of every resource:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -704,7 +704,298 @@
   </header>
 
 
-  <div class="entry-content">
+  <div class="entry-content"><p><a href="https://github.com/Azure-Samples/ansible-playbooks/blob/master/hdinsight-create.yml">https://github.com/Azure-Samples/ansible-playbooks/blob/master/hdinsight-create.yml</a></p>
+
+<p>This sample will:</p>
+
+<ul>
+<li>create resource group</li>
+<li>create storage account</li>
+<li>obtain storage account keys required by the cluster</li>
+<li>create HDInsight cluster</li>
+<li>resize cluster</li>
+<li>delete cluster</li>
+</ul>
+
+
+<h2>Create Random Prefix</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">hosts</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">localhost</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">tasks</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Prepare random prefix</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">set_fact</span><span class="p-Indicator">:</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">rpfx</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">resource_group_name</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">hash(&#39;md5&#39;)</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">truncate(7,</span><span class="nv"> </span><span class="s">True,</span><span class="nv"> </span><span class="s">&#39;&#39;)</span><span class="nv"> </span><span class="s">}}{{</span><span class="nv"> </span><span class="s">1000</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">random</span><span class="nv"> </span><span class="s">}}&quot;</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">run_once</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">yes</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Variables</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'>  <span class="l-Scalar-Plain">vars</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">resource_group_name</span><span class="nv"> </span><span class="s">}}&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">location</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">eastus</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">vnet_name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">myVirtualNetwork</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">subnet_name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">mySubnet</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">cluster_name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">mycluster{{ rpfx }}</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">storage_account_name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">mystorage{{ rpfx }}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Create Resource Group</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create a resource group</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_resourcegroup</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">resource_group</span><span class="nv"> </span><span class="s">}}&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">location</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">location</span><span class="nv"> </span><span class="s">}}&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Create Storage Account and Obtain Keys</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create storage account</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_storageaccount</span><span class="p-Indicator">:</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">resource_group</span><span class="nv"> </span><span class="s">}}&quot;</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">storage_account_name</span><span class="nv"> </span><span class="s">}}&quot;</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">account_type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Standard_LRS</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">location</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">eastus2</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Get storage account keys</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_resource</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">api_version</span><span class="p-Indicator">:</span> <span class="s">&#39;2018-07-01&#39;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">method</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">POST</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">resource_group</span><span class="nv"> </span><span class="s">}}&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">provider</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">storage</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">storageaccounts</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_name</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">storage_account_name</span><span class="nv"> </span><span class="s">}}&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">subresource</span><span class="p-Indicator">:</span>
+</span><span class='line'>      <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">listkeys</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">register</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">storage_output</span>
+</span><span class='line'>
+</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">debug</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">var</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">storage_output</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Create Instance of HDInsight Cluster</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create instance of Cluster</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_hdinsightcluster</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">resource_group</span><span class="nv"> </span><span class="s">}}&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">cluster_name</span><span class="nv"> </span><span class="s">}}&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">location</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">eastus2</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">cluster_version</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">3.6</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">os_type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">linux</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">tier</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">standard</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">cluster_definition</span><span class="p-Indicator">:</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">kind</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">spark</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">gateway_rest_username</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">http-user</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">gateway_rest_password</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">MuABCPassword!!@123</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">storage_accounts</span><span class="p-Indicator">:</span>
+</span><span class='line'>      <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">storage_account_name</span><span class="nv"> </span><span class="s">}}.blob.core.windows.net&quot;</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">is_default</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">yes</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">container</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">cluster_name</span><span class="nv"> </span><span class="s">}}&quot;</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">key</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">storage_output[&#39;response&#39;][&#39;keys&#39;][0][&#39;value&#39;]</span><span class="nv"> </span><span class="s">}}&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">compute_profile_roles</span><span class="p-Indicator">:</span>
+</span><span class='line'>      <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">headnode</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">target_instance_count</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">1</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">vm_size</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Standard_D3</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">linux_profile</span><span class="p-Indicator">:</span>
+</span><span class='line'>          <span class="l-Scalar-Plain">username</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">sshuser</span>
+</span><span class='line'>          <span class="l-Scalar-Plain">password</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">MuABCPassword!!@123</span>
+</span><span class='line'>      <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">workernode</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">target_instance_count</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">1</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">vm_size</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Standard_D3</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">linux_profile</span><span class="p-Indicator">:</span>
+</span><span class='line'>          <span class="l-Scalar-Plain">username</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">sshuser</span>
+</span><span class='line'>          <span class="l-Scalar-Plain">password</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">MuABCPassword!!@123</span>
+</span><span class='line'>      <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">zookeepernode</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">target_instance_count</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">3</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">vm_size</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Medium</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">linux_profile</span><span class="p-Indicator">:</span>
+</span><span class='line'>          <span class="l-Scalar-Plain">username</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">sshuser</span>
+</span><span class='line'>          <span class="l-Scalar-Plain">password</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">MuABCPassword!!@123</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Resize Cluster</h2>
+
+<p>The only thing that can be changed after HDInsight cluster is created is the number of worker nodes.
+Below task will increment number of nodes from 1 to 2.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Resize cluster</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_hdinsightcluster</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">resource_group</span><span class="nv"> </span><span class="s">}}&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">cluster_name</span><span class="nv"> </span><span class="s">}}&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">location</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">eastus2</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">cluster_version</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">3.6</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">os_type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">linux</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">tier</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">standard</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">cluster_definition</span><span class="p-Indicator">:</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">kind</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">spark</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">gateway_rest_username</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">http-user</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">gateway_rest_password</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">MuABCPassword!!@123</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">storage_accounts</span><span class="p-Indicator">:</span>
+</span><span class='line'>      <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">storage_account_name</span><span class="nv"> </span><span class="s">}}.blob.core.windows.net&quot;</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">is_default</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">yes</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">container</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">cluster_name</span><span class="nv"> </span><span class="s">}}&quot;</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">key</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">storage_output[&#39;response&#39;][&#39;keys&#39;][0][&#39;value&#39;]</span><span class="nv"> </span><span class="s">}}&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">compute_profile_roles</span><span class="p-Indicator">:</span>
+</span><span class='line'>      <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">headnode</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">target_instance_count</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">1</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">vm_size</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Standard_D3</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">linux_profile</span><span class="p-Indicator">:</span>
+</span><span class='line'>          <span class="l-Scalar-Plain">username</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">sshuser</span>
+</span><span class='line'>          <span class="l-Scalar-Plain">password</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">MuABCPassword!!@123</span>
+</span><span class='line'>      <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">workernode</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">target_instance_count</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">2</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">vm_size</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Standard_D3</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">linux_profile</span><span class="p-Indicator">:</span>
+</span><span class='line'>          <span class="l-Scalar-Plain">username</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">sshuser</span>
+</span><span class='line'>          <span class="l-Scalar-Plain">password</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">MuABCPassword!!@123</span>
+</span><span class='line'>      <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">zookeepernode</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">target_instance_count</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">3</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">vm_size</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Medium</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">linux_profile</span><span class="p-Indicator">:</span>
+</span><span class='line'>          <span class="l-Scalar-Plain">username</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">sshuser</span>
+</span><span class='line'>          <span class="l-Scalar-Plain">password</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">MuABCPassword!!@123</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">tags</span><span class="p-Indicator">:</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">aaa</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">bbb</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">register</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Clean Up</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Delete instance of Cluster</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_hdinsightcluster</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">resource_group</span><span class="nv"> </span><span class="s">}}&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">cluster_name</span><span class="nv"> </span><span class="s">}}&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">state</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">absent</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
 </div>
   
   
