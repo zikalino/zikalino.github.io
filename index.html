@@ -1025,7 +1025,9 @@ Below task will increment number of nodes from 1 to 2.</p>
   </header>
 
 
-  <div class="entry-content"><p><a href="https://github.com/Azure-Samples/ansible-playbooks/blob/master/cosmosdb-create.yml">https://github.com/Azure-Samples/ansible-playbooks/blob/master/cosmosdb-create.yml</a></p>
+  <div class="entry-content"><p>Cosmos DB Account sample is available here:</p>
+
+<p><a href="https://github.com/Azure-Samples/ansible-playbooks/blob/master/cosmosdb-create.yml">https://github.com/Azure-Samples/ansible-playbooks/blob/master/cosmosdb-create.yml</a></p>
 
 <p>This sample:</p>
 
@@ -1073,7 +1075,49 @@ Below task will increment number of nodes from 1 to 2.</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
+<p>Following variables can be set in <strong>vars</strong> section of the playbook:</p>
+
+<table>
+<thead>
+<tr>
+<th>Variable Name</th>
+<th>Description</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>resource_group</td>
+<td>resource group where resources will be created</td>
+<td>by default it&rsquo;s using <strong>resource_group_name</strong> parameter passed when running the playbook</td>
+</tr>
+<tr>
+<td>location</td>
+<td>location where resources should be created</td>
+<td></td>
+</tr>
+<tr>
+<td>vnet_name</td>
+<td>virtual network name</td>
+<td></td>
+</tr>
+<tr>
+<td>subnet</td>
+<td>subnet name</td>
+<td></td>
+</tr>
+<tr>
+<td>cosmosdbaccount_name</td>
+<td>CosmosDB account name</td>
+<td>should include only lowercase characters and be globally unique</td>
+</tr>
+</tbody>
+</table>
+
+
 <h2>Create Resource Group</h2>
+
+<p>This simple task creates a resource group if doesn&rsquo;t exist yet.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -1087,6 +1131,14 @@ Below task will increment number of nodes from 1 to 2.</p>
 
 
 <h2>Create Virtual Network and Subnet</h2>
+
+<p>This task created prerequisites for CosmosDB account:</p>
+
+<ul>
+<li>virtual network</li>
+<li>subnet</li>
+</ul>
+
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -1127,6 +1179,8 @@ Below task will increment number of nodes from 1 to 2.</p>
 
 <h2>Create CosmosDB Account</h2>
 
+<p>This task creates actual CosmosDB account.</p>
+
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -1146,11 +1200,13 @@ Below task will increment number of nodes from 1 to 2.</p>
 <span class='line-number'>17</span>
 <span class='line-number'>18</span>
 <span class='line-number'>19</span>
+<span class='line-number'>20</span>
 </pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create instance of Cosmos DB Account</span>
 </span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_cosmosdbaccount</span><span class="p-Indicator">:</span>
 </span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">resource_group</span><span class="nv"> </span><span class="s">}}&quot;</span>
 </span><span class='line'>    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">cosmosdbaccount_name</span><span class="nv"> </span><span class="s">}}&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">location</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">eastus</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">location</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">location</span><span class="nv"> </span><span class="s">}}&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">kind</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">global_document_db</span>
 </span><span class='line'>    <span class="l-Scalar-Plain">geo_rep_locations</span><span class="p-Indicator">:</span>
 </span><span class='line'>      <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">eastus</span>
 </span><span class='line'>        <span class="l-Scalar-Plain">failover_priority</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">0</span>
@@ -1169,6 +1225,8 @@ Below task will increment number of nodes from 1 to 2.</p>
 
 
 <h2>Retrieve Keys</h2>
+
+<p>This task shows how to retrieve CosmosDB account keys that should be used later by any application using the database:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
