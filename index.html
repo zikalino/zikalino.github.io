@@ -9,22 +9,7 @@
   <meta name="author" content="Your Name">
 
   
-  <meta name="description" content="Now, this is pretty cool. With a very small Ansible playbook you can dump entire content of a Resource Group. 1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16 &hellip;">
+  <meta name="description" content="Now, this is pretty cool. With a very small Ansible playbook you can dump entire content of a Resource Group. Please note it requires Ansible 2.8. 1 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -118,6 +103,8 @@
 
   <div class="entry-content"><p>Now, this is pretty cool. With a very small Ansible playbook you can dump entire content of a Resource Group.</p>
 
+<p>Please note it requires Ansible 2.8.</p>
+
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -140,63 +127,54 @@
 <span class='line-number'>20</span>
 <span class='line-number'>21</span>
 <span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">List all resources in resource group</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">hosts</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">localhost</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">connection</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">local</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">tasks</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">List all the resources under a resource group</span>
-</span><span class='line'>      <span class="l-Scalar-Plain">azure_rm_resource_facts</span><span class="p-Indicator">:</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">api_version</span><span class="p-Indicator">:</span> <span class="s">&#39;2015-01-01&#39;</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">zimsdtl</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">resource_type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">resources</span>
-</span><span class='line'>      <span class="l-Scalar-Plain">register</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">List all the resources under a resource group</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_resource_facts</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">api_version</span><span class="p-Indicator">:</span> <span class="s">&#39;2015-01-01&#39;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">zimsdtl</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">resources</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">register</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
 </span><span class='line'>
-</span><span class='line'>    <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">debug</span><span class="p-Indicator">:</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">var</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Dump raw list of resouces in the resource group</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">debug</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">var</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
 </span><span class='line'>
-</span><span class='line'>    <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Iterate through the resources and query details on each one</span>
-</span><span class='line'>      <span class="l-Scalar-Plain">azure_rm_resource_facts</span><span class="p-Indicator">:</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">url</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">item.id</span><span class="nv"> </span><span class="s">}}&quot;</span>
-</span><span class='line'>      <span class="l-Scalar-Plain">register</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
-</span><span class='line'>      <span class="l-Scalar-Plain">with_items</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">output.response</span><span class="nv"> </span><span class="s">}}&quot;</span>
+</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create a list of resource IDs</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">set_fact</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_ids</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">output.response</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">map(attribute=&#39;id&#39;)</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">list</span><span class="nv"> </span><span class="s">}}&quot;</span>
 </span><span class='line'>
-</span><span class='line'>    <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">debug</span><span class="p-Indicator">:</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">var</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Dump list of resource IDs</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">debug</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">var</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">resource_ids</span>
+</span><span class='line'>
+</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Iterate through the resources and query details on each one</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_resource_facts</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">url</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">item</span><span class="nv"> </span><span class="s">}}&quot;</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">register</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">with_items</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">resource_ids</span><span class="nv"> </span><span class="s">}}&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create single list of resources</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">set_fact</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resources</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">output.results</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">map(attribute=&#39;response&#39;)</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">sum(start=[])</span><span class="nv"> </span><span class="s">}}&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Dump final list of resources</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">debug</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">var</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">resources</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>First task gets a list of resource ids, which looks as follows:</p>
+<h2>Final Output</h2>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="l-Scalar-Plain">TASK [debug] ****************************************************************************************************************************************************************************</span>
-</span><span class='line'><span class="l-Scalar-Plain">ok</span><span class="p-Indicator">:</span> <span class="p-Indicator">[</span><span class="nv">localhost</span><span class="p-Indicator">]</span> <span class="l-Scalar-Plain">=&gt; {</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">&quot;output&quot;</span><span class="p-Indicator">:</span> <span class="p-Indicator">{</span>
-</span><span class='line'>        <span class="s">&quot;changed&quot;</span><span class="p-Indicator">:</span> <span class="nv">false</span><span class="p-Indicator">,</span>
-</span><span class='line'>        <span class="s">&quot;failed&quot;</span><span class="p-Indicator">:</span> <span class="nv">false</span><span class="p-Indicator">,</span>
-</span><span class='line'>        <span class="s">&quot;response&quot;</span><span class="p-Indicator">:</span> <span class="p-Indicator">[</span>
-</span><span class='line'>            <span class="p-Indicator">{</span>
-</span><span class='line'>                <span class="s">&quot;id&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/zimsdtl/providers/Microsoft.DevTestLab/labs/labxxxx&quot;</span><span class="p-Indicator">,</span>
-</span><span class='line'>                <span class="s">&quot;location&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;eastus&quot;</span><span class="p-Indicator">,</span>
-</span><span class='line'>                <span class="s">&quot;name&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;labxxxx&quot;</span><span class="p-Indicator">,</span>
-</span><span class='line'>                <span class="s">&quot;type&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;Microsoft.DevTestLab/labs&quot;</span>
-</span><span class='line'>            <span class="p-Indicator">}</span>
-</span><span class='line'><span class="nv">.........................</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Second task iterates through the list and does generic query of every resource to get all the details of every resource:</p>
+<p>And final output looks like this:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -235,7 +213,272 @@
 <span class='line-number'>35</span>
 <span class='line-number'>36</span>
 <span class='line-number'>37</span>
-</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="l-Scalar-Plain">TASK [debug] ****************************************************************************************************************************************************************************</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+<span class='line-number'>128</span>
+<span class='line-number'>129</span>
+<span class='line-number'>130</span>
+<span class='line-number'>131</span>
+<span class='line-number'>132</span>
+<span class='line-number'>133</span>
+<span class='line-number'>134</span>
+<span class='line-number'>135</span>
+<span class='line-number'>136</span>
+<span class='line-number'>137</span>
+<span class='line-number'>138</span>
+<span class='line-number'>139</span>
+<span class='line-number'>140</span>
+<span class='line-number'>141</span>
+<span class='line-number'>142</span>
+<span class='line-number'>143</span>
+<span class='line-number'>144</span>
+<span class='line-number'>145</span>
+<span class='line-number'>146</span>
+<span class='line-number'>147</span>
+<span class='line-number'>148</span>
+<span class='line-number'>149</span>
+<span class='line-number'>150</span>
+<span class='line-number'>151</span>
+<span class='line-number'>152</span>
+<span class='line-number'>153</span>
+<span class='line-number'>154</span>
+<span class='line-number'>155</span>
+<span class='line-number'>156</span>
+<span class='line-number'>157</span>
+<span class='line-number'>158</span>
+<span class='line-number'>159</span>
+<span class='line-number'>160</span>
+<span class='line-number'>161</span>
+<span class='line-number'>162</span>
+<span class='line-number'>163</span>
+<span class='line-number'>164</span>
+<span class='line-number'>165</span>
+<span class='line-number'>166</span>
+<span class='line-number'>167</span>
+<span class='line-number'>168</span>
+<span class='line-number'>169</span>
+<span class='line-number'>170</span>
+<span class='line-number'>171</span>
+<span class='line-number'>172</span>
+<span class='line-number'>173</span>
+<span class='line-number'>174</span>
+<span class='line-number'>175</span>
+<span class='line-number'>176</span>
+<span class='line-number'>177</span>
+<span class='line-number'>178</span>
+<span class='line-number'>179</span>
+<span class='line-number'>180</span>
+<span class='line-number'>181</span>
+<span class='line-number'>182</span>
+<span class='line-number'>183</span>
+<span class='line-number'>184</span>
+<span class='line-number'>185</span>
+<span class='line-number'>186</span>
+<span class='line-number'>187</span>
+<span class='line-number'>188</span>
+<span class='line-number'>189</span>
+<span class='line-number'>190</span>
+<span class='line-number'>191</span>
+<span class='line-number'>192</span>
+<span class='line-number'>193</span>
+<span class='line-number'>194</span>
+<span class='line-number'>195</span>
+<span class='line-number'>196</span>
+<span class='line-number'>197</span>
+<span class='line-number'>198</span>
+<span class='line-number'>199</span>
+<span class='line-number'>200</span>
+<span class='line-number'>201</span>
+<span class='line-number'>202</span>
+<span class='line-number'>203</span>
+<span class='line-number'>204</span>
+<span class='line-number'>205</span>
+<span class='line-number'>206</span>
+<span class='line-number'>207</span>
+<span class='line-number'>208</span>
+<span class='line-number'>209</span>
+<span class='line-number'>210</span>
+<span class='line-number'>211</span>
+<span class='line-number'>212</span>
+<span class='line-number'>213</span>
+<span class='line-number'>214</span>
+<span class='line-number'>215</span>
+<span class='line-number'>216</span>
+<span class='line-number'>217</span>
+<span class='line-number'>218</span>
+<span class='line-number'>219</span>
+<span class='line-number'>220</span>
+<span class='line-number'>221</span>
+<span class='line-number'>222</span>
+<span class='line-number'>223</span>
+<span class='line-number'>224</span>
+<span class='line-number'>225</span>
+<span class='line-number'>226</span>
+<span class='line-number'>227</span>
+<span class='line-number'>228</span>
+<span class='line-number'>229</span>
+<span class='line-number'>230</span>
+<span class='line-number'>231</span>
+<span class='line-number'>232</span>
+<span class='line-number'>233</span>
+<span class='line-number'>234</span>
+<span class='line-number'>235</span>
+<span class='line-number'>236</span>
+<span class='line-number'>237</span>
+<span class='line-number'>238</span>
+<span class='line-number'>239</span>
+<span class='line-number'>240</span>
+<span class='line-number'>241</span>
+<span class='line-number'>242</span>
+<span class='line-number'>243</span>
+<span class='line-number'>244</span>
+<span class='line-number'>245</span>
+<span class='line-number'>246</span>
+<span class='line-number'>247</span>
+<span class='line-number'>248</span>
+<span class='line-number'>249</span>
+<span class='line-number'>250</span>
+<span class='line-number'>251</span>
+<span class='line-number'>252</span>
+<span class='line-number'>253</span>
+<span class='line-number'>254</span>
+<span class='line-number'>255</span>
+<span class='line-number'>256</span>
+<span class='line-number'>257</span>
+<span class='line-number'>258</span>
+<span class='line-number'>259</span>
+<span class='line-number'>260</span>
+<span class='line-number'>261</span>
+<span class='line-number'>262</span>
+<span class='line-number'>263</span>
+<span class='line-number'>264</span>
+<span class='line-number'>265</span>
+<span class='line-number'>266</span>
+<span class='line-number'>267</span>
+<span class='line-number'>268</span>
+<span class='line-number'>269</span>
+<span class='line-number'>270</span>
+<span class='line-number'>271</span>
+<span class='line-number'>272</span>
+<span class='line-number'>273</span>
+<span class='line-number'>274</span>
+<span class='line-number'>275</span>
+<span class='line-number'>276</span>
+<span class='line-number'>277</span>
+<span class='line-number'>278</span>
+<span class='line-number'>279</span>
+<span class='line-number'>280</span>
+<span class='line-number'>281</span>
+<span class='line-number'>282</span>
+<span class='line-number'>283</span>
+<span class='line-number'>284</span>
+<span class='line-number'>285</span>
+<span class='line-number'>286</span>
+<span class='line-number'>287</span>
+<span class='line-number'>288</span>
+<span class='line-number'>289</span>
+<span class='line-number'>290</span>
+<span class='line-number'>291</span>
+<span class='line-number'>292</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="l-Scalar-Plain">PLAY [List all resources in resource group] *********************************************************************************************************************************************</span>
+</span><span class='line'>
+</span><span class='line'><span class="l-Scalar-Plain">TASK [Gathering Facts] ******************************************************************************************************************************************************************</span>
+</span><span class='line'><span class="l-Scalar-Plain">ok</span><span class="p-Indicator">:</span> <span class="p-Indicator">[</span><span class="nv">localhost</span><span class="p-Indicator">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="l-Scalar-Plain">TASK [List all the resources under a resource group] ************************************************************************************************************************************</span>
+</span><span class='line'> <span class="l-Scalar-Plain">[WARNING]</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Azure API profile latest does not define an entry for GenericRestClient</span>
+</span><span class='line'>
+</span><span class='line'><span class="l-Scalar-Plain">ok</span><span class="p-Indicator">:</span> <span class="p-Indicator">[</span><span class="nv">localhost</span><span class="p-Indicator">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="l-Scalar-Plain">TASK [Dump raw list of resouces in the resource group] **********************************************************************************************************************************</span>
 </span><span class='line'><span class="l-Scalar-Plain">ok</span><span class="p-Indicator">:</span> <span class="p-Indicator">[</span><span class="nv">localhost</span><span class="p-Indicator">]</span> <span class="l-Scalar-Plain">=&gt; {</span>
 </span><span class='line'>    <span class="l-Scalar-Plain">&quot;output&quot;</span><span class="p-Indicator">:</span> <span class="p-Indicator">{</span>
 </span><span class='line'>        <span class="s">&quot;changed&quot;</span><span class="p-Indicator">:</span> <span class="nv">false</span><span class="p-Indicator">,</span>
@@ -272,6 +515,251 @@
 </span><span class='line'>                <span class="p-Indicator">},</span>
 </span><span class='line'>                <span class="s">&quot;type&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;Microsoft.Network/virtualNetworks&quot;</span>
 </span><span class='line'>            <span class="p-Indicator">},</span>
+</span><span class='line'>            <span class="p-Indicator">{</span>
+</span><span class='line'>                <span class="s">&quot;id&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/zimsdtl/providers/Microsoft.Storage/storageAccounts/alabxxxx2409&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                <span class="s">&quot;kind&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;StorageV2&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                <span class="s">&quot;location&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;eastus&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                <span class="s">&quot;name&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;alabxxxx2409&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                <span class="s">&quot;sku&quot;</span><span class="p-Indicator">:</span> <span class="p-Indicator">{</span>
+</span><span class='line'>                    <span class="s">&quot;name&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;Standard_LRS&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                    <span class="s">&quot;tier&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;Standard&quot;</span>
+</span><span class='line'>                <span class="p-Indicator">},</span>
+</span><span class='line'>                <span class="s">&quot;tags&quot;</span><span class="p-Indicator">:</span> <span class="p-Indicator">{</span>
+</span><span class='line'>                    <span class="s">&quot;hidden-DevTestLabs-LabUId&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;1f33aff8-4e19-43e2-b2fc-181ce85afd2a&quot;</span>
+</span><span class='line'>                <span class="p-Indicator">},</span>
+</span><span class='line'>                <span class="s">&quot;type&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;Microsoft.Storage/storageAccounts&quot;</span>
+</span><span class='line'>            <span class="p-Indicator">}</span>
+</span><span class='line'>        <span class="p-Indicator">],</span>
+</span><span class='line'>        <span class="s">&quot;url&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/zimsdtl/resources&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>        <span class="s">&quot;warnings&quot;</span><span class="p-Indicator">:</span> <span class="p-Indicator">[</span>
+</span><span class='line'>            <span class="s">&quot;Azure</span><span class="nv"> </span><span class="s">API</span><span class="nv"> </span><span class="s">profile</span><span class="nv"> </span><span class="s">latest</span><span class="nv"> </span><span class="s">does</span><span class="nv"> </span><span class="s">not</span><span class="nv"> </span><span class="s">define</span><span class="nv"> </span><span class="s">an</span><span class="nv"> </span><span class="s">entry</span><span class="nv"> </span><span class="s">for</span><span class="nv"> </span><span class="s">GenericRestClient&quot;</span>
+</span><span class='line'>        <span class="p-Indicator">]</span>
+</span><span class='line'>    <span class="p-Indicator">}</span>
+</span><span class='line'><span class="err">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="l-Scalar-Plain">TASK [Create a list of resource IDs] ****************************************************************************************************************************************************</span>
+</span><span class='line'><span class="l-Scalar-Plain">ok</span><span class="p-Indicator">:</span> <span class="p-Indicator">[</span><span class="nv">localhost</span><span class="p-Indicator">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="l-Scalar-Plain">TASK [Dump list of resource IDs] ********************************************************************************************************************************************************</span>
+</span><span class='line'><span class="l-Scalar-Plain">ok</span><span class="p-Indicator">:</span> <span class="p-Indicator">[</span><span class="nv">localhost</span><span class="p-Indicator">]</span> <span class="l-Scalar-Plain">=&gt; {</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">&quot;resource_ids&quot;</span><span class="p-Indicator">:</span> <span class="p-Indicator">[</span>
+</span><span class='line'>        <span class="s">&quot;/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/zimsdtl/providers/Microsoft.DevTestLab/labs/labxxxx&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>        <span class="s">&quot;/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/zimsdtl/providers/Microsoft.DevTestLab/labs/labxxxx/virtualMachines/vmxxxx&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>        <span class="s">&quot;/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/zimsdtl/providers/Microsoft.KeyVault/vaults/labxxxx9607&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>        <span class="s">&quot;/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/zimsdtl/providers/Microsoft.Network/virtualNetworks/vnxxxx&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>        <span class="s">&quot;/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/zimsdtl/providers/Microsoft.Storage/storageAccounts/alabxxxx2409&quot;</span>
+</span><span class='line'>    <span class="p-Indicator">]</span>
+</span><span class='line'><span class="err">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="l-Scalar-Plain">TASK [Iterate through the resources and query details on each one] **********************************************************************************************************************</span>
+</span><span class='line'><span class="l-Scalar-Plain">ok</span><span class="p-Indicator">:</span> <span class="p-Indicator">[</span><span class="nv">localhost</span><span class="p-Indicator">]</span> <span class="l-Scalar-Plain">=&gt; (item=/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/zimsdtl/providers/Microsoft.DevTestLab/labs/labxxxx)</span>
+</span><span class='line'><span class="l-Scalar-Plain">ok</span><span class="p-Indicator">:</span> <span class="p-Indicator">[</span><span class="nv">localhost</span><span class="p-Indicator">]</span> <span class="l-Scalar-Plain">=&gt; (item=/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/zimsdtl/providers/Microsoft.DevTestLab/labs/labxxxx/virtualMachines/vmxxxx)</span>
+</span><span class='line'><span class="l-Scalar-Plain">ok</span><span class="p-Indicator">:</span> <span class="p-Indicator">[</span><span class="nv">localhost</span><span class="p-Indicator">]</span> <span class="l-Scalar-Plain">=&gt; (item=/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/zimsdtl/providers/Microsoft.KeyVault/vaults/labxxxx9607)</span>
+</span><span class='line'><span class="l-Scalar-Plain">ok</span><span class="p-Indicator">:</span> <span class="p-Indicator">[</span><span class="nv">localhost</span><span class="p-Indicator">]</span> <span class="l-Scalar-Plain">=&gt; (item=/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/zimsdtl/providers/Microsoft.Network/virtualNetworks/vnxxxx)</span>
+</span><span class='line'><span class="l-Scalar-Plain">ok</span><span class="p-Indicator">:</span> <span class="p-Indicator">[</span><span class="nv">localhost</span><span class="p-Indicator">]</span> <span class="l-Scalar-Plain">=&gt; (item=/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/zimsdtl/providers/Microsoft.Storage/storageAccounts/alabxxxx2409)</span>
+</span><span class='line'>
+</span><span class='line'><span class="l-Scalar-Plain">TASK [Create single list of resources] **************************************************************************************************************************************************</span>
+</span><span class='line'><span class="l-Scalar-Plain">ok</span><span class="p-Indicator">:</span> <span class="p-Indicator">[</span><span class="nv">localhost</span><span class="p-Indicator">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="l-Scalar-Plain">TASK [Dump final list of resources] *****************************************************************************************************************************************************</span>
+</span><span class='line'><span class="l-Scalar-Plain">ok</span><span class="p-Indicator">:</span> <span class="p-Indicator">[</span><span class="nv">localhost</span><span class="p-Indicator">]</span> <span class="l-Scalar-Plain">=&gt; {</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">&quot;resources&quot;</span><span class="p-Indicator">:</span> <span class="p-Indicator">[</span>
+</span><span class='line'>        <span class="p-Indicator">{</span>
+</span><span class='line'>            <span class="s">&quot;id&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourcegroups/zimsdtl/providers/microsoft.devtestlab/labs/labxxxx&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>            <span class="s">&quot;location&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;eastus&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>            <span class="s">&quot;name&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;labxxxx&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>            <span class="s">&quot;properties&quot;</span><span class="p-Indicator">:</span> <span class="p-Indicator">{</span>
+</span><span class='line'>                <span class="s">&quot;announcement&quot;</span><span class="p-Indicator">:</span> <span class="p-Indicator">{</span>
+</span><span class='line'>                    <span class="s">&quot;enabled&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;Disabled&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                    <span class="s">&quot;expired&quot;</span><span class="p-Indicator">:</span> <span class="nv">false</span><span class="p-Indicator">,</span>
+</span><span class='line'>                    <span class="s">&quot;markdown&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                    <span class="s">&quot;title&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>                <span class="p-Indicator">},</span>
+</span><span class='line'>                <span class="s">&quot;artifactsStorageAccount&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/zimsdtl/providers/Microsoft.Storage/storageAccounts/alabxxxx2409&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                <span class="s">&quot;createdDate&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;2019-03-01T08:42:35.4625319+00:00&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                <span class="s">&quot;defaultPremiumStorageAccount&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/zimsdtl/providers/Microsoft.Storage/storageAccounts/alabxxxx2409&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                <span class="s">&quot;defaultStorageAccount&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/zimsdtl/providers/Microsoft.Storage/storageAccounts/alabxxxx2409&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                <span class="s">&quot;environmentPermission&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;Reader&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                <span class="s">&quot;labStorageType&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;Standard&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                <span class="s">&quot;mandatoryArtifactsResourceIdsLinux&quot;</span><span class="p-Indicator">:</span> <span class="p-Indicator">[],</span>
+</span><span class='line'>                <span class="s">&quot;mandatoryArtifactsResourceIdsWindows&quot;</span><span class="p-Indicator">:</span> <span class="p-Indicator">[],</span>
+</span><span class='line'>                <span class="s">&quot;premiumDataDiskStorageAccount&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/zimsdtl/providers/Microsoft.Storage/storageAccounts/alabxxxx2409&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                <span class="s">&quot;premiumDataDisks&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;Disabled&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                <span class="s">&quot;provisioningState&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;Succeeded&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                <span class="s">&quot;support&quot;</span><span class="p-Indicator">:</span> <span class="p-Indicator">{</span>
+</span><span class='line'>                    <span class="s">&quot;enabled&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;Disabled&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                    <span class="s">&quot;markdown&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>                <span class="p-Indicator">},</span>
+</span><span class='line'>                <span class="s">&quot;uniqueIdentifier&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;1f33aff8-4e19-43e2-b2fc-181ce85afd2a&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                <span class="s">&quot;vaultName&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/zimsdtl/providers/Microsoft.KeyVault/vaults/labxxxx9607&quot;</span>
+</span><span class='line'>            <span class="p-Indicator">},</span>
+</span><span class='line'>            <span class="s">&quot;type&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;Microsoft.DevTestLab/labs&quot;</span>
+</span><span class='line'>        <span class="p-Indicator">},</span>
+</span><span class='line'>        <span class="p-Indicator">{</span>
+</span><span class='line'>            <span class="s">&quot;id&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourcegroups/zimsdtl/providers/microsoft.devtestlab/labs/labxxxx/virtualmachines/vmxxxx&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>            <span class="s">&quot;location&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;eastus&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>            <span class="s">&quot;name&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;vmxxxx&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>            <span class="s">&quot;properties&quot;</span><span class="p-Indicator">:</span> <span class="p-Indicator">{</span>
+</span><span class='line'>                <span class="s">&quot;allowClaim&quot;</span><span class="p-Indicator">:</span> <span class="nv">false</span><span class="p-Indicator">,</span>
+</span><span class='line'>                <span class="s">&quot;artifactDeploymentStatus&quot;</span><span class="p-Indicator">:</span> <span class="p-Indicator">{</span>
+</span><span class='line'>                    <span class="s">&quot;artifactsApplied&quot;</span><span class="p-Indicator">:</span> <span class="nv">0</span><span class="p-Indicator">,</span>
+</span><span class='line'>                    <span class="s">&quot;totalArtifacts&quot;</span><span class="p-Indicator">:</span> <span class="nv">0</span>
+</span><span class='line'>                <span class="p-Indicator">},</span>
+</span><span class='line'>                <span class="s">&quot;computeId&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/labxxxx-vmxxxx-561112/providers/Microsoft.Compute/virtualMachines/vmxxxx&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                <span class="s">&quot;createdByUser&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                <span class="s">&quot;createdByUserId&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                <span class="s">&quot;createdDate&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;2019-03-01T08:44:56.9375632+00:00&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                <span class="s">&quot;dataDiskParameters&quot;</span><span class="p-Indicator">:</span> <span class="p-Indicator">[],</span>
+</span><span class='line'>                <span class="s">&quot;disallowPublicIpAddress&quot;</span><span class="p-Indicator">:</span> <span class="nv">false</span><span class="p-Indicator">,</span>
+</span><span class='line'>                <span class="s">&quot;expirationDate&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;2029-02-22T01:49:12.117974+00:00&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                <span class="s">&quot;fqdn&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;vmxxxx.eastus.cloudapp.azure.com&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                <span class="s">&quot;galleryImageReference&quot;</span><span class="p-Indicator">:</span> <span class="p-Indicator">{</span>
+</span><span class='line'>                    <span class="s">&quot;offer&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;UbuntuServer&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                    <span class="s">&quot;osType&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;Linux&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                    <span class="s">&quot;publisher&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;Canonical&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                    <span class="s">&quot;sku&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;16.04-LTS&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                    <span class="s">&quot;version&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;latest&quot;</span>
+</span><span class='line'>                <span class="p-Indicator">},</span>
+</span><span class='line'>                <span class="s">&quot;labSubnetName&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;vnxxxxSubnet&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                <span class="s">&quot;labVirtualNetworkId&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/zimsdtl/providers/Microsoft.DevTestLab/labs/labxxxx/virtualnetworks/vnxxxx&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                <span class="s">&quot;lastKnownPowerState&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;Stopped&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                <span class="s">&quot;networkInterface&quot;</span><span class="p-Indicator">:</span> <span class="p-Indicator">{},</span>
+</span><span class='line'>                <span class="s">&quot;notes&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;Virtual</span><span class="nv"> </span><span class="s">machine</span><span class="nv"> </span><span class="s">notes,</span><span class="nv"> </span><span class="s">just</span><span class="nv"> </span><span class="s">something....&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                <span class="s">&quot;osType&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;Linux&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                <span class="s">&quot;ownerObjectId&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;20d81029-94cd-4923-a766-994415ff73bd&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                <span class="s">&quot;ownerUserPrincipalName&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                <span class="s">&quot;provisioningState&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;Succeeded&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                <span class="s">&quot;size&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;Standard_A2_v2&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                <span class="s">&quot;storageType&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;Standard&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                <span class="s">&quot;uniqueIdentifier&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;39fc5a87-2b95-48ff-a827-468902b78149&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                <span class="s">&quot;userName&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;dtladmin&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                <span class="s">&quot;virtualMachineCreationSource&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;FromGalleryImage&quot;</span>
+</span><span class='line'>            <span class="p-Indicator">},</span>
+</span><span class='line'>            <span class="s">&quot;type&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;Microsoft.DevTestLab/labs/virtualMachines&quot;</span>
+</span><span class='line'>        <span class="p-Indicator">},</span>
+</span><span class='line'>        <span class="p-Indicator">{</span>
+</span><span class='line'>            <span class="s">&quot;id&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/zimsdtl/providers/Microsoft.KeyVault/vaults/labxxxx9607&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>            <span class="s">&quot;location&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;eastus&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>            <span class="s">&quot;name&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;labxxxx9607&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>            <span class="s">&quot;properties&quot;</span><span class="p-Indicator">:</span> <span class="p-Indicator">{</span>
+</span><span class='line'>                <span class="s">&quot;accessPolicies&quot;</span><span class="p-Indicator">:</span> <span class="p-Indicator">[</span>
+</span><span class='line'>                    <span class="p-Indicator">{</span>
+</span><span class='line'>                        <span class="s">&quot;objectId&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;9d706dfc-a44a-4341-9cac-e995cc8a1530&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                        <span class="s">&quot;permissions&quot;</span><span class="p-Indicator">:</span> <span class="p-Indicator">{</span>
+</span><span class='line'>                            <span class="s">&quot;secrets&quot;</span><span class="p-Indicator">:</span> <span class="p-Indicator">[</span>
+</span><span class='line'>                                <span class="s">&quot;all&quot;</span>
+</span><span class='line'>                            <span class="p-Indicator">]</span>
+</span><span class='line'>                        <span class="p-Indicator">},</span>
+</span><span class='line'>                        <span class="s">&quot;tenantId&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;72f988bf-86f1-41af-91ab-2d7cd011db47&quot;</span>
+</span><span class='line'>                    <span class="p-Indicator">}</span>
+</span><span class='line'>                <span class="p-Indicator">],</span>
+</span><span class='line'>                <span class="s">&quot;enabledForDeployment&quot;</span><span class="p-Indicator">:</span> <span class="nv">true</span><span class="p-Indicator">,</span>
+</span><span class='line'>                <span class="s">&quot;provisioningState&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;Succeeded&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                <span class="s">&quot;sku&quot;</span><span class="p-Indicator">:</span> <span class="p-Indicator">{</span>
+</span><span class='line'>                    <span class="s">&quot;family&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;A&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                    <span class="s">&quot;name&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;standard&quot;</span>
+</span><span class='line'>                <span class="p-Indicator">},</span>
+</span><span class='line'>                <span class="s">&quot;tenantId&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;72f988bf-86f1-41af-91ab-2d7cd011db47&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                <span class="s">&quot;vaultUri&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;https://labxxxx9607.vault.azure.net/&quot;</span>
+</span><span class='line'>            <span class="p-Indicator">},</span>
+</span><span class='line'>            <span class="s">&quot;tags&quot;</span><span class="p-Indicator">:</span> <span class="p-Indicator">{</span>
+</span><span class='line'>                <span class="s">&quot;CreatedBy&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;DevTestLabs&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                <span class="s">&quot;hidden-DevTestLabs-LabUId&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;1f33aff8-4e19-43e2-b2fc-181ce85afd2a&quot;</span>
+</span><span class='line'>            <span class="p-Indicator">},</span>
+</span><span class='line'>            <span class="s">&quot;type&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;Microsoft.KeyVault/vaults&quot;</span>
+</span><span class='line'>        <span class="p-Indicator">},</span>
+</span><span class='line'>        <span class="p-Indicator">{</span>
+</span><span class='line'>            <span class="s">&quot;etag&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;W/\&quot;806f86f0-0cdd-4424-9fbc-17b9ab331ad7\&quot;&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>            <span class="s">&quot;id&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/zimsdtl/providers/Microsoft.Network/virtualNetworks/vnxxxx&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>            <span class="s">&quot;location&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;eastus&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>            <span class="s">&quot;name&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;vnxxxx&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>            <span class="s">&quot;properties&quot;</span><span class="p-Indicator">:</span> <span class="p-Indicator">{</span>
+</span><span class='line'>                <span class="s">&quot;addressSpace&quot;</span><span class="p-Indicator">:</span> <span class="p-Indicator">{</span>
+</span><span class='line'>                    <span class="s">&quot;addressPrefixes&quot;</span><span class="p-Indicator">:</span> <span class="p-Indicator">[</span>
+</span><span class='line'>                        <span class="s">&quot;10.0.0.0/20&quot;</span>
+</span><span class='line'>                    <span class="p-Indicator">]</span>
+</span><span class='line'>                <span class="p-Indicator">},</span>
+</span><span class='line'>                <span class="s">&quot;dhcpOptions&quot;</span><span class="p-Indicator">:</span> <span class="p-Indicator">{</span>
+</span><span class='line'>                    <span class="s">&quot;dnsServers&quot;</span><span class="p-Indicator">:</span> <span class="p-Indicator">[]</span>
+</span><span class='line'>                <span class="p-Indicator">},</span>
+</span><span class='line'>                <span class="s">&quot;enableDdosProtection&quot;</span><span class="p-Indicator">:</span> <span class="nv">false</span><span class="p-Indicator">,</span>
+</span><span class='line'>                <span class="s">&quot;enableVmProtection&quot;</span><span class="p-Indicator">:</span> <span class="nv">false</span><span class="p-Indicator">,</span>
+</span><span class='line'>                <span class="s">&quot;provisioningState&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;Succeeded&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                <span class="s">&quot;resourceGuid&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;9f622d47-478c-44a1-9796-3ba51eb44259&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                <span class="s">&quot;subnets&quot;</span><span class="p-Indicator">:</span> <span class="p-Indicator">[</span>
+</span><span class='line'>                    <span class="p-Indicator">{</span>
+</span><span class='line'>                        <span class="s">&quot;etag&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;W/\&quot;806f86f0-0cdd-4424-9fbc-17b9ab331ad7\&quot;&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                        <span class="s">&quot;id&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/zimsdtl/providers/Microsoft.Network/virtualNetworks/vnxxxx/subnets/vnxxxxSubnet&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                        <span class="s">&quot;name&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;vnxxxxSubnet&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                        <span class="s">&quot;properties&quot;</span><span class="p-Indicator">:</span> <span class="p-Indicator">{</span>
+</span><span class='line'>                            <span class="s">&quot;addressPrefix&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;10.0.0.0/20&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                            <span class="s">&quot;delegations&quot;</span><span class="p-Indicator">:</span> <span class="p-Indicator">[],</span>
+</span><span class='line'>                            <span class="s">&quot;provisioningState&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;Succeeded&quot;</span>
+</span><span class='line'>                        <span class="p-Indicator">},</span>
+</span><span class='line'>                        <span class="s">&quot;type&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;Microsoft.Network/virtualNetworks/subnets&quot;</span>
+</span><span class='line'>                    <span class="p-Indicator">}</span>
+</span><span class='line'>                <span class="p-Indicator">],</span>
+</span><span class='line'>                <span class="s">&quot;virtualNetworkPeerings&quot;</span><span class="p-Indicator">:</span> <span class="p-Indicator">[]</span>
+</span><span class='line'>            <span class="p-Indicator">},</span>
+</span><span class='line'>            <span class="s">&quot;tags&quot;</span><span class="p-Indicator">:</span> <span class="p-Indicator">{</span>
+</span><span class='line'>                <span class="s">&quot;hidden-DevTestLabs-LabUId&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;1f33aff8-4e19-43e2-b2fc-181ce85afd2a&quot;</span>
+</span><span class='line'>            <span class="p-Indicator">},</span>
+</span><span class='line'>            <span class="s">&quot;type&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;Microsoft.Network/virtualNetworks&quot;</span>
+</span><span class='line'>        <span class="p-Indicator">},</span>
+</span><span class='line'>        <span class="p-Indicator">{</span>
+</span><span class='line'>            <span class="s">&quot;id&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/zimsdtl/providers/Microsoft.Storage/storageAccounts/alabxxxx2409&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>            <span class="s">&quot;kind&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;StorageV2&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>            <span class="s">&quot;location&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;eastus&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>            <span class="s">&quot;name&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;alabxxxx2409&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>            <span class="s">&quot;properties&quot;</span><span class="p-Indicator">:</span> <span class="p-Indicator">{</span>
+</span><span class='line'>                <span class="s">&quot;accessTier&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;Hot&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                <span class="s">&quot;creationTime&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;2019-03-01T08:43:18.0722775Z&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                <span class="s">&quot;encryption&quot;</span><span class="p-Indicator">:</span> <span class="p-Indicator">{</span>
+</span><span class='line'>                    <span class="s">&quot;keySource&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;Microsoft.Storage&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                    <span class="s">&quot;services&quot;</span><span class="p-Indicator">:</span> <span class="p-Indicator">{</span>
+</span><span class='line'>                        <span class="s">&quot;blob&quot;</span><span class="p-Indicator">:</span> <span class="p-Indicator">{</span>
+</span><span class='line'>                            <span class="s">&quot;enabled&quot;</span><span class="p-Indicator">:</span> <span class="nv">true</span><span class="p-Indicator">,</span>
+</span><span class='line'>                            <span class="s">&quot;lastEnabledTime&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;2019-03-01T08:43:18.1972664Z&quot;</span>
+</span><span class='line'>                        <span class="p-Indicator">},</span>
+</span><span class='line'>                        <span class="s">&quot;file&quot;</span><span class="p-Indicator">:</span> <span class="p-Indicator">{</span>
+</span><span class='line'>                            <span class="s">&quot;enabled&quot;</span><span class="p-Indicator">:</span> <span class="nv">true</span><span class="p-Indicator">,</span>
+</span><span class='line'>                            <span class="s">&quot;lastEnabledTime&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;2019-03-01T08:43:18.1972664Z&quot;</span>
+</span><span class='line'>                        <span class="p-Indicator">}</span>
+</span><span class='line'>                    <span class="p-Indicator">}</span>
+</span><span class='line'>                <span class="p-Indicator">},</span>
+</span><span class='line'>                <span class="s">&quot;networkAcls&quot;</span><span class="p-Indicator">:</span> <span class="p-Indicator">{</span>
+</span><span class='line'>                    <span class="s">&quot;bypass&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;AzureServices&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                    <span class="s">&quot;defaultAction&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;Allow&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                    <span class="s">&quot;ipRules&quot;</span><span class="p-Indicator">:</span> <span class="p-Indicator">[],</span>
+</span><span class='line'>                    <span class="s">&quot;virtualNetworkRules&quot;</span><span class="p-Indicator">:</span> <span class="p-Indicator">[]</span>
+</span><span class='line'>                <span class="p-Indicator">},</span>
+</span><span class='line'>                <span class="s">&quot;primaryEndpoints&quot;</span><span class="p-Indicator">:</span> <span class="p-Indicator">{</span>
+</span><span class='line'>                    <span class="s">&quot;blob&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;https://alabxxxx2409.blob.core.windows.net/&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                    <span class="s">&quot;dfs&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;https://alabxxxx2409.dfs.core.windows.net/&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                    <span class="s">&quot;file&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;https://alabxxxx2409.file.core.windows.net/&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                    <span class="s">&quot;queue&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;https://alabxxxx2409.queue.core.windows.net/&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                    <span class="s">&quot;table&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;https://alabxxxx2409.table.core.windows.net/&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                    <span class="s">&quot;web&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;https://alabxxxx2409.z13.web.core.windows.net/&quot;</span>
+</span><span class='line'>                <span class="p-Indicator">},</span>
+</span><span class='line'>                <span class="s">&quot;primaryLocation&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;eastus&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                <span class="s">&quot;provisioningState&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;Succeeded&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                <span class="s">&quot;statusOfPrimary&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;available&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                <span class="s">&quot;supportsHttpsTrafficOnly&quot;</span><span class="p-Indicator">:</span> <span class="nv">true</span>
+</span><span class='line'>            <span class="p-Indicator">},</span>
+</span><span class='line'>            <span class="s">&quot;sku&quot;</span><span class="p-Indicator">:</span> <span class="p-Indicator">{</span>
+</span><span class='line'>                <span class="s">&quot;name&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;Standard_LRS&quot;</span><span class="p-Indicator">,</span>
+</span><span class='line'>                <span class="s">&quot;tier&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;Standard&quot;</span>
+</span><span class='line'>            <span class="p-Indicator">},</span>
+</span><span class='line'>            <span class="s">&quot;tags&quot;</span><span class="p-Indicator">:</span> <span class="p-Indicator">{</span>
+</span><span class='line'>                <span class="s">&quot;hidden-DevTestLabs-LabUId&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;1f33aff8-4e19-43e2-b2fc-181ce85afd2a&quot;</span>
+</span><span class='line'>            <span class="p-Indicator">},</span>
+</span><span class='line'>            <span class="s">&quot;type&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;Microsoft.Storage/storageAccounts&quot;</span>
+</span><span class='line'>        <span class="p-Indicator">}</span>
+</span><span class='line'>    <span class="p-Indicator">]</span>
+</span><span class='line'><span class="err">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="l-Scalar-Plain">PLAY RECAP ******************************************************************************************************************************************************************************</span>
+</span><span class='line'><span class="l-Scalar-Plain">localhost</span>                  <span class="p-Indicator">:</span> <span class="l-Scalar-Plain">ok=8    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
