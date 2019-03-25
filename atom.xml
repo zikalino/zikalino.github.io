@@ -4,7 +4,7 @@
   <title><![CDATA[Zim's Notes]]></title>
   <link href="http://zikalino.github.io/atom.xml" rel="self"/>
   <link href="http://zikalino.github.io/"/>
-  <updated>2019-03-23T21:49:13+08:00</updated>
+  <updated>2019-03-25T13:48:07+08:00</updated>
   <id>http://zikalino.github.io/</id>
   <author>
     <name><![CDATA[Your Name]]></name>
@@ -14,6 +14,75 @@
 
   
   <entry>
+    <title type="html"><![CDATA[Coming Rename of _facts Modules to _info Modules]]></title>
+    <link href="http://zikalino.github.io/blog/2019/03/25/coming-rename-of-facts-modules-to-info-modules/"/>
+    <updated>2019-03-25T13:24:19+08:00</updated>
+    <id>http://zikalino.github.io/blog/2019/03/25/coming-rename-of-facts-modules-to-info-modules</id>
+    <content type="html"><![CDATA[<p>It requires some statistics on what needs to be done:
+|Module Name|Status|Action|
+|&mdash;&mdash;&mdash;&ndash;|&mdash;&mdash;|&mdash;&mdash;|
+|azure_rm_aks_facts|2.6|<strong> needs upgrade|
+|azure_rm_appserviceplan_facts|2.7|rename/obsolete|
+|azure_rm_autoscale_facts|2.7|rename/obsolete|
+|azure_rm_availabilityset_facts|OLD|</strong> needs upgrade|
+|azure_rm_containerregistry_facts|2.7|rename/obsolete|
+|azure_rm_devtestlabarmtemplate_facts|2.8|rename|
+|azure_rm_devtestlabartifactsource_facts|2.8|rename|
+|azure_rm_devtestlabartifact_facts|2.8|rename|
+|azure_rm_devtestlabvirtualmachine_facts|2.8|rename|
+|azure_rm_devtestlabvirtualnetwork_facts|2.8|rename|
+|azure_rm_devtestlab_facts|2.8|rename|
+|azure_rm_dnsrecordset_facts|OLD/SPLIT|split/obsolete|
+|azure_rm_dnszone_facts|OLD/SPLIT|split/obsolete|
+|azure_rm_functionapp_facts|OLD|<strong> needs upgrade|
+|azure_rm_loadbalancer_facts|OLD|</strong> needs upgrade|
+|azure_rm_managed_disk_facts|OLD|<strong> needs upgrade|
+|azure_rm_mariadbconfiguration_facts|2.8||
+|azure_rm_mariadbdatabase_facts|2.8||
+|azure_rm_mariadbfirewallrule_facts|2.8||
+|azure_rm_mariadbserver_facts|2.8||
+|azure_rm_mysqlconfiguration_facts|||
+|azure_rm_mysqldatabase_facts|||
+|azure_rm_mysqlfirewallrule_facts|||
+|azure_rm_mysqlserver_facts|||
+|azure_rm_networkinterface_facts|OLD/SPLIT|split/obsolete|
+|azure_rm_postgresqlconfiguration_facts|||
+|azure_rm_postgresqldatabase_facts|||
+|azure_rm_postgresqlfirewallrule_facts|||
+|azure_rm_postgresqlserver_facts|||
+|azure_rm_publicipaddress_facts|OLD/SPLIT|split/obsolete|
+|azure_rm_resourcegroup_facts|OLD|</strong> needs upgrade|
+|azure_rm_resource_facts|||
+|azure_rm_routetable_facts|||
+|azure_rm_securitygroup_facts|OLD|<strong> needs upgrade|
+|azure_rm_sqldatabase_facts|||
+|azure_rm_sqlfirewallrule_facts|||
+|azure_rm_sqlserver_facts|||
+|azure_rm_storageaccount_facts|OLD/SPLIT?|split/obsolete|
+|azure_rm_trafficmanagerendpoint_facts|||
+|azure_rm_trafficmanagerprofile_facts|||
+|azure_rm_virtualmachineextension_facts|||
+|azure_rm_virtualmachineimage_facts|OLD|</strong> needs upgrade|
+|azure_rm_virtualmachinescalesetextension_facts|||
+|azure_rm_virtualmachinescalesetinstance_facts|||
+|azure_rm_virtualmachine_facts|||
+|azure_rm_virtualmachine_scaleset_facts|OLD/SPLIT|split/obsolete|
+|azure_rm_virtualnetwork_facts|OLD/SPLIT|split/obsolete|
+|azure_rm_webapp_facts|||</p>
+
+<p>From above:</p>
+
+<p><strong>needs upgrade</strong> - these modules need new <em>curated</em> version (8 modules)</p>
+
+<p><strong>split/obsolete</strong> - these modules alerady have <em>curated</em> format, need to be split (7 modules)</p>
+
+<p><strong>rename/obsolete</strong> - these modules were introduced before 2.8 and we need to rename them and made old version available via symbolic link and obsolete</p>
+
+<p><strong>rename</strong> - these modules we introduced in Ansible 2.8, meaning they are not release them, meaning we can release them before freeze (around 35 modules)</p>
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[Dumping All the Resources in Resource Group Using Ansible]]></title>
     <link href="http://zikalino.github.io/blog/2019/03/22/dumping-all-the-resources-in-resource-group-using-ansible/"/>
     <updated>2019-03-22T15:25:37+08:00</updated>
@@ -21,6 +90,28 @@
     <content type="html"><![CDATA[<p>Now, this is pretty cool. With a very small Ansible playbook you can dump entire content of a Resource Group.</p>
 
 <p>Please note it requires Ansible 2.8.</p>
+
+<h2>Running the Example</h2>
+
+<p>The example is now available in official <strong>Azure-Samples</strong>:</p>
+
+<pre><code>https://github.com/Azure-Samples/ansible-playbooks/blob/master/rest/resourcegroup_dump_resources.yml
+</code></pre>
+
+<h2>The Playbook</h2>
+
+<p>The playbook uses <strong>azure_rm_resource_facts</strong> module and does following steps:</p>
+
+<ul>
+<li>retrieve list of all of the resources in the resource group</li>
+<li>dump list of resources</li>
+<li>create list of resource ids</li>
+<li>dump list of resource ids</li>
+<li>iterate through resource ids and retrieve details of each resource</li>
+<li>convert output to single list of all resources</li>
+<li>dump detailed list of resources</li>
+</ul>
+
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -53,10 +144,8 @@
 <span class='line-number'>29</span>
 <span class='line-number'>30</span>
 <span class='line-number'>31</span>
-<span class='line-number'>32</span>
 </pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">List all the resources under a resource group</span>
 </span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_resource_facts</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">api_version</span><span class="p-Indicator">:</span> <span class="s">&#39;2015-01-01&#39;</span>
 </span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">zimsdtl</span>
 </span><span class='line'>    <span class="l-Scalar-Plain">resource_type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">resources</span>
 </span><span class='line'>  <span class="l-Scalar-Plain">register</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>

@@ -9,7 +9,7 @@
   <meta name="author" content="Your Name">
 
   
-  <meta name="description" content="Now, this is pretty cool. With a very small Ansible playbook you can dump entire content of a Resource Group. Please note it requires Ansible 2.8. 1 &hellip;">
+  <meta name="description" content="Now, this is pretty cool. With a very small Ansible playbook you can dump entire content of a Resource Group. Please note it requires Ansible 2.8. &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -104,6 +104,28 @@
 
 <p>Please note it requires Ansible 2.8.</p>
 
+<h2>Running the Example</h2>
+
+<p>The example is now available in official <strong>Azure-Samples</strong>:</p>
+
+<pre><code>https://github.com/Azure-Samples/ansible-playbooks/blob/master/rest/resourcegroup_dump_resources.yml
+</code></pre>
+
+<h2>The Playbook</h2>
+
+<p>The playbook uses <strong>azure_rm_resource_facts</strong> module and does following steps:</p>
+
+<ul>
+<li>retrieve list of all of the resources in the resource group</li>
+<li>dump list of resources</li>
+<li>create list of resource ids</li>
+<li>dump list of resource ids</li>
+<li>iterate through resource ids and retrieve details of each resource</li>
+<li>convert output to single list of all resources</li>
+<li>dump detailed list of resources</li>
+</ul>
+
+
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -135,10 +157,8 @@
 <span class='line-number'>29</span>
 <span class='line-number'>30</span>
 <span class='line-number'>31</span>
-<span class='line-number'>32</span>
 </pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">List all the resources under a resource group</span>
 </span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_resource_facts</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">api_version</span><span class="p-Indicator">:</span> <span class="s">&#39;2015-01-01&#39;</span>
 </span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">zimsdtl</span>
 </span><span class='line'>    <span class="l-Scalar-Plain">resource_type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">resources</span>
 </span><span class='line'>  <span class="l-Scalar-Plain">register</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
@@ -805,6 +825,8 @@
       
         <a class="basic-alignment left" href="/blog/2019/03/22/new-azure-virtual-machine-scale-set-features-support-in-ansible/" title="Previous Post: New Azure Virtual Machine Scale Set features support in Ansible">&laquo; New Azure Virtual Machine Scale Set features support in Ansible</a>
       
+      
+        <a class="basic-alignment right" href="/blog/2019/03/25/coming-rename-of-facts-modules-to-info-modules/" title="Next Post: Coming Rename of _facts modules to _info modules">Coming Rename of _facts modules to _info modules &raquo;</a>
       
     </p>
   </footer>

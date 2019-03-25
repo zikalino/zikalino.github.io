@@ -9,7 +9,10 @@
   <meta name="author" content="Your Name">
 
   
-  <meta name="description" content="Now, this is pretty cool. With a very small Ansible playbook you can dump entire content of a Resource Group. Please note it requires Ansible 2.8. 1 &hellip;">
+  <meta name="description" content="It requires some statistics on what needs to be done:
+|Module Name|Status|Action|
+|&mdash;&mdash;&mdash;&ndash;|&mdash;&mdash;|&mdash;&mdash;|
+| &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -84,6 +87,96 @@
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2019/03/25/coming-rename-of-facts-modules-to-info-modules/">Coming Rename of _facts Modules to _info Modules</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2019-03-25T13:24:19+08:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>25</span><span class='date-suffix'>th</span>, <span class='date-year'>2019</span></span> <span class='time'>1:24 pm</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>It requires some statistics on what needs to be done:
+|Module Name|Status|Action|
+|&mdash;&mdash;&mdash;&ndash;|&mdash;&mdash;|&mdash;&mdash;|
+|azure_rm_aks_facts|2.6|<strong> needs upgrade|
+|azure_rm_appserviceplan_facts|2.7|rename/obsolete|
+|azure_rm_autoscale_facts|2.7|rename/obsolete|
+|azure_rm_availabilityset_facts|OLD|</strong> needs upgrade|
+|azure_rm_containerregistry_facts|2.7|rename/obsolete|
+|azure_rm_devtestlabarmtemplate_facts|2.8|rename|
+|azure_rm_devtestlabartifactsource_facts|2.8|rename|
+|azure_rm_devtestlabartifact_facts|2.8|rename|
+|azure_rm_devtestlabvirtualmachine_facts|2.8|rename|
+|azure_rm_devtestlabvirtualnetwork_facts|2.8|rename|
+|azure_rm_devtestlab_facts|2.8|rename|
+|azure_rm_dnsrecordset_facts|OLD/SPLIT|split/obsolete|
+|azure_rm_dnszone_facts|OLD/SPLIT|split/obsolete|
+|azure_rm_functionapp_facts|OLD|<strong> needs upgrade|
+|azure_rm_loadbalancer_facts|OLD|</strong> needs upgrade|
+|azure_rm_managed_disk_facts|OLD|<strong> needs upgrade|
+|azure_rm_mariadbconfiguration_facts|2.8||
+|azure_rm_mariadbdatabase_facts|2.8||
+|azure_rm_mariadbfirewallrule_facts|2.8||
+|azure_rm_mariadbserver_facts|2.8||
+|azure_rm_mysqlconfiguration_facts|||
+|azure_rm_mysqldatabase_facts|||
+|azure_rm_mysqlfirewallrule_facts|||
+|azure_rm_mysqlserver_facts|||
+|azure_rm_networkinterface_facts|OLD/SPLIT|split/obsolete|
+|azure_rm_postgresqlconfiguration_facts|||
+|azure_rm_postgresqldatabase_facts|||
+|azure_rm_postgresqlfirewallrule_facts|||
+|azure_rm_postgresqlserver_facts|||
+|azure_rm_publicipaddress_facts|OLD/SPLIT|split/obsolete|
+|azure_rm_resourcegroup_facts|OLD|</strong> needs upgrade|
+|azure_rm_resource_facts|||
+|azure_rm_routetable_facts|||
+|azure_rm_securitygroup_facts|OLD|<strong> needs upgrade|
+|azure_rm_sqldatabase_facts|||
+|azure_rm_sqlfirewallrule_facts|||
+|azure_rm_sqlserver_facts|||
+|azure_rm_storageaccount_facts|OLD/SPLIT?|split/obsolete|
+|azure_rm_trafficmanagerendpoint_facts|||
+|azure_rm_trafficmanagerprofile_facts|||
+|azure_rm_virtualmachineextension_facts|||
+|azure_rm_virtualmachineimage_facts|OLD|</strong> needs upgrade|
+|azure_rm_virtualmachinescalesetextension_facts|||
+|azure_rm_virtualmachinescalesetinstance_facts|||
+|azure_rm_virtualmachine_facts|||
+|azure_rm_virtualmachine_scaleset_facts|OLD/SPLIT|split/obsolete|
+|azure_rm_virtualnetwork_facts|OLD/SPLIT|split/obsolete|
+|azure_rm_webapp_facts|||</p>
+
+<p>From above:</p>
+
+<p><strong>needs upgrade</strong> - these modules need new <em>curated</em> version (8 modules)</p>
+
+<p><strong>split/obsolete</strong> - these modules alerady have <em>curated</em> format, need to be split (7 modules)</p>
+
+<p><strong>rename/obsolete</strong> - these modules were introduced before 2.8 and we need to rename them and made old version available via symbolic link and obsolete</p>
+
+<p><strong>rename</strong> - these modules we introduced in Ansible 2.8, meaning they are not release them, meaning we can release them before freeze (around 35 modules)</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2019/03/22/dumping-all-the-resources-in-resource-group-using-ansible/">Dumping All the Resources in Resource Group Using Ansible</a></h1>
     
     
@@ -104,6 +197,28 @@
   <div class="entry-content"><p>Now, this is pretty cool. With a very small Ansible playbook you can dump entire content of a Resource Group.</p>
 
 <p>Please note it requires Ansible 2.8.</p>
+
+<h2>Running the Example</h2>
+
+<p>The example is now available in official <strong>Azure-Samples</strong>:</p>
+
+<pre><code>https://github.com/Azure-Samples/ansible-playbooks/blob/master/rest/resourcegroup_dump_resources.yml
+</code></pre>
+
+<h2>The Playbook</h2>
+
+<p>The playbook uses <strong>azure_rm_resource_facts</strong> module and does following steps:</p>
+
+<ul>
+<li>retrieve list of all of the resources in the resource group</li>
+<li>dump list of resources</li>
+<li>create list of resource ids</li>
+<li>dump list of resource ids</li>
+<li>iterate through resource ids and retrieve details of each resource</li>
+<li>convert output to single list of all resources</li>
+<li>dump detailed list of resources</li>
+</ul>
+
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -136,10 +251,8 @@
 <span class='line-number'>29</span>
 <span class='line-number'>30</span>
 <span class='line-number'>31</span>
-<span class='line-number'>32</span>
 </pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">List all the resources under a resource group</span>
 </span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_resource_facts</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">api_version</span><span class="p-Indicator">:</span> <span class="s">&#39;2015-01-01&#39;</span>
 </span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">zimsdtl</span>
 </span><span class='line'>    <span class="l-Scalar-Plain">resource_type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">resources</span>
 </span><span class='line'>  <span class="l-Scalar-Plain">register</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
@@ -3047,172 +3160,6 @@ Below task will increment number of nodes from 1 to 2.</p>
 </span><span class='line'><span class="p">}</span>
 </span></code></pre></td></tr></table></div></figure>
 
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2019/03/06/ansible-modules-proposed-improvements/">Ansible Modules - Proposed Improvements</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2019-03-06T08:03:07+08:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>6</span><span class='date-suffix'>th</span>, <span class='date-year'>2019</span></span> <span class='time'>8:03 am</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>I have done a lot of experiments with Ansible module idempotence and here&rsquo;s a summary and a proposal of generic solution.</p>
-
-<p>Let&rsquo;s start with problems we have:
-- every module has their own idempotency checks so the behaviour is not consistent
-- we agreed to display warning when change is detected but can&rsquo;t be applied. This is not implemented yet in majority in the modules.</p>
-
-<h2>Manual Idempotence Check</h2>
-
-<ul>
-<li>error prone</li>
-<li>time consuming</li>
-<li>no consistency between modules</li>
-</ul>
-
-
-<h2>Generic Compare Function</h2>
-
-<ul>
-<li>quite effective</li>
-<li>robust</li>
-<li>difficult to handle exceptions</li>
-</ul>
-
-
-<h3>Comparison Types</h3>
-
-<table>
-<thead>
-<tr>
-<th>Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>exact</td>
-<td>This kind of comparison should work for most of the properties.</td>
-</tr>
-<tr>
-<td>case insensitive</td>
-<td>for instance resource id may need this type of comparison</td>
-</tr>
-<tr>
-<td>location</td>
-<td> location may be returned in different formats, for instance <strong>east us</strong> or <strong>East US</strong></td>
-</tr>
-<tr>
-<td>ignore</td>
-<td>for properties that are not returned by GET, for instance passwords, secrets, or any other fields that we can&rsquo;t perform comparison</td>
-</tr>
-</tbody>
-</table>
-
-
-<h3>Exceptions</h3>
-
-<ul>
-<li>sometimes (quite rarely) structure returned by GET is different from PUT</li>
-<li>some properties are not returned by GET, so can&rsquo;t compare</li>
-<li>sometimes comparison method needs to be adjusted to particular scenario</li>
-</ul>
-
-
-<h2>Proposed Approach: Global Compare Function + Metadata in module_arg_spec</h2>
-
-<p>I have done appropriate tests and:
-- it&rsquo;s possible to add custom metadata to <strong>module_arg_spec</strong> without disturbing Ansible sanity checks</p>
-
-<p>Therefore we could have Azure specific metadata defined as follows, to provide auxilliary information for modules about:
-- updatability of the field
-- field relationship to structures obtained from <strong>Get</strong> and <strong>CreateOrUpdate</strong>
-- idempotence comparison method</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="bp">self</span><span class="o">.</span><span class="n">module_arg_spec</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-</span><span class='line'>    <span class="c"># ...</span>
-</span><span class='line'>    <span class="n">option_a</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-</span><span class='line'>        <span class="nb">type</span><span class="o">=</span><span class="s">&#39;str&#39;</span><span class="p">,</span>
-</span><span class='line'>        <span class="n">required</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
-</span><span class='line'>        <span class="c"># Azure Module Specific Metadata</span>
-</span><span class='line'>        <span class="n">updatable</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
-</span><span class='line'>        <span class="n">disposition</span><span class="o">=</span><span class="s">&#39;parameters/option_a&#39;</span><span class="p">,</span>
-</span><span class='line'>        <span class="n">comparison</span><span class="o">=</span><span class="s">&#39;insensitive&#39;</span>
-</span><span class='line'>    <span class="p">),</span>
-</span><span class='line'><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Default</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>updatable</td>
-<td><strong>True</strong></td>
-<td>Set to <strong>False</strong> if property cannot be updated. Warning will be automatically generated if change is detected.</td>
-</tr>
-<tr>
-<td>disposition</td>
-<td>-</td>
-<td>Different name or path if property in different location after expanding options</td>
-</tr>
-<tr>
-<td>comparison</td>
-<td><strong>exact</strong></td>
-<td>Comparison method, use one of: <strong>exact</strong>, <strong>insensitive</strong>, <strong>location</strong>, <strong>ignore</strong></td>
-</tr>
-</tbody>
-</table>
-
-
-<p>Module base will provide function:</p>
-
-<p><strong>map_and_compare(old_properties)</strong></p>
-
-<p><strong>old_properties</strong> is a dictionary returned by <strong>Get</strong> or empty dictionary <strong>{}</strong>.</p>
-
-<p>Function will map new property values into existing dictionary or populate empty dictionary.</p>
-
-<p>Function will return <strong>True</strong> if any change is detected.</p>
-
-<p>Function will generate appropriate warnings if change of non-updatable fields is detected.</p>
 </div>
   
   
