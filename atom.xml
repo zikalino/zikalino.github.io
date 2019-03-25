@@ -4,7 +4,7 @@
   <title><![CDATA[Zim's Notes]]></title>
   <link href="http://zikalino.github.io/atom.xml" rel="self"/>
   <link href="http://zikalino.github.io/"/>
-  <updated>2019-03-25T13:48:07+08:00</updated>
+  <updated>2019-03-25T14:09:05+08:00</updated>
   <id>http://zikalino.github.io/</id>
   <author>
     <name><![CDATA[Your Name]]></name>
@@ -18,65 +18,348 @@
     <link href="http://zikalino.github.io/blog/2019/03/25/coming-rename-of-facts-modules-to-info-modules/"/>
     <updated>2019-03-25T13:24:19+08:00</updated>
     <id>http://zikalino.github.io/blog/2019/03/25/coming-rename-of-facts-modules-to-info-modules</id>
-    <content type="html"><![CDATA[<p>It requires some statistics on what needs to be done:
-|Module Name|Status|Action|
-|&mdash;&mdash;&mdash;&ndash;|&mdash;&mdash;|&mdash;&mdash;|
-|azure_rm_aks_facts|2.6|<strong> needs upgrade|
-|azure_rm_appserviceplan_facts|2.7|rename/obsolete|
-|azure_rm_autoscale_facts|2.7|rename/obsolete|
-|azure_rm_availabilityset_facts|OLD|</strong> needs upgrade|
-|azure_rm_containerregistry_facts|2.7|rename/obsolete|
-|azure_rm_devtestlabarmtemplate_facts|2.8|rename|
-|azure_rm_devtestlabartifactsource_facts|2.8|rename|
-|azure_rm_devtestlabartifact_facts|2.8|rename|
-|azure_rm_devtestlabvirtualmachine_facts|2.8|rename|
-|azure_rm_devtestlabvirtualnetwork_facts|2.8|rename|
-|azure_rm_devtestlab_facts|2.8|rename|
-|azure_rm_dnsrecordset_facts|OLD/SPLIT|split/obsolete|
-|azure_rm_dnszone_facts|OLD/SPLIT|split/obsolete|
-|azure_rm_functionapp_facts|OLD|<strong> needs upgrade|
-|azure_rm_loadbalancer_facts|OLD|</strong> needs upgrade|
-|azure_rm_managed_disk_facts|OLD|<strong> needs upgrade|
-|azure_rm_mariadbconfiguration_facts|2.8||
-|azure_rm_mariadbdatabase_facts|2.8||
-|azure_rm_mariadbfirewallrule_facts|2.8||
-|azure_rm_mariadbserver_facts|2.8||
-|azure_rm_mysqlconfiguration_facts|||
-|azure_rm_mysqldatabase_facts|||
-|azure_rm_mysqlfirewallrule_facts|||
-|azure_rm_mysqlserver_facts|||
-|azure_rm_networkinterface_facts|OLD/SPLIT|split/obsolete|
-|azure_rm_postgresqlconfiguration_facts|||
-|azure_rm_postgresqldatabase_facts|||
-|azure_rm_postgresqlfirewallrule_facts|||
-|azure_rm_postgresqlserver_facts|||
-|azure_rm_publicipaddress_facts|OLD/SPLIT|split/obsolete|
-|azure_rm_resourcegroup_facts|OLD|</strong> needs upgrade|
-|azure_rm_resource_facts|||
-|azure_rm_routetable_facts|||
-|azure_rm_securitygroup_facts|OLD|<strong> needs upgrade|
-|azure_rm_sqldatabase_facts|||
-|azure_rm_sqlfirewallrule_facts|||
-|azure_rm_sqlserver_facts|||
-|azure_rm_storageaccount_facts|OLD/SPLIT?|split/obsolete|
-|azure_rm_trafficmanagerendpoint_facts|||
-|azure_rm_trafficmanagerprofile_facts|||
-|azure_rm_virtualmachineextension_facts|||
-|azure_rm_virtualmachineimage_facts|OLD|</strong> needs upgrade|
-|azure_rm_virtualmachinescalesetextension_facts|||
-|azure_rm_virtualmachinescalesetinstance_facts|||
-|azure_rm_virtualmachine_facts|||
-|azure_rm_virtualmachine_scaleset_facts|OLD/SPLIT|split/obsolete|
-|azure_rm_virtualnetwork_facts|OLD/SPLIT|split/obsolete|
-|azure_rm_webapp_facts|||</p>
+    <content type="html"><![CDATA[<p>It requires some statistics on what needs to be done:</p>
+
+<table>
+<thead>
+<tr>
+<th>Module Name</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>azure_rm_aks_facts</td>
+<td>2.6</td>
+<td>** needs upgrade</td>
+</tr>
+<tr>
+<td>azure_rm_applicationsecuritygroup_facts</td>
+<td>2.8</td>
+<td>rename</td>
+</tr>
+<tr>
+<td>azure_rm_appserviceplan_facts</td>
+<td>2.7</td>
+<td>rename/obsolete</td>
+</tr>
+<tr>
+<td>azure_rm_autoscale_facts</td>
+<td>2.7</td>
+<td>rename/obsolete</td>
+</tr>
+<tr>
+<td>azure_rm_availabilityset_facts</td>
+<td>OLD</td>
+<td>** needs upgrade</td>
+</tr>
+<tr>
+<td>azure_rm_cdnendpoint_facts</td>
+<td>2.8</td>
+<td>rename</td>
+</tr>
+<tr>
+<td>azure_rm_cdnprofile_facts</td>
+<td>2.8</td>
+<td>rename</td>
+</tr>
+<tr>
+<td>azure_rm_containerinstance_facts</td>
+<td>2.8</td>
+<td>rename</td>
+</tr>
+<tr>
+<td>azure_rm_containerregistry_facts</td>
+<td>2.7</td>
+<td>rename/obsolete</td>
+</tr>
+<tr>
+<td>azure_rm_cosmosdbaccount_facts</td>
+<td>2.8</td>
+<td>rename</td>
+</tr>
+<tr>
+<td>azure_rm_deployment_facts</td>
+<td>2.8</td>
+<td>rename</td>
+</tr>
+<tr>
+<td>azure_rm_devtestlabarmtemplate_facts</td>
+<td>2.8</td>
+<td>rename</td>
+</tr>
+<tr>
+<td>azure_rm_devtestlabartifactsource_facts</td>
+<td>2.8</td>
+<td>rename</td>
+</tr>
+<tr>
+<td>azure_rm_devtestlabartifact_facts</td>
+<td>2.8</td>
+<td>rename</td>
+</tr>
+<tr>
+<td>azure_rm_devtestlabcustomimage_facts</td>
+<td>2.8</td>
+<td>rename</td>
+</tr>
+<tr>
+<td>azure_rm_devtestlabenvironment_facts</td>
+<td>2.8</td>
+<td>rename</td>
+</tr>
+<tr>
+<td>azure_rm_devtestlabartifact_facts</td>
+<td>2.8</td>
+<td>rename</td>
+</tr>
+<tr>
+<td>azure_rm_devtestlabpolicy_facts</td>
+<td>2.8</td>
+<td>rename</td>
+</tr>
+<tr>
+<td>azure_rm_devtestlabvirtualmachine_facts</td>
+<td>2.8</td>
+<td>rename</td>
+</tr>
+<tr>
+<td>azure_rm_devtestlabvirtualnetwork_facts</td>
+<td>2.8</td>
+<td>rename</td>
+</tr>
+<tr>
+<td>azure_rm_devtestlab_facts</td>
+<td>2.8</td>
+<td>rename</td>
+</tr>
+<tr>
+<td>azure_rm_dnsrecordset_facts</td>
+<td>OLD/SPLIT</td>
+<td>split/obsolete</td>
+</tr>
+<tr>
+<td>azure_rm_dnszone_facts</td>
+<td>OLD/SPLIT</td>
+<td>split/obsolete</td>
+</tr>
+<tr>
+<td>azure_rm_functionapp_facts</td>
+<td>OLD</td>
+<td>** needs upgrade</td>
+</tr>
+<tr>
+<td>azure_rm_hdinsight_facts</td>
+<td>2.8</td>
+<td>rename</td>
+</tr>
+<tr>
+<td>azure_rm_image_facts</td>
+<td>2.8</td>
+<td>rename</td>
+</tr>
+<tr>
+<td>azure_rm_loadbalancer_facts</td>
+<td>OLD</td>
+<td>** needs upgrade</td>
+</tr>
+<tr>
+<td>azure_rm_managed_disk_facts</td>
+<td>OLD</td>
+<td>** needs upgrade</td>
+</tr>
+<tr>
+<td>azure_rm_mariadbconfiguration_facts</td>
+<td>2.8</td>
+<td>rename</td>
+</tr>
+<tr>
+<td>azure_rm_mariadbdatabase_facts</td>
+<td>2.8</td>
+<td>rename</td>
+</tr>
+<tr>
+<td>azure_rm_mariadbfirewallrule_facts</td>
+<td>2.8</td>
+<td>rename</td>
+</tr>
+<tr>
+<td>azure_rm_mariadbserver_facts</td>
+<td>2.8</td>
+<td>rename</td>
+</tr>
+<tr>
+<td>azure_rm_mysqlconfiguration_facts</td>
+<td>2.8</td>
+<td>rename</td>
+</tr>
+<tr>
+<td>azure_rm_mysqldatabase_facts</td>
+<td></td>
+<td>rename/obsolete</td>
+</tr>
+<tr>
+<td>azure_rm_mysqlfirewallrule_facts</td>
+<td>2.8</td>
+<td>rename</td>
+</tr>
+<tr>
+<td>azure_rm_mysqlserver_facts</td>
+<td></td>
+<td>rename/obsolete</td>
+</tr>
+<tr>
+<td>azure_rm_networkinterface_facts</td>
+<td>OLD/SPLIT</td>
+<td>split/obsolete</td>
+</tr>
+<tr>
+<td>azure_rm_postgresqlconfiguration_facts</td>
+<td>2.8</td>
+<td>rename</td>
+</tr>
+<tr>
+<td>azure_rm_postgresqldatabase_facts</td>
+<td></td>
+<td>rename/obsolete</td>
+</tr>
+<tr>
+<td>azure_rm_postgresqlfirewallrule_facts</td>
+<td>2.8</td>
+<td>rename</td>
+</tr>
+<tr>
+<td>azure_rm_postgresqlserver_facts</td>
+<td></td>
+<td>rename/obsolete</td>
+</tr>
+<tr>
+<td>azure_rm_publicipaddress_facts</td>
+<td>OLD/SPLIT</td>
+<td>split/obsolete</td>
+</tr>
+<tr>
+<td>azure_rm_rediscache_facts</td>
+<td>2.8</td>
+<td>rename</td>
+</tr>
+<tr>
+<td>azure_rm_resourcegroup_facts</td>
+<td>OLD</td>
+<td>** needs upgrade</td>
+</tr>
+<tr>
+<td>azure_rm_resource_facts</td>
+<td>2.6</td>
+<td>rename/obsolete</td>
+</tr>
+<tr>
+<td>azure_rm_roleassignment_facts</td>
+<td>2.8</td>
+<td>rename</td>
+</tr>
+<tr>
+<td>azure_rm_roledefinition_facts</td>
+<td>2.8</td>
+<td>rename</td>
+</tr>
+<tr>
+<td>azure_rm_routetable_facts</td>
+<td>2.7</td>
+<td>rename/obsolete</td>
+</tr>
+<tr>
+<td>azure_rm_securitygroup_facts</td>
+<td>OLD</td>
+<td>** needs upgrade</td>
+</tr>
+<tr>
+<td>azure_rm_sqldatabase_facts</td>
+<td>2.8</td>
+<td>rename</td>
+</tr>
+<tr>
+<td>azure_rm_sqlfirewallrule_facts</td>
+<td>2.8</td>
+<td>rename</td>
+</tr>
+<tr>
+<td>azure_rm_sqlserver_facts</td>
+<td></td>
+<td>** needs upgrade</td>
+</tr>
+<tr>
+<td>azure_rm_subnet_facts</td>
+<td>2.8</td>
+<td>rename</td>
+</tr>
+<tr>
+<td>azure_rm_storageaccount_facts</td>
+<td>OLD/SPLIT?</td>
+<td>split/obsolete</td>
+</tr>
+<tr>
+<td>azure_rm_trafficmanagerendpoint_facts</td>
+<td></td>
+<td>rename/obsolete</td>
+</tr>
+<tr>
+<td>azure_rm_trafficmanagerprofile_facts</td>
+<td></td>
+<td>rename/obsolete</td>
+</tr>
+<tr>
+<td>azure_rm_virtualmachineextension_facts</td>
+<td>2.8</td>
+<td>rename</td>
+</tr>
+<tr>
+<td>azure_rm_virtualmachineimage_facts</td>
+<td>OLD</td>
+<td>** needs upgrade</td>
+</tr>
+<tr>
+<td>azure_rm_virtualmachinescalesetextension_facts</td>
+<td>2.8</td>
+<td>rename</td>
+</tr>
+<tr>
+<td>azure_rm_virtualmachinescalesetinstance_facts</td>
+<td>2.8</td>
+<td>rename</td>
+</tr>
+<tr>
+<td>azure_rm_virtualmachine_facts</td>
+<td>2.7</td>
+<td>rename/obsolete</td>
+</tr>
+<tr>
+<td>azure_rm_virtualmachine_scaleset_facts</td>
+<td>OLD/SPLIT</td>
+<td>split/obsolete</td>
+</tr>
+<tr>
+<td>azure_rm_virtualnetwork_facts</td>
+<td>OLD/SPLIT</td>
+<td>split/obsolete</td>
+</tr>
+<tr>
+<td>azure_rm_webapp_facts</td>
+<td>2.7</td>
+<td>rename/obsolete</td>
+</tr>
+</tbody>
+</table>
+
 
 <p>From above:</p>
 
-<p><strong>needs upgrade</strong> - these modules need new <em>curated</em> version (8 modules)</p>
+<p><strong>needs upgrade</strong> - these modules need new <em>curated</em> version (9 modules)</p>
 
 <p><strong>split/obsolete</strong> - these modules alerady have <em>curated</em> format, need to be split (7 modules)</p>
 
-<p><strong>rename/obsolete</strong> - these modules were introduced before 2.8 and we need to rename them and made old version available via symbolic link and obsolete</p>
+<p><strong>rename/obsolete</strong> - these modules were introduced before 2.8 and we need to rename them and made old version available via symbolic link and obsolete (14 modules)</p>
 
 <p><strong>rename</strong> - these modules we introduced in Ansible 2.8, meaning they are not release them, meaning we can release them before freeze (around 35 modules)</p>
 ]]></content>
