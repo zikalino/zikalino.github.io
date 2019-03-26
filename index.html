@@ -449,6 +449,39 @@ Action azure_rm_aks_facts
 <p><strong>rename/obsolete</strong> - these modules were introduced before 2.8 and we need to rename them and made old version available via symbolic link and obsolete (14 modules)</p>
 
 <p><strong>rename</strong> - these modules we introduced in Ansible 2.8, meaning they are not release them, meaning we can release them before freeze (around 35 modules)</p>
+
+<h2>Impact on Sample Playbooks</h2>
+
+<ul>
+<li>we need to rename <strong>facts</strong> to <strong>info</strong> in all playbooks referring to new 2.8 facts modules</li>
+<li>we have more then 1 year timeframe for older <strong>facts</strong> modules as they will be marked as obsolete</li>
+</ul>
+
+
+<h2>Impact on users</h2>
+
+<ul>
+<li>for all the new 2.8 modules they will see only new <strong>info</strong> modules, so there&rsquo;s no impact</li>
+<li>for older <strong>facts</strong> modules they can use either <strong>facts</strong> or <strong>info</strong>, if they use <strong>facts</strong> they will be encouraged to switch to new <strong>info</strong> modules, also impact is minimal</li>
+<li>they will have a year to change</li>
+</ul>
+
+
+<h2>Impact on test</h2>
+
+<ul>
+<li>same tests executed on new <strong>info</strong> modules as old <em>*facts</em> modules</li>
+<li>in most cases <strong>facts</strong> modules will be symbolic links to <strong>info</strong> modules, so content will be the same</li>
+<li>for oldest modules, we can disable tests for old <strong>fact</strong> or we can test both <strong>facts</strong> and <strong>info</strong></li>
+</ul>
+
+
+<h2>Impact on azure_preview_modules</h2>
+
+<ul>
+<li>no impact, we will just copy all the updated from devel, as usual</li>
+</ul>
+
 </div>
   
   
