@@ -5,11 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Creating Container Based Function App Using Azure CLI - Zim's Notes</title>
+  <title>Creating Azure Function App Using REST API - Zim's Notes</title>
   <meta name="author" content="Your Name">
 
   
-  <meta name="description" content="It&rsquo;s just a few lines of code, but took me some time to do it by trial and error. Just a few steps: (1) create resource group (2) create &hellip;">
+  <meta name="description" content="Finally I got it working&hellip; I used appservice plan as created in my previous post: 1
+az appservice plan create --name myplan -g zimsfromclixx -- &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://zikalino.github.io/blog/2019/03/27/creating-container-based-function-app-using-azure-cli">
+  <link rel="canonical" href="http://zikalino.github.io/blog/2019/03/27/creating-azure-function-app-using-rest-api">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="Zim's Notes" type="application/atom+xml">
@@ -82,7 +83,7 @@
   <header>
     
       
-        <h1 class="entry-title">Creating Container Based Function App Using Azure CLI</h1>
+        <h1 class="entry-title">Creating Azure Function App Using REST API</h1>
       
     
     
@@ -92,7 +93,7 @@
 
 
 
-<time class='entry-date' datetime='2019-03-27T12:53:55+08:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>27</span><span class='date-suffix'>th</span>, <span class='date-year'>2019</span></span> <span class='time'>12:53 pm</span></time>
+<time class='entry-date' datetime='2019-03-27T13:47:38+08:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>27</span><span class='date-suffix'>th</span>, <span class='date-year'>2019</span></span> <span class='time'>1:47 pm</span></time>
         
         
       </p>
@@ -100,17 +101,16 @@
   </header>
 
 
-<div class="entry-content"><p>It&rsquo;s just a few lines of code, but took me some time to do it by trial and error.</p>
+<div class="entry-content"><p>Finally I got it working&hellip;</p>
 
-<p>Just a few steps:</p>
+<p>I used appservice plan as created in my previous post:</p>
 
-<p>(1) create resource group</p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>az appservice plan create --name myplan -g zimsfromclixx --is-linux --location westeurope --sku S1 --number-of-workers 1
+</span></code></pre></td></tr></table></div></figure>
 
-<p>(2) create storage account</p>
 
-<p>(3) create appservice plan with <strong>is_linux</strong> option</p>
-
-<p>(4) create function app and specify container image <strong>httpd</strong> from DockerHub</p>
+<p>and updated my task to refer that Linux-enabled plan (<strong>serverFarmId</strong>):</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -119,33 +119,42 @@
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
 <span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>az group create --name zimsfromclixx --location westeurope
-</span><span class='line'>
-</span><span class='line'>az storage account create --name zimsstoragefromclixx --location westeurope --resource-group zimsfromclixx --sku Standard_LRS
-</span><span class='line'>
-</span><span class='line'>az appservice plan create --name myplan -g zimsfromclixx --is-linux --location westeurope --sku S1 --number-of-workers 1
-</span><span class='line'>
-</span><span class='line'>az functionapp create --resource-group zimsfromclixx --os-type Linux --plan myplan --name zimsfromclixx --deployment-container-image-name httpd --storage-account zimsstoragefromclixx
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>- name: Create Function App using REST API
+</span><span class='line'>  azure_rm_resource:
+</span><span class='line'>    api_version: <span class="s1">&#39;2018-02-01&#39;</span>
+</span><span class='line'>    resource_group: <span class="s2">&quot;&quot;</span>
+</span><span class='line'>    provider: web
+</span><span class='line'>    resource_type: sites
+</span><span class='line'>    resource_name: <span class="s2">&quot;&quot;</span>
+</span><span class='line'>    body:
+</span><span class='line'>      kind: functionapp,linux,container
+</span><span class='line'>      properties:
+</span><span class='line'>        siteConfig:
+</span><span class='line'>          appSettings:
+</span><span class='line'>            - name: FUNCTIONS_EXTENSION_VERSION
+</span><span class='line'>              value<span class="s1">&#39;: &#39;</span>~2<span class="s1">&#39;</span>
+</span><span class='line'><span class="s1">            - name: DOCKER_REGISTRY_SERVER_URL</span>
+</span><span class='line'><span class="s1">              value: &#39;</span>https://index.docker.io<span class="s1">&#39;</span>
+</span><span class='line'><span class="s1">          linuxFxVersion: &#39;</span>DOCKER<span class="p">|</span>httpd<span class="err">&#39;</span>
+</span><span class='line'>        serverFarmId: /subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/zimsfromclixx/providers/Microsoft.Web/serverFarms/myplan
+</span><span class='line'>      location: eastus
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Just run the commands using Azure CLI, go to the browser and enter <a href="https://zimsfromclixx.azurewebsites.net/">https://zimsfromclixx.azurewebsites.net/</a> (you may use your own functionapp name here), and you should see standard Apache&rsquo;s **It Works!!&ldquo; welcome page.</p>
-
-<p>Sounds easy, however when creating functionapp, <strong>&ndash;plan</strong> argument is not obligatory, and if you omit step (3) and <strong>&ndash;plan</strong> argument, default plan will be created, and with default plan you can&rsquo;t use containers. It took me some time to figure out&hellip;.</p>
-
-<p>Also some people run into similar problem, for instance here:</p>
-
-<p><a href="https://github.com/Azure/azure-cli/issues/7426">https://github.com/Azure/azure-cli/issues/7426</a></p>
-
-<p>In fact only this PR helped me to understand how Azure CLI works:</p>
-
-<p><a href="https://github.com/Azure/azure-cli/pull/7435/files">https://github.com/Azure/azure-cli/pull/7435/files</a></p>
-
-<p>When you try to specify <strong>&ndash;deployment-container-image-name httpd</strong> without passing <strong>&ndash;plan</strong> that is <strong>is_linux</strong>, Azure CLI resoponds with following message, which is quite misleading:</p>
-
-<p><strong>usage error: &ndash;runtime RUNTIME required for linux functions apps without custom image.</strong></p>
-
-<p>I submitted issue to Azure CLI regarding this: <a href="https://github.com/Azure/azure-cli/issues/8889">https://github.com/Azure/azure-cli/issues/8889</a></p>
+<p>Task is pretty simple, and I guess it may be simplified even further. I plan to create full sample, and add apropriate updates to <strong>azure_rm_functionapp</strong> module.
+Plus I will create a new sample for Azure REST API specification. That was at least two days of work to get here&hellip;.</p>
 </div>
 
 
@@ -168,7 +177,7 @@
 
 
 
-<time class='entry-date' datetime='2019-03-27T12:53:55+08:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>27</span><span class='date-suffix'>th</span>, <span class='date-year'>2019</span></span> <span class='time'>12:53 pm</span></time>
+<time class='entry-date' datetime='2019-03-27T13:47:38+08:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>27</span><span class='date-suffix'>th</span>, <span class='date-year'>2019</span></span> <span class='time'>1:47 pm</span></time>
       
       
 
@@ -177,7 +186,7 @@
     
       <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://zikalino.github.io/blog/2019/03/27/creating-container-based-function-app-using-azure-cli/" data-via="" data-counturl="http://zikalino.github.io/blog/2019/03/27/creating-container-based-function-app-using-azure-cli/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://zikalino.github.io/blog/2019/03/27/creating-azure-function-app-using-rest-api/" data-via="" data-counturl="http://zikalino.github.io/blog/2019/03/27/creating-azure-function-app-using-rest-api/" >Tweet</a>
   
   
   
@@ -186,10 +195,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2019/03/25/coming-rename-of-facts-modules-to-info-modules/" title="Previous Post: Coming Rename of _facts modules to _info modules">&laquo; Coming Rename of _facts modules to _info modules</a>
+        <a class="basic-alignment left" href="/blog/2019/03/27/creating-container-based-function-app-using-azure-cli/" title="Previous Post: Creating Container Based Function App Using Azure CLI">&laquo; Creating Container Based Function App Using Azure CLI</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2019/03/27/creating-azure-function-app-using-rest-api/" title="Next Post: Creating Azure Function App using REST API">Creating Azure Function App using REST API &raquo;</a>
       
     </p>
   </footer>
