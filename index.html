@@ -9,8 +9,7 @@
   <meta name="author" content="Your Name">
 
   
-  <meta name="description" content="It&rsquo;s just a few lines of code, but took me some time to do it by trial and error. Just a few steps: (1) create resource group
-(2) create &hellip;">
+  <meta name="description" content="It&rsquo;s just a few lines of code, but took me some time to do it by trial and error. Just a few steps: (1) create resource group (2) create &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -106,10 +105,13 @@
 
 <p>Just a few steps:</p>
 
-<p>(1) create resource group
-(2) create storage account
-(3) create appservice plan with <strong>is_linux</strong> option
-(4) create function app and specify container image <strong>httpd</strong> from DockerHub</p>
+<p>(1) create resource group</p>
+
+<p>(2) create storage account</p>
+
+<p>(3) create appservice plan with <strong>is_linux</strong> option</p>
+
+<p>(4) create function app and specify container image <strong>httpd</strong> from DockerHub</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -139,6 +141,12 @@
 <p>In fact only this PR helped me to understand how Azure CLI works:</p>
 
 <p><a href="https://github.com/Azure/azure-cli/pull/7435/files">https://github.com/Azure/azure-cli/pull/7435/files</a></p>
+
+<p>When you try to specify <strong>&ndash;deployment-container-image-name httpd</strong> without passing <strong>&ndash;plan</strong> that is <strong>is_linux</strong>, Azure CLI resoponds with following message, which is quite misleading:</p>
+
+<p><strong>usage error: &ndash;runtime RUNTIME required for linux functions apps without custom image.</strong></p>
+
+<p>I submitted issue to Azure CLI regarding this: <a href="https://github.com/Azure/azure-cli/issues/8889">https://github.com/Azure/azure-cli/issues/8889</a></p>
 </div>
   
   
