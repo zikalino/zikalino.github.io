@@ -4,7 +4,7 @@
   <title><![CDATA[Zim's Notes]]></title>
   <link href="http://zikalino.github.io/atom.xml" rel="self"/>
   <link href="http://zikalino.github.io/"/>
-  <updated>2019-03-26T10:17:11+08:00</updated>
+  <updated>2019-03-27T13:03:51+08:00</updated>
   <id>http://zikalino.github.io/</id>
   <author>
     <name><![CDATA[Your Name]]></name>
@@ -12,6 +12,51 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Creating Container Based Function App Using Azure CLI]]></title>
+    <link href="http://zikalino.github.io/blog/2019/03/27/creating-container-based-function-app-using-azure-cli/"/>
+    <updated>2019-03-27T12:53:55+08:00</updated>
+    <id>http://zikalino.github.io/blog/2019/03/27/creating-container-based-function-app-using-azure-cli</id>
+    <content type="html"><![CDATA[<p>It&rsquo;s just a few lines of code, but took me some time to do it by trial and error.</p>
+
+<p>Just a few steps:</p>
+
+<p>(1) create resource group
+(2) create storage account
+(3) create appservice plan with <strong>is_linux</strong> option
+(4) create function app and specify container image <strong>httpd</strong> from DockerHub</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>az group create --name zimsfromclixx --location westeurope
+</span><span class='line'>
+</span><span class='line'>az storage account create --name zimsstoragefromclixx --location westeurope --resource-group zimsfromclixx --sku Standard_LRS
+</span><span class='line'>
+</span><span class='line'>az appservice plan create --name myplan -g zimsfromclixx --is-linux --location westeurope --sku S1 --number-of-workers 1
+</span><span class='line'>
+</span><span class='line'>az functionapp create --resource-group zimsfromclixx --os-type Linux --plan myplan --name zimsfromclixx --deployment-container-image-name httpd --storage-account zimsstoragefromclixx
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Just run the commands using Azure CLI, go to the browser and enter <a href="https://zimsfromclixx.azurewebsites.net/">https://zimsfromclixx.azurewebsites.net/</a> (you may use your own functionapp name here), and you should see standard Apache&rsquo;s **It Works!!&ldquo; welcome page.</p>
+
+<p>Sounds easy, however when creating functionapp, <strong>&ndash;plan</strong> argument is not obligatory, and if you omit step (3) and <strong>&ndash;plan</strong> argument, default plan will be created, and with default plan you can&rsquo;t use containers. It took me some time to figure out&hellip;.</p>
+
+<p>Also some people run into similar problem, for instance here:</p>
+
+<p><a href="https://github.com/Azure/azure-cli/issues/7426">https://github.com/Azure/azure-cli/issues/7426</a></p>
+
+<p>In fact only this PR helped me to understand how Azure CLI works:</p>
+
+<p><a href="https://github.com/Azure/azure-cli/pull/7435/files">https://github.com/Azure/azure-cli/pull/7435/files</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Coming Rename of _facts Modules to _info Modules]]></title>
@@ -4999,16 +5044,6 @@ adminPassword -> &ldquo;{your-password}&rdquo;</p>
 </tbody>
 </table>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Just a First Post]]></title>
-    <link href="http://zikalino.github.io/blog/2019/01/15/azure-devtest-labs-rest-examples-in-ansible/"/>
-    <updated>2019-01-15T10:14:39+08:00</updated>
-    <id>http://zikalino.github.io/blog/2019/01/15/azure-devtest-labs-rest-examples-in-ansible</id>
-    <content type="html"><![CDATA[<p>Nothing much in here. I have written a lot of notes mostly related to Ansible, but also to Azure REST API, and it&rsquo;s time to publish it them somewhere and made available to wider public.
-So, Hello World!</p>
 ]]></content>
   </entry>
   

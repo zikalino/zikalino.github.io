@@ -9,7 +9,7 @@
   <meta name="author" content="Your Name">
 
   
-  <meta name="description" content="I have done a lot of experiments with Ansible module idempotence and here&rsquo;s a summary and a proposal of generic solution. Let&rsquo;s start &hellip;">
+  <meta name="description" content="It&rsquo;s time to refresh azure_rm_deployment. Currently we have following problems with azure_rm_deployment it&rsquo;s a kind of VM oriented only &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -78,6 +78,526 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2019/03/07/diving-into-azure-rm-deployment/">Diving Into Azure_rm_deployment</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2019-03-07T10:40:24+08:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>7</span><span class='date-suffix'>th</span>, <span class='date-year'>2019</span></span> <span class='time'>10:40 am</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>It&rsquo;s time to refresh <strong>azure_rm_deployment</strong>.</p>
+
+<p>Currently we have following problems with <strong>azure_rm_deployment</strong></p>
+
+<ul>
+<li>it&rsquo;s a kind of VM oriented only</li>
+<li>no proper facts module, no proper information about created resources, so it&rsquo;s difficult to build on the top of resources created by ARM deployment</li>
+<li>deleting deployment actually deletes entire resource group, so no convenient way to have any additional resources in the same resource group</li>
+<li>default deployment name (user can optionally specify) is confusing and inconsistent with other resources</li>
+</ul>
+
+
+<p>What we can fix, and it&rsquo;s quite easy:
+- facts module that lists all the resource ids in dictionary by resource type
+- properly deleting resources created by deployment, enabling users to have more than one deployment in a resource group</p>
+
+<p>Let&rsquo;s start with a simple playbook. I have just taken it from integration tests:</p>
+
+<h2>How it currently works?</h2>
+
+<p>Just a simple playbook that creates a virtual machine:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create Azure Deploy</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">azure_rm_deployment</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">location</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">eastus2</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">template_link</span><span class="p-Indicator">:</span> <span class="s">&#39;https://raw.githubusercontent.com/Azure/azure-quickstart-templates/d01a5c06f4f1bc03a049ca17bbbd6e06d62657b3/101-vm-simple-linux/azuredeploy.json&#39;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">deployment_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">parameters</span><span class="p-Indicator">:</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">adminUsername</span><span class="p-Indicator">:</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">value</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">chouseknecht</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">adminPassword</span><span class="p-Indicator">:</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">value</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">password123!</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">dnsLabelPrefix</span><span class="p-Indicator">:</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">value</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">ubuntuOSVersion</span><span class="p-Indicator">:</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">value</span><span class="p-Indicator">:</span> <span class="s">&quot;16.04.0-LTS&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">register</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+</span><span class='line'>
+</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">debug</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">var</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>and the output looks like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="nt">&quot;output&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nt">&quot;changed&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;deployment&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>            <span class="nt">&quot;group_name&quot;</span><span class="p">:</span> <span class="s2">&quot;zimsdeployment&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/zimsdeployment/providers/Microsoft.Resources/deployments/zimsdeployment&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;instances&quot;</span><span class="p">:</span> <span class="p">[</span>
+</span><span class='line'>                <span class="p">{</span>
+</span><span class='line'>                    <span class="nt">&quot;ips&quot;</span><span class="p">:</span> <span class="p">[</span>
+</span><span class='line'>                        <span class="p">{</span>
+</span><span class='line'>                            <span class="nt">&quot;dns_settings&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>                                <span class="nt">&quot;domain_name_label&quot;</span><span class="p">:</span> <span class="s2">&quot;zimsdeployment&quot;</span><span class="p">,</span>
+</span><span class='line'>                                <span class="nt">&quot;fqdn&quot;</span><span class="p">:</span> <span class="s2">&quot;zimsdeployment.eastus2.cloudapp.azure.com&quot;</span>
+</span><span class='line'>                            <span class="p">},</span>
+</span><span class='line'>                            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/zimsdeployment/providers/Microsoft.Network/publicIPAddresses/myPublicIP&quot;</span><span class="p">,</span>
+</span><span class='line'>                            <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;myPublicIP&quot;</span><span class="p">,</span>
+</span><span class='line'>                            <span class="nt">&quot;public_ip&quot;</span><span class="p">:</span> <span class="s2">&quot;23.100.65.195&quot;</span><span class="p">,</span>
+</span><span class='line'>                            <span class="nt">&quot;public_ip_allocation_method&quot;</span><span class="p">:</span> <span class="s2">&quot;Dynamic&quot;</span>
+</span><span class='line'>                        <span class="p">}</span>
+</span><span class='line'>                    <span class="p">],</span>
+</span><span class='line'>                    <span class="nt">&quot;vm_name&quot;</span><span class="p">:</span> <span class="s2">&quot;MyUbuntuVM&quot;</span>
+</span><span class='line'>                <span class="p">}</span>
+</span><span class='line'>            <span class="p">],</span>
+</span><span class='line'>            <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;zimsdeployment&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;outputs&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>                <span class="nt">&quot;hostname&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>                    <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;String&quot;</span><span class="p">,</span>
+</span><span class='line'>                    <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;zimsdeployment.eastus2.cloudapp.azure.com&quot;</span>
+</span><span class='line'>                <span class="p">},</span>
+</span><span class='line'>                <span class="nt">&quot;sshCommand&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>                    <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;String&quot;</span><span class="p">,</span>
+</span><span class='line'>                    <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;ssh chouseknecht@zimsdeployment.eastus2.cloudapp.azure.com&quot;</span>
+</span><span class='line'>                <span class="p">}</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="p">},</span>
+</span><span class='line'>        <span class="nt">&quot;failed&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;msg&quot;</span><span class="p">:</span> <span class="s2">&quot;deployment succeeded&quot;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>What is actually returned by Azure REST API?</h2>
+
+<p>I have created following task to find it out:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Get deployment</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">azure_rm_resource_facts</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">api_version</span><span class="p-Indicator">:</span> <span class="s">&#39;2019-03-01&#39;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">provider</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">resources</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">deployments</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_name</span><span class="p-Indicator">:</span>  <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">register</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">debug</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">var</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As you see below it actually returns quite a lot:
+- list of all created resource IDs
+- list of all dependencies between resources</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+<span class='line-number'>128</span>
+<span class='line-number'>129</span>
+<span class='line-number'>130</span>
+<span class='line-number'>131</span>
+<span class='line-number'>132</span>
+<span class='line-number'>133</span>
+<span class='line-number'>134</span>
+<span class='line-number'>135</span>
+<span class='line-number'>136</span>
+<span class='line-number'>137</span>
+<span class='line-number'>138</span>
+<span class='line-number'>139</span>
+<span class='line-number'>140</span>
+<span class='line-number'>141</span>
+<span class='line-number'>142</span>
+<span class='line-number'>143</span>
+<span class='line-number'>144</span>
+<span class='line-number'>145</span>
+<span class='line-number'>146</span>
+<span class='line-number'>147</span>
+<span class='line-number'>148</span>
+<span class='line-number'>149</span>
+<span class='line-number'>150</span>
+<span class='line-number'>151</span>
+<span class='line-number'>152</span>
+<span class='line-number'>153</span>
+<span class='line-number'>154</span>
+<span class='line-number'>155</span>
+<span class='line-number'>156</span>
+</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="nt">&quot;output&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nt">&quot;changed&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;failed&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;response&quot;</span><span class="p">:</span> <span class="p">[</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;/subscriptions/1c5b82ee-9294-4568-b0c0-b9c523bc0d86/resourceGroups/zimsanotherdeployment/providers/Microsoft.Resources/deployments/zimsdplxxxx&quot;</span><span class="p">,</span>
+</span><span class='line'>                <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;zimsdplxxxx&quot;</span><span class="p">,</span>
+</span><span class='line'>                <span class="nt">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>                    <span class="nt">&quot;correlationId&quot;</span><span class="p">:</span> <span class="s2">&quot;0c26c003-f147-4f18-95c6-a28e43630dd1&quot;</span><span class="p">,</span>
+</span><span class='line'>                    <span class="nt">&quot;dependencies&quot;</span><span class="p">:</span> <span class="p">[</span>
+</span><span class='line'>                        <span class="p">{</span>
+</span><span class='line'>                            <span class="nt">&quot;dependsOn&quot;</span><span class="p">:</span> <span class="p">[</span>
+</span><span class='line'>                                <span class="p">{</span>
+</span><span class='line'>                                    <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;/subscriptions/1c5b82ee-9294-4568-b0c0-b9c523bc0d86/resourceGroups/zimsanotherdeployment/providers/Microsoft.Network/publicIPAddresses/myPublicIP&quot;</span><span class="p">,</span>
+</span><span class='line'>                                    <span class="nt">&quot;resourceName&quot;</span><span class="p">:</span> <span class="s2">&quot;myPublicIP&quot;</span><span class="p">,</span>
+</span><span class='line'>                                    <span class="nt">&quot;resourceType&quot;</span><span class="p">:</span> <span class="s2">&quot;Microsoft.Network/publicIPAddresses&quot;</span>
+</span><span class='line'>                                <span class="p">},</span>
+</span><span class='line'>                                <span class="p">{</span>
+</span><span class='line'>                                    <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;/subscriptions/1c5b82ee-9294-4568-b0c0-b9c523bc0d86/resourceGroups/zimsanotherdeployment/providers/Microsoft.Network/virtualNetworks/MyVNET&quot;</span><span class="p">,</span>
+</span><span class='line'>                                    <span class="nt">&quot;resourceName&quot;</span><span class="p">:</span> <span class="s2">&quot;MyVNET&quot;</span><span class="p">,</span>
+</span><span class='line'>                                    <span class="nt">&quot;resourceType&quot;</span><span class="p">:</span> <span class="s2">&quot;Microsoft.Network/virtualNetworks&quot;</span>
+</span><span class='line'>                                <span class="p">}</span>
+</span><span class='line'>                            <span class="p">],</span>
+</span><span class='line'>                            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;/subscriptions/1c5b82ee-9294-4568-b0c0-b9c523bc0d86/resourceGroups/zimsanotherdeployment/providers/Microsoft.Network/networkInterfaces/myVMNic&quot;</span><span class="p">,</span>
+</span><span class='line'>                            <span class="nt">&quot;resourceName&quot;</span><span class="p">:</span> <span class="s2">&quot;myVMNic&quot;</span><span class="p">,</span>
+</span><span class='line'>                            <span class="nt">&quot;resourceType&quot;</span><span class="p">:</span> <span class="s2">&quot;Microsoft.Network/networkInterfaces&quot;</span>
+</span><span class='line'>                        <span class="p">},</span>
+</span><span class='line'>                        <span class="p">{</span>
+</span><span class='line'>                            <span class="nt">&quot;dependsOn&quot;</span><span class="p">:</span> <span class="p">[</span>
+</span><span class='line'>                                <span class="p">{</span>
+</span><span class='line'>                                    <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;/subscriptions/1c5b82ee-9294-4568-b0c0-b9c523bc0d86/resourceGroups/zimsanotherdeployment/providers/Microsoft.Storage/storageAccounts/iovbjgl443l64sawinvm&quot;</span><span class="p">,</span>
+</span><span class='line'>                                    <span class="nt">&quot;resourceName&quot;</span><span class="p">:</span> <span class="s2">&quot;iovbjgl443l64sawinvm&quot;</span><span class="p">,</span>
+</span><span class='line'>                                    <span class="nt">&quot;resourceType&quot;</span><span class="p">:</span> <span class="s2">&quot;Microsoft.Storage/storageAccounts&quot;</span>
+</span><span class='line'>                                <span class="p">},</span>
+</span><span class='line'>                                <span class="p">{</span>
+</span><span class='line'>                                    <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;/subscriptions/1c5b82ee-9294-4568-b0c0-b9c523bc0d86/resourceGroups/zimsanotherdeployment/providers/Microsoft.Network/networkInterfaces/myVMNic&quot;</span><span class="p">,</span>
+</span><span class='line'>                                    <span class="nt">&quot;resourceName&quot;</span><span class="p">:</span> <span class="s2">&quot;myVMNic&quot;</span><span class="p">,</span>
+</span><span class='line'>                                    <span class="nt">&quot;resourceType&quot;</span><span class="p">:</span> <span class="s2">&quot;Microsoft.Network/networkInterfaces&quot;</span>
+</span><span class='line'>                                <span class="p">}</span>
+</span><span class='line'>                            <span class="p">],</span>
+</span><span class='line'>                            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;/subscriptions/1c5b82ee-9294-4568-b0c0-b9c523bc0d86/resourceGroups/zimsanotherdeployment/providers/Microsoft.Compute/virtualMachines/SimpleWinVM&quot;</span><span class="p">,</span>
+</span><span class='line'>                            <span class="nt">&quot;resourceName&quot;</span><span class="p">:</span> <span class="s2">&quot;SimpleWinVM&quot;</span><span class="p">,</span>
+</span><span class='line'>                            <span class="nt">&quot;resourceType&quot;</span><span class="p">:</span> <span class="s2">&quot;Microsoft.Compute/virtualMachines&quot;</span>
+</span><span class='line'>                        <span class="p">}</span>
+</span><span class='line'>                    <span class="p">],</span>
+</span><span class='line'>                    <span class="nt">&quot;duration&quot;</span><span class="p">:</span> <span class="s2">&quot;PT46.927468S&quot;</span><span class="p">,</span>
+</span><span class='line'>                    <span class="nt">&quot;mode&quot;</span><span class="p">:</span> <span class="s2">&quot;Incremental&quot;</span><span class="p">,</span>
+</span><span class='line'>                    <span class="nt">&quot;outputResources&quot;</span><span class="p">:</span> <span class="p">[</span>
+</span><span class='line'>                        <span class="p">{</span>
+</span><span class='line'>                            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;/subscriptions/1c5b82ee-9294-4568-b0c0-b9c523bc0d86/resourceGroups/zimsanotherdeployment/providers/Microsoft.Compute/virtualMachines/SimpleWinVM&quot;</span>
+</span><span class='line'>                        <span class="p">},</span>
+</span><span class='line'>                        <span class="p">{</span>
+</span><span class='line'>                            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;/subscriptions/1c5b82ee-9294-4568-b0c0-b9c523bc0d86/resourceGroups/zimsanotherdeployment/providers/Microsoft.Network/networkInterfaces/myVMNic&quot;</span>
+</span><span class='line'>                        <span class="p">},</span>
+</span><span class='line'>                        <span class="p">{</span>
+</span><span class='line'>                            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;/subscriptions/1c5b82ee-9294-4568-b0c0-b9c523bc0d86/resourceGroups/zimsanotherdeployment/providers/Microsoft.Network/publicIPAddresses/myPublicIP&quot;</span>
+</span><span class='line'>                        <span class="p">},</span>
+</span><span class='line'>                        <span class="p">{</span>
+</span><span class='line'>                            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;/subscriptions/1c5b82ee-9294-4568-b0c0-b9c523bc0d86/resourceGroups/zimsanotherdeployment/providers/Microsoft.Network/virtualNetworks/MyVNET&quot;</span>
+</span><span class='line'>                        <span class="p">},</span>
+</span><span class='line'>                        <span class="p">{</span>
+</span><span class='line'>                            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;/subscriptions/1c5b82ee-9294-4568-b0c0-b9c523bc0d86/resourceGroups/zimsanotherdeployment/providers/Microsoft.Storage/storageAccounts/iovbjgl443l64sawinvm&quot;</span>
+</span><span class='line'>                        <span class="p">}</span>
+</span><span class='line'>                    <span class="p">],</span>
+</span><span class='line'>                    <span class="nt">&quot;outputs&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>                        <span class="nt">&quot;hostname&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>                            <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;String&quot;</span><span class="p">,</span>
+</span><span class='line'>                            <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;zimsdplxxxx.eastus2.cloudapp.azure.com&quot;</span>
+</span><span class='line'>                        <span class="p">}</span>
+</span><span class='line'>                    <span class="p">},</span>
+</span><span class='line'>                    <span class="nt">&quot;parameters&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>                        <span class="nt">&quot;adminPassword&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>                            <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;SecureString&quot;</span>
+</span><span class='line'>                        <span class="p">},</span>
+</span><span class='line'>                        <span class="nt">&quot;adminUsername&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>                            <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;String&quot;</span><span class="p">,</span>
+</span><span class='line'>                            <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;chouseknecht&quot;</span>
+</span><span class='line'>                        <span class="p">},</span>
+</span><span class='line'>                        <span class="nt">&quot;dnsLabelPrefix&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>                            <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;String&quot;</span><span class="p">,</span>
+</span><span class='line'>                            <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;zimsdplxxxx&quot;</span>
+</span><span class='line'>                        <span class="p">},</span>
+</span><span class='line'>                        <span class="nt">&quot;location&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>                            <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;String&quot;</span><span class="p">,</span>
+</span><span class='line'>                            <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;eastus2&quot;</span>
+</span><span class='line'>                        <span class="p">},</span>
+</span><span class='line'>                        <span class="nt">&quot;windowsOSVersion&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>                            <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;String&quot;</span><span class="p">,</span>
+</span><span class='line'>                            <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-Datacenter&quot;</span>
+</span><span class='line'>                        <span class="p">}</span>
+</span><span class='line'>                    <span class="p">},</span>
+</span><span class='line'>                    <span class="nt">&quot;providers&quot;</span><span class="p">:</span> <span class="p">[</span>
+</span><span class='line'>                        <span class="p">{</span>
+</span><span class='line'>                            <span class="nt">&quot;namespace&quot;</span><span class="p">:</span> <span class="s2">&quot;Microsoft.Storage&quot;</span><span class="p">,</span>
+</span><span class='line'>                            <span class="nt">&quot;resourceTypes&quot;</span><span class="p">:</span> <span class="p">[</span>
+</span><span class='line'>                                <span class="p">{</span>
+</span><span class='line'>                                    <span class="nt">&quot;locations&quot;</span><span class="p">:</span> <span class="p">[</span>
+</span><span class='line'>                                        <span class="s2">&quot;eastus2&quot;</span>
+</span><span class='line'>                                    <span class="p">],</span>
+</span><span class='line'>                                    <span class="nt">&quot;resourceType&quot;</span><span class="p">:</span> <span class="s2">&quot;storageAccounts&quot;</span>
+</span><span class='line'>                                <span class="p">}</span>
+</span><span class='line'>                            <span class="p">]</span>
+</span><span class='line'>                        <span class="p">},</span>
+</span><span class='line'>                        <span class="p">{</span>
+</span><span class='line'>                            <span class="nt">&quot;namespace&quot;</span><span class="p">:</span> <span class="s2">&quot;Microsoft.Network&quot;</span><span class="p">,</span>
+</span><span class='line'>                            <span class="nt">&quot;resourceTypes&quot;</span><span class="p">:</span> <span class="p">[</span>
+</span><span class='line'>                                <span class="p">{</span>
+</span><span class='line'>                                    <span class="nt">&quot;locations&quot;</span><span class="p">:</span> <span class="p">[</span>
+</span><span class='line'>                                        <span class="s2">&quot;eastus2&quot;</span>
+</span><span class='line'>                                    <span class="p">],</span>
+</span><span class='line'>                                    <span class="nt">&quot;resourceType&quot;</span><span class="p">:</span> <span class="s2">&quot;publicIPAddresses&quot;</span>
+</span><span class='line'>                                <span class="p">},</span>
+</span><span class='line'>                                <span class="p">{</span>
+</span><span class='line'>                                    <span class="nt">&quot;locations&quot;</span><span class="p">:</span> <span class="p">[</span>
+</span><span class='line'>                                        <span class="s2">&quot;eastus2&quot;</span>
+</span><span class='line'>                                    <span class="p">],</span>
+</span><span class='line'>                                    <span class="nt">&quot;resourceType&quot;</span><span class="p">:</span> <span class="s2">&quot;virtualNetworks&quot;</span>
+</span><span class='line'>                                <span class="p">},</span>
+</span><span class='line'>                                <span class="p">{</span>
+</span><span class='line'>                                    <span class="nt">&quot;locations&quot;</span><span class="p">:</span> <span class="p">[</span>
+</span><span class='line'>                                        <span class="s2">&quot;eastus2&quot;</span>
+</span><span class='line'>                                    <span class="p">],</span>
+</span><span class='line'>                                    <span class="nt">&quot;resourceType&quot;</span><span class="p">:</span> <span class="s2">&quot;networkInterfaces&quot;</span>
+</span><span class='line'>                                <span class="p">}</span>
+</span><span class='line'>                            <span class="p">]</span>
+</span><span class='line'>                        <span class="p">},</span>
+</span><span class='line'>                        <span class="p">{</span>
+</span><span class='line'>                            <span class="nt">&quot;namespace&quot;</span><span class="p">:</span> <span class="s2">&quot;Microsoft.Compute&quot;</span><span class="p">,</span>
+</span><span class='line'>                            <span class="nt">&quot;resourceTypes&quot;</span><span class="p">:</span> <span class="p">[</span>
+</span><span class='line'>                                <span class="p">{</span>
+</span><span class='line'>                                    <span class="nt">&quot;locations&quot;</span><span class="p">:</span> <span class="p">[</span>
+</span><span class='line'>                                        <span class="s2">&quot;eastus2&quot;</span>
+</span><span class='line'>                                    <span class="p">],</span>
+</span><span class='line'>                                    <span class="nt">&quot;resourceType&quot;</span><span class="p">:</span> <span class="s2">&quot;virtualMachines&quot;</span>
+</span><span class='line'>                                <span class="p">}</span>
+</span><span class='line'>                            <span class="p">]</span>
+</span><span class='line'>                        <span class="p">}</span>
+</span><span class='line'>                    <span class="p">],</span>
+</span><span class='line'>                    <span class="nt">&quot;provisioningState&quot;</span><span class="p">:</span> <span class="s2">&quot;Succeeded&quot;</span><span class="p">,</span>
+</span><span class='line'>                    <span class="nt">&quot;templateHash&quot;</span><span class="p">:</span> <span class="s2">&quot;17224794003184781395&quot;</span><span class="p">,</span>
+</span><span class='line'>                    <span class="nt">&quot;templateLink&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>                        <span class="nt">&quot;contentVersion&quot;</span><span class="p">:</span> <span class="s2">&quot;1.0.0.0&quot;</span><span class="p">,</span>
+</span><span class='line'>                        <span class="nt">&quot;uri&quot;</span><span class="p">:</span> <span class="s2">&quot;https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/101-vm-simple-windows/azuredeploy.json&quot;</span>
+</span><span class='line'>                    <span class="p">},</span>
+</span><span class='line'>                    <span class="nt">&quot;timestamp&quot;</span><span class="p">:</span> <span class="s2">&quot;2019-03-07T05:49:05.3868647Z&quot;</span>
+</span><span class='line'>                <span class="p">},</span>
+</span><span class='line'>                <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Microsoft.Resources/deployments&quot;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="p">],</span>
+</span><span class='line'>        <span class="nt">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;/subscriptions/1c5b82ee-9294-4568-b0c0-b9c523bc0d86/resourceGroups/zimsanotherdeployment/providers/Microsoft.resources/deployments/zimsdplxxxx&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;warnings&quot;</span><span class="p">:</span> <span class="p">[</span>
+</span><span class='line'>            <span class="s2">&quot;Azure API profile latest does not define an entry for GenericRestClient&quot;</span>
+</span><span class='line'>        <span class="p">]</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2066,38 +2586,9 @@ adminPassword -> &ldquo;{your-password}&rdquo;</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2019/01/15/azure-devtest-labs-rest-examples-in-ansible/">Just a First Post</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2019-01-15T10:14:39+08:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>15</span><span class='date-suffix'>th</span>, <span class='date-year'>2019</span></span> <span class='time'>10:14 am</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Nothing much in here. I have written a lot of notes mostly related to Ansible, but also to Azure REST API, and it&rsquo;s time to publish it them somewhere and made available to wider public.
-So, Hello World!</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
+    
+      <a class="prev" href="/posts/3">&larr; Older</a>
     
     <a href="/blog/archives">Blog Archives</a>
     
