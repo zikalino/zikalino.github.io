@@ -135,20 +135,36 @@ Missing Examples (for instance Web App, Function App &hellip;">
 
 <p>For instance resource group will be always called <strong>myresourcegroup</strong>, and this makes combining examples trivial.</p>
 
-<h2>How to test examples?</h2>
+<h3>Extend Example Validation</h3>
+
+<p>More checks can be introduced to validate examples against actual REST API definition to detect mistakes. I will include more examples here.</p>
+
+<h3>Encourage Reusing REST API Examples Downstream</h3>
+
+<p>Currently examples from REST API are not used directly in any other project. Encouraging usage, testing and contributing fixes upstream would significantly improve REST API specs for everyone.</p>
+
+<h2>What we do in Ansible?</h2>
 
 <p>We are currently developing Autorest / Magic Modules solution to generate Ansible and Terraform modules.</p>
 
 <p>Ansible modules should come with appropriate examples, and also having integration tests are requirement.</p>
 
-<p>Before:
-- examples were usually written manually
-- examples were sometimes broken or getting outdated
-- integration tests were written manually</p>
+<p>Before:</p>
 
-<p>Where we are going to do now:
-- we want to have requirement that examples included in the module are <strong>all</strong> included/kept in sync with integration test
-- examples and integration tests are <strong>not</strong> written manually</p>
+<ul>
+<li>examples were usually written manually</li>
+<li>examples were sometimes broken or getting outdated</li>
+<li>integration tests were written manually</li>
+</ul>
+
+
+<p>Where we are going to do now:</p>
+
+<ul>
+<li>we want to have requirement that examples included in the module are <strong>all</strong> included/kept in sync with integration test</li>
+<li>examples and integration tests are <strong>not</strong> written manually</li>
+</ul>
+
 
 <p>Benefits:</p>
 
@@ -170,6 +186,12 @@ Missing Examples (for instance Web App, Function App &hellip;">
 
 
 <h2>Sample Processed Output</h2>
+
+<h3>Subnet Example</h3>
+
+<p>Below you can see <strong>network_virtualnetworks_subnet_put.yml</strong> example.</p>
+
+<p>On the top you can see that it automatically includes <strong>network_virtualnetworks_put.yml</strong> example that creates virtual network.</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -229,7 +251,11 @@ Missing Examples (for instance Web App, Function App &hellip;">
 </span><span class='line'>            addressPrefix: "10.0.0.0/16"</span></code></pre></td></tr></table></div></figure>
 
 
+<h3>Virtual Network Example</h3>
 
+<p>Below you can see <strong>network_virtualnetwork_put.yml</strong> example that was referred in previous playbook.</p>
+
+<p>On the top you can see that it automatically includes <strong>resourcegroups_put.yml</strong> example that creates required .</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -287,7 +313,19 @@ Missing Examples (for instance Web App, Function App &hellip;">
 </span><span class='line'>          location: "eastus"</span></code></pre></td></tr></table></div></figure>
 
 
+<h3>Resource Group Example</h3>
 
+<p>And finally you can check <strong>resource_groups_put.yml</strong> example that is required by previous playbooks.</p>
+
+<p>On the top you can see that it automatically includes <strong>resourcegroups_put.yml</strong> example that creates required.</p>
+
+<p>You can find a PR here that I have merged to REST API specs:</p>
+
+<p><a href="https://github.com/Azure/azure-rest-api-specs/pull/4971">https://github.com/Azure/azure-rest-api-specs/pull/4971</a></p>
+
+<p>You can find the same example was propagated here to Azure REST API docs:</p>
+
+<p><a href="https://docs.microsoft.com/en-us/rest/api/resources/resourcegroups/createorupdate">https://docs.microsoft.com/en-us/rest/api/resources/resourcegroups/createorupdate</a></p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -341,6 +379,8 @@ Missing Examples (for instance Web App, Function App &hellip;">
 </span><span class='line'>cd examples</span></code></pre></td></tr></table></div></figure>
 
 
+<h3>Running Examples Demo</h3>
+
 <p>From examples folder run:</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -349,7 +389,7 @@ Missing Examples (for instance Web App, Function App &hellip;">
 
 <p>You should see that all dependencies and subnet are correctly created:</p>
 
-<p><img src="/images/running-examples.png" alt="VM B" /></p>
+<p><img src="/images/running-examples.png" alt="Running Examples Demo" /></p>
 </div>
   
   
