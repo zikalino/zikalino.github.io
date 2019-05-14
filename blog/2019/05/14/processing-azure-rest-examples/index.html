@@ -1,0 +1,436 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Processing Azure REST Examples - Zim's Notes</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="Some Issues with Azure REST API Examples Examples are currently not tested
+No naming conventions
+Missing Examples (for instance Web App, Function App &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://zikalino.github.io/blog/2019/05/14/processing-azure-rest-examples">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Zim's Notes" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Fjalla+One" rel="stylesheet" type="text/css">
+<!--- MathJax Configuration -->
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Zim's Notes</a></h1>
+  
+    <h2>Just work related notes.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscribe" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS" target="_blank"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="25" height="25" viewbox="0 0 100 100"><path class="social" d="M 13.310204,73.332654 C 5.967347,73.332654 0,79.322448 0,86.621428 c 0,7.338776 5.967347,13.262246 13.310204,13.262246 7.370408,0 13.328572,-5.92245 13.328572,-13.262246 0,-7.29898 -5.958164,-13.288774 -13.328572,-13.288774 z M 0.01530612,33.978572 V 53.143878 C 12.493878,53.143878 24.229592,58.02347 33.068368,66.865306 41.894898,75.685714 46.767346,87.47449 46.767346,100 h 19.25 C 66.017346,63.592858 36.4,33.979592 0.01530612,33.978572 l 0,0 z M 0.03877552,0 V 19.17449 C 44.54796,19.17551 80.77551,55.437756 80.77551,100 H 100 C 100,44.87653 55.15102,0 0.03877552,0 z"></path></svg></a></li>
+  
+</ul>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    
+      <form action="https://www.google.com/search" method="get">
+        <fieldset role="search">
+          <input type="hidden" name="sitesearch" value="zikalino.github.io" />
+    
+          <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+        </fieldset>
+      </form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      
+        <h1 class="entry-title">Processing Azure REST Examples</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2019-05-14T11:26:13-07:00'><span class='date'><span class='date-month'>May</span> <span class='date-day'>14</span><span class='date-suffix'>th</span>, <span class='date-year'>2019</span></span> <span class='time'>11:26 am</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h2>Some Issues with Azure REST API Examples</h2>
+
+<ul>
+<li>Examples are currently not tested</li>
+<li>No naming conventions</li>
+<li>Missing Examples (for instance Web App, Function App, I have created missing Resource Group example myself)</li>
+<li>No dependencies</li>
+</ul>
+
+
+<h2>Solutions</h2>
+
+<h3>Example naming conventions</h3>
+
+<p>I am using resource URIs to create sample names. For instance:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>network_virtualnetworks_subnets_put.yml
+</span><span class='line'>network_virtualnetworks_put.yml
+</span><span class='line'>resourcegroups_put.yml</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This approach makes it easy to find dependencies between examples, which is shown in the demo below.</p>
+
+<h3>Resource naming conventions within samples</h3>
+
+<p>I am overriding names of the resources with names derived from URI pattern.</p>
+
+<p>For instance resource group will be always called <strong>myresourcegroup</strong>, and this makes combining examples trivial.</p>
+
+<h2>How to test examples?</h2>
+
+<p>We are currently developing Autorest / Magic Modules solution to generate Ansible and Terraform modules.</p>
+
+<p>Ansible modules should come with appropriate examples, and also having integration tests are requirement.</p>
+
+<p>Before:
+- examples were usually written manually
+- examples were sometimes broken or getting outdated
+- integration tests were written manually</p>
+
+<p>Where we are going to do now:
+- we want to have requirement that examples included in the module are <strong>all</strong> included/kept in sync with integration test
+- examples and integration tests are <strong>not</strong> written manually</p>
+
+<p>Benefits:</p>
+
+<ul>
+<li>Azure REST API Examples are tested</li>
+<li>Examples are fixed/added at the source which is beneficial to everyone</li>
+<li>Ensuring that Azure REST API documentation has actually complete/correct examples</li>
+<li>Ansible/Terraform documentation has complete and correct examples that are inline with generic Azure documentation</li>
+</ul>
+
+
+<h2>What could be done next?</h2>
+
+<ul>
+<li>integrate autorest.devops autorest extension with Azure REST API Specs CI</li>
+<li>enforce new rules / possibly generate warnings when necessary?</li>
+<li>calculate API score for every resource including example coverage, following naming conventions, etc.</li>
+</ul>
+
+
+<h2>Sample Processed Output</h2>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>- import_playbook: network_virtualnetworks_put.yml
+</span><span class='line'>- hosts: localhost
+</span><span class='line'>  roles:
+</span><span class='line'>    - ../modules
+</span><span class='line'>  vars_files:
+</span><span class='line'>    - _vars.yml
+</span><span class='line'>  vars:
+</span><span class='line'>    resource_group: myresourcegroup
+</span><span class='line'>    virtual_network_name: myvirtualnetwork
+</span><span class='line'>    subnet_name: mysubnet
+</span><span class='line'>  tasks:
+</span><span class='line'>    - name: Create subnet
+</span><span class='line'>      azure_rm_resource:
+</span><span class='line'>        idempotency: yes
+</span><span class='line'>        api_version: '2018-02-01'
+</span><span class='line'>        polling_timeout: 600
+</span><span class='line'>        polling_interval: 30
+</span><span class='line'>        # url: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/virtualNetworks/{virtualNetworkName}/subnets/{subnetName}
+</span><span class='line'>        resource_group: '{{ resource_group }}'
+</span><span class='line'>        provider: Network
+</span><span class='line'>        resource_type: virtualNetworks
+</span><span class='line'>        resource_name: "{{ virtual_network_name }}"
+</span><span class='line'>        subresource:
+</span><span class='line'>          - type: subnets
+</span><span class='line'>            name: "{{ subnet_name }}"
+</span><span class='line'>        body:
+</span><span class='line'>          properties:
+</span><span class='line'>            addressPrefix: "10.0.0.0/16"</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>- import_playbook: resourcegroups_put.yml
+</span><span class='line'>- hosts: localhost
+</span><span class='line'>  roles:
+</span><span class='line'>    - ../modules
+</span><span class='line'>  vars_files:
+</span><span class='line'>    - _vars.yml
+</span><span class='line'>  vars:
+</span><span class='line'>    resource_group: myresourcegroup
+</span><span class='line'>    virtual_network_name: myvirtualnetwork
+</span><span class='line'>  tasks:
+</span><span class='line'>    - name: Create virtual network
+</span><span class='line'>      azure_rm_resource:
+</span><span class='line'>        idempotency: yes
+</span><span class='line'>        api_version: '2018-02-01'
+</span><span class='line'>        polling_timeout: 600
+</span><span class='line'>        polling_interval: 30
+</span><span class='line'>        # url: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/virtualNetworks/{virtualNetworkName}
+</span><span class='line'>        resource_group: '{{ resource_group }}'
+</span><span class='line'>        provider: Network
+</span><span class='line'>        resource_type: virtualNetworks
+</span><span class='line'>        resource_name: "{{ virtual_network_name }}"
+</span><span class='line'>        body:
+</span><span class='line'>          properties:
+</span><span class='line'>            addressSpace:
+</span><span class='line'>              addressPrefixes:
+</span><span class='line'>                - "10.0.0.0/16"
+</span><span class='line'>          location: "eastus"</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>- hosts: localhost
+</span><span class='line'>  roles:
+</span><span class='line'>    - ../modules
+</span><span class='line'>  vars_files:
+</span><span class='line'>    - _vars.yml
+</span><span class='line'>  vars:
+</span><span class='line'>    resource_group: myresourcegroup
+</span><span class='line'>  tasks:
+</span><span class='line'>    - name: Create or update a resource group.
+</span><span class='line'>      azure_rm_resource:
+</span><span class='line'>        idempotency: yes
+</span><span class='line'>        api_version: '2018-05-01'
+</span><span class='line'>        # url: /subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}
+</span><span class='line'>        resource_group: '{{ resource_group }}'
+</span><span class='line'>        body:
+</span><span class='line'>          location: eastus</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Demo</h2>
+
+<h3>Prerequisites</h3>
+
+<p>Ansible 2.8</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>pip install ansible[azure]</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Clone sample repository:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>git clone https://github.com/zikalino/ansible-azure-rest-examples.git
+</span><span class='line'>cd examples</span></code></pre></td></tr></table></div></figure>
+
+
+<p>From examples folder run:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>ansible-playbook network_virtual_networks_subnet_put.yml</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You should see that all dependencies and subnet are correctly created:</p>
+
+<p><img src="/images/running-examples.png" alt="VM B" /></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+
+
+  <span class="byline author vcard">Authored by <span class="fn">
+  
+    Your Name
+  
+  </span></span>
+
+
+      
+
+
+
+
+<time class='entry-date' datetime='2019-05-14T11:26:13-07:00'><span class='date'><span class='date-month'>May</span> <span class='date-day'>14</span><span class='date-suffix'>th</span>, <span class='date-year'>2019</span></span> <span class='time'>11:26 am</span></time>
+      
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://zikalino.github.io/blog/2019/05/14/processing-azure-rest-examples/" data-via="" data-counturl="http://zikalino.github.io/blog/2019/05/14/processing-azure-rest-examples/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2019/03/27/creating-azure-function-app-using-rest-api/" title="Previous Post: Creating Azure Function App using REST API">&laquo; Creating Azure Function App using REST API</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+
+</div>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2019 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a> | Themed with <a href="https://github.com/lucaslew/whitespace">Whitespace</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

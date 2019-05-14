@@ -9,7 +9,7 @@
   <meta name="author" content="Your Name">
 
   
-  <meta name="description" content="This is something I was planning to investigate for some time. We have azure_rm_functionapp module, but it seems to be very limited. Actually I don& &hellip;">
+  <meta name="description" content="This is one of the topic I had to look into. Removing locks appeared to be an issue while performing automatic clean up of the resources. Currently &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -78,6 +78,177 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2019/03/18/removing-resource-locks-using-ansible-and-azure-rest-api/">Removing Resource Locks Using Ansible and Azure REST API</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2019-03-18T14:51:20+08:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2019</span></span> <span class='time'>2:51 pm</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>This is one of the topic I had to look into. Removing locks appeared to be an issue while performing automatic clean up of the resources.</p>
+
+<p>Currently there&rsquo;s no support for locks in Ansible, but I have tried to use <strong>azure_rm_resource_facts</strong> module to list locks on both resource group and subscription level, and then delete locks using <strong>azure_rm_resource</strong>.</p>
+
+<p>To list all the locks in the resource group:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'>  <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">List all the locks in the resource group</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">azure_rm_resource_facts</span><span class="p-Indicator">:</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">api_version</span><span class="p-Indicator">:</span> <span class="s">&#39;2016-09-01&#39;</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">provider</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">authorization</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">resource_type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">locks</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">register</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">debug</span><span class="p-Indicator">:</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">var</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>or all resources in the subscription, just remove <strong>resource_group</strong> parameter:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'>  <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">List all the locks in the resource group</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">azure_rm_resource_facts</span><span class="p-Indicator">:</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">api_version</span><span class="p-Indicator">:</span> <span class="s">&#39;2016-09-01&#39;</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">provider</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">authorization</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">resource_type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">locks</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">register</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">debug</span><span class="p-Indicator">:</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">var</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Output will look as follows:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="nt">&quot;output&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nt">&quot;changed&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;failed&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;response&quot;</span><span class="p">:</span> <span class="p">[</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;/subscriptions/1c5b82ee-9294-4568-b0c0-b9c523bc0d86/resourceGroups/zimslockedrg/providers/Microsoft.Network/virtualNetworks/zimslockedvb/providers/Microsoft.Authorization/locks/justalock&quot;</span><span class="p">,</span>
+</span><span class='line'>                <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;justalock&quot;</span><span class="p">,</span>
+</span><span class='line'>                <span class="nt">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>                    <span class="nt">&quot;level&quot;</span><span class="p">:</span> <span class="s2">&quot;CanNotDelete&quot;</span><span class="p">,</span>
+</span><span class='line'>                    <span class="nt">&quot;notes&quot;</span><span class="p">:</span> <span class="s2">&quot;blabla&quot;</span>
+</span><span class='line'>                <span class="p">},</span>
+</span><span class='line'>                <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Microsoft.Authorization/locks&quot;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="p">],</span>
+</span><span class='line'>        <span class="nt">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;/subscriptions/1c5b82ee-9294-4568-b0c0-b9c523bc0d86/resourceGroups/zimslockedrg/providers/Microsoft.authorization/locks&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;warnings&quot;</span><span class="p">:</span> <span class="p">[</span>
+</span><span class='line'>            <span class="s2">&quot;Azure API profile latest does not define an entry for GenericRestClient&quot;</span>
+</span><span class='line'>        <span class="p">]</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Based on this output you can just delete all the locks one by one using <strong>azure_rm_resource</strong> module:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'>  <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Delete locks one by one</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">azure_rm_resource</span><span class="p-Indicator">:</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">api_version</span><span class="p-Indicator">:</span> <span class="s">&#39;2016-09-01&#39;</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">url</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">provider</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">authorization</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">resource_type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">locks</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">state</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">absent</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">with_items</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Please note that there&rsquo;s a bug in the versions of Ansible earlier than 2.8, and the last playbook needs small modification:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'>  <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Delete locks one by one</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">azure_rm_resource</span><span class="p-Indicator">:</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">api_version</span><span class="p-Indicator">:</span> <span class="s">&#39;2016-09-01&#39;</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">url</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">provider</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">authorization</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">resource_type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">locks</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">state</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">absent</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">with_items</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2489,148 +2660,6 @@ Here&rsquo;s an example of creating a virtual machine via Azure portal and insta
 
 <p>adminUsername -> &ldquo;{your-username}&rdquo;
 adminPassword -> &ldquo;{your-password}&rdquo;</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2019/01/20/creating-azure-virtual-machines-with-ansible-and-rest-api/">Creating Azure Virtual Machines With Ansible and REST API</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2019-01-20T18:09:56+08:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>20</span><span class='date-suffix'>th</span>, <span class='date-year'>2019</span></span> <span class='time'>6:09 pm</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Just go to <strong>examples</strong> folder and run following playbook:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>ansible-playbook compute_virtualmachines_put.yml
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Please note that it will create all the necessary dependencies:</p>
-
-<ul>
-<li>resource group</li>
-<li>network interface</li>
-<li>public IP address</li>
-<li>virtual network with subnet</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">import_playbook</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">network_networkinterfaces_put.yml</span>
-</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">hosts</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">localhost</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">roles</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">../modules</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">vars</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">subscription_id</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">myResourceGroup</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">virtual_machine_name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">myVirtualMachine</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">network_interface_name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">myNetworkInterface</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">tasks</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create a vm with password authentication.</span>
-</span><span class='line'>      <span class="l-Scalar-Plain">azure_rm_resource</span><span class="p-Indicator">:</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">idempotency</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">yes</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">api_version</span><span class="p-Indicator">:</span> <span class="s">&#39;2018-10-01&#39;</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">polling_timeout</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">600</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">polling_interval</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">30</span>
-</span><span class='line'>        <span class="c1"># url: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&#39;&#39;</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">provider</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Compute</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">resource_type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">virtualMachines</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">resource_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">body</span><span class="p-Indicator">:</span>
-</span><span class='line'>          <span class="l-Scalar-Plain">location</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">eastus</span>
-</span><span class='line'>          <span class="l-Scalar-Plain">properties</span><span class="p-Indicator">:</span>
-</span><span class='line'>            <span class="l-Scalar-Plain">hardwareProfile</span><span class="p-Indicator">:</span>
-</span><span class='line'>              <span class="l-Scalar-Plain">vmSize</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Standard_D3_v2</span>
-</span><span class='line'>            <span class="l-Scalar-Plain">storageProfile</span><span class="p-Indicator">:</span>
-</span><span class='line'>              <span class="l-Scalar-Plain">imageReference</span><span class="p-Indicator">:</span>
-</span><span class='line'>                <span class="l-Scalar-Plain">sku</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">2016-Datacenter</span>
-</span><span class='line'>                <span class="l-Scalar-Plain">publisher</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">MicrosoftWindowsServer</span>
-</span><span class='line'>                <span class="l-Scalar-Plain">version</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">latest</span>
-</span><span class='line'>                <span class="l-Scalar-Plain">offer</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">WindowsServer</span>
-</span><span class='line'>              <span class="l-Scalar-Plain">osDisk</span><span class="p-Indicator">:</span>
-</span><span class='line'>                <span class="l-Scalar-Plain">caching</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">ReadWrite</span>
-</span><span class='line'>                <span class="l-Scalar-Plain">managedDisk</span><span class="p-Indicator">:</span>
-</span><span class='line'>                  <span class="l-Scalar-Plain">storageAccountType</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Standard_LRS</span>
-</span><span class='line'>                <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">myVMosdisk</span>
-</span><span class='line'>                <span class="l-Scalar-Plain">createOption</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">FromImage</span>
-</span><span class='line'>            <span class="l-Scalar-Plain">osProfile</span><span class="p-Indicator">:</span>
-</span><span class='line'>              <span class="l-Scalar-Plain">adminUsername</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">adminxyz</span>
-</span><span class='line'>              <span class="l-Scalar-Plain">computerName</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">myVM</span>
-</span><span class='line'>              <span class="l-Scalar-Plain">adminPassword</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">MooMoo123!!!!</span>
-</span><span class='line'>            <span class="l-Scalar-Plain">networkProfile</span><span class="p-Indicator">:</span>
-</span><span class='line'>              <span class="l-Scalar-Plain">networkInterfaces</span><span class="p-Indicator">:</span>
-</span><span class='line'>                <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">id</span><span class="p-Indicator">:</span> <span class="s">&quot;/subscriptions//resourceGroups//providers/Microsoft.Network/networkInterfaces/&quot;</span>
-</span><span class='line'>                  <span class="l-Scalar-Plain">properties</span><span class="p-Indicator">:</span>
-</span><span class='line'>                    <span class="l-Scalar-Plain">primary</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">True</span>
-</span></code></pre></td></tr></table></div></figure>
-
 </div>
   
   
