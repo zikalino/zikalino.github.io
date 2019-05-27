@@ -4,7 +4,7 @@
   <title><![CDATA[Zim's Notes]]></title>
   <link href="http://zikalino.github.io/atom.xml" rel="self"/>
   <link href="http://zikalino.github.io/"/>
-  <updated>2019-05-27T12:11:28+08:00</updated>
+  <updated>2019-05-27T12:13:03+08:00</updated>
   <id>http://zikalino.github.io/</id>
   <author>
     <name><![CDATA[Your Name]]></name>
@@ -45,13 +45,17 @@
 
 <h3>Overview</h3>
 
-<p>The tool should allow to:
-- run existing examples directly from Azure REST API specs (local or GitHub repo)
-- run examples in their raw form
-- automatically fix problems / adjust naming conventions to match common naming convention
-- allow applying custom parameter fixes
-- generate final adjusted / updated example source code
-- optionally copy example to original source tree or create a pull request in original GitHub repo (fork of Azure REST API specification)</p>
+<p>The tool should allow to:</p>
+
+<ul>
+<li>run existing examples directly from Azure REST API specs (local or GitHub repo)</li>
+<li>run examples in their raw form</li>
+<li>automatically fix problems / adjust naming conventions to match common naming convention</li>
+<li>allow applying custom parameter fixes</li>
+<li>generate final adjusted / updated example source code</li>
+<li>optionally copy example to original source tree or create a pull request in original GitHub repo (fork of Azure REST API specification)</li>
+</ul>
+
 
 <h3>Command</h3>
 
@@ -86,10 +90,14 @@
 <p>If this option is specified extension will attempt to update existing sample in the local filesystem.
 In the future it could create a branch and pull requests directly to the GitHub Repo.</p>
 
-<p>The attempt will be made if:
-- example was run successfully
-- there are differences between existing example input parameters and overrided input parameters
-- there is difference in return value specified and value actually returned</p>
+<p>The attempt will be made if:</p>
+
+<ul>
+<li>example was run successfully</li>
+<li>there are differences between existing example input parameters and overrided input parameters</li>
+<li>there is difference in return value specified and value actually returned</li>
+</ul>
+
 
 <p>Sample input could look like that:</p>
 
