@@ -9,8 +9,8 @@
   <meta name="author" content="Your Name">
 
   
-  <meta name="description" content="This idea occured to me for three reasons: there&rsquo;s no single tool used to create, test and validate Azure Swagger examples
-Azure CLI is the &hellip;">
+  <meta name="description" content="Overview This idea occured to me for several reasons: there&rsquo;s no single tool used to create, test and validate Azure Swagger examples
+process &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -101,12 +101,26 @@ Azure CLI is the &hellip;">
   </header>
 
 
-<div class="entry-content"><p>This idea occured to me for three reasons:</p>
+<div class="entry-content"><h2>Overview</h2>
+
+<p>This idea occured to me for several reasons:</p>
 
 <ul>
 <li>there&rsquo;s no single tool used to create, test and validate Azure Swagger examples</li>
+<li>process of validating and updating Azure REST API examples is quite awkward and time consuming. Updating even single input value reauires a lot of steps, for instance responses should be updated as well</li>
+<li>there are no single naming conventions</li>
 <li>Azure CLI is the most commonly used tool to manage Azure resources</li>
 <li>it would be very easy to create an extension based on <strong>az resource</strong> which already allows raw REST API calls meaning it provides entire framework</li>
+</ul>
+
+
+<h2>Advantages</h2>
+
+<ul>
+<li>easy, fast and consistent process of creating new and updating existing examples</li>
+<li>validation and dependency checking</li>
+<li>enforcing consistent naming conventions, that would lead to more consistent documentation and compatibility between examples (for instance all the examples would use single resource group <strong>myResourceGroup</strong>)</li>
+<li>simple way to check examples without using any additional tool</li>
 </ul>
 
 
