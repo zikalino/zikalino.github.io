@@ -9,7 +9,7 @@
   <meta name="author" content="Your Name">
 
   
-  <meta name="description" content="This is one of the topic I had to look into. Removing locks appeared to be an issue while performing automatic clean up of the resources. Currently &hellip;">
+  <meta name="description" content="Cosmos DB Account sample is available here: https://github.com/Azure-Samples/ansible-playbooks/blob/master/cosmosdb-create.yml This sample: creates &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -78,6 +78,380 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2019/03/22/new-ansible-module-azure-rm-cosmosdbaccount/">New Ansible Module Azure_rm_cosmosdbaccount</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2019-03-22T09:00:13+08:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>22</span><span class='date-suffix'>nd</span>, <span class='date-year'>2019</span></span> <span class='time'>9:00 am</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Cosmos DB Account sample is available here:</p>
+
+<p><a href="https://github.com/Azure-Samples/ansible-playbooks/blob/master/cosmosdb-create.yml">https://github.com/Azure-Samples/ansible-playbooks/blob/master/cosmosdb-create.yml</a></p>
+
+<p>This sample:</p>
+
+<ul>
+<li>creates random postfix to use in CosmosDB account name</li>
+<li>creates resource group</li>
+<li>creates virtual network</li>
+<li>creates subnet</li>
+<li>creates CosmosDB account</li>
+<li>queries and prints CosmosDB keys</li>
+</ul>
+
+
+<h2>Create Random Postfix</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">hosts</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">localhost</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">tasks</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Prepare random postfix</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">set_fact</span><span class="p-Indicator">:</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">rpfx</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">1000</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">random</span><span class="nv"> </span><span class="s">}}&quot;</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">run_once</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">yes</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Variables</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'>  <span class="l-Scalar-Plain">vars</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">resource_group_name</span><span class="nv"> </span><span class="s">}}&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">location</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">eastus</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">vnet_name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">myVirtualNetwork</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">subnet_name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">mySubnet</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">cosmosdbaccount_name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">cosmos{{ rpfx }}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Following variables can be set in <strong>vars</strong> section of the playbook:</p>
+
+<table>
+<thead>
+<tr>
+<th>Variable Name</th>
+<th>Description</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>resource_group</td>
+<td>resource group where resources will be created</td>
+<td>by default it&rsquo;s using <strong>resource_group_name</strong> parameter passed when running the playbook</td>
+</tr>
+<tr>
+<td>location</td>
+<td>location where resources should be created</td>
+<td></td>
+</tr>
+<tr>
+<td>vnet_name</td>
+<td>virtual network name</td>
+<td></td>
+</tr>
+<tr>
+<td>subnet</td>
+<td>subnet name</td>
+<td></td>
+</tr>
+<tr>
+<td>cosmosdbaccount_name</td>
+<td>CosmosDB account name</td>
+<td>should include only lowercase characters and be globally unique</td>
+</tr>
+</tbody>
+</table>
+
+
+<h2>Create Resource Group</h2>
+
+<p>This simple task creates a resource group if doesn&rsquo;t exist yet.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create a resource group</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_resourcegroup</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">resource_group</span><span class="nv"> </span><span class="s">}}&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">location</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">location</span><span class="nv"> </span><span class="s">}}&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Create Virtual Network and Subnet</h2>
+
+<p>This task created prerequisites for CosmosDB account:</p>
+
+<ul>
+<li>virtual network</li>
+<li>subnet</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create virtual network</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_virtualnetwork</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">resource_group</span><span class="nv"> </span><span class="s">}}&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">vnet_name</span><span class="nv"> </span><span class="s">}}&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">address_prefixes_cidr</span><span class="p-Indicator">:</span>
+</span><span class='line'>      <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">10.1.0.0/16</span>
+</span><span class='line'>      <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">172.100.0.0/16</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">dns_servers</span><span class="p-Indicator">:</span>
+</span><span class='line'>      <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">127.0.0.1</span>
+</span><span class='line'>      <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">127.0.0.3</span>
+</span><span class='line'>
+</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Add subnet</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_subnet</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">subnet_name</span><span class="nv"> </span><span class="s">}}&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">virtual_network_name</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">vnet_name</span><span class="nv"> </span><span class="s">}}&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">resource_group</span><span class="nv"> </span><span class="s">}}&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">address_prefix_cidr</span><span class="p-Indicator">:</span> <span class="s">&quot;10.1.0.0/24&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Create CosmosDB Account</h2>
+
+<p>This task creates actual CosmosDB account.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create instance of Cosmos DB Account</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_cosmosdbaccount</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">resource_group</span><span class="nv"> </span><span class="s">}}&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">cosmosdbaccount_name</span><span class="nv"> </span><span class="s">}}&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">location</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">location</span><span class="nv"> </span><span class="s">}}&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">kind</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">global_document_db</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">geo_rep_locations</span><span class="p-Indicator">:</span>
+</span><span class='line'>      <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">eastus</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">failover_priority</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">0</span>
+</span><span class='line'>      <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">westus</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">failover_priority</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">1</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">database_account_offer_type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Standard</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">is_virtual_network_filter_enabled</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">yes</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">virtual_network_rules</span><span class="p-Indicator">:</span>
+</span><span class='line'>      <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">subnet</span><span class="p-Indicator">:</span>
+</span><span class='line'>          <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">resource_group</span><span class="nv"> </span><span class="s">}}&quot;</span>
+</span><span class='line'>          <span class="l-Scalar-Plain">virtual_network_name</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">vnet_name</span><span class="nv"> </span><span class="s">}}&quot;</span>
+</span><span class='line'>          <span class="l-Scalar-Plain">subnet_name</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">subnet_name</span><span class="nv"> </span><span class="s">}}&quot;</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">ignore_missing_vnet_service_endpoint</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">yes</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">enable_automatic_failover</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">yes</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Retrieve Keys</h2>
+
+<p>This task shows how to retrieve CosmosDB account keys that should be used later by any application using the database:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Get Cosmos DB Account facts with keys</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_cosmosdbaccount_facts</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">resource_group</span><span class="nv"> </span><span class="s">}}&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">cosmosdbaccount_name</span><span class="nv"> </span><span class="s">}}&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">retrieve_keys</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">all</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">register</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+</span><span class='line'>
+</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Display Cosmos DB Acccount facts output</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">debug</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">var</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Use in your application</h2>
+
+<p>&hellip;</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2019/03/19/note-on-ansible-examples/">Note on Ansible Examples</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2019-03-19T06:42:26+08:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>19</span><span class='date-suffix'>th</span>, <span class='date-year'>2019</span></span> <span class='time'>6:42 am</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>When I started working with Ansible I wa</p>
+
+<p>Let&rsquo;s do following exercise. I want to create an Azure Virtual Machine using examples from documentation.</p>
+
+<p>Let&rsquo;s start with default virtual machine example (<a href="https://docs.ansible.com/ansible/latest/modules/azure_rm_virtualmachine_module.html">https://docs.ansible.com/ansible/latest/modules/azure_rm_virtualmachine_module.html</a>)</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create Azure VM using default samples</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">hosts</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">localhost</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">connection</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">local</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">tasks</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create VM with defaults</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">azure_rm_virtualmachine</span><span class="p-Indicator">:</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Testing</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">testvm10</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">admin_username</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">chouseknecht</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">admin_password</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">&lt;your password here&gt;</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">image</span><span class="p-Indicator">:</span>
+</span><span class='line'>          <span class="l-Scalar-Plain">offer</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">CentOS</span>
+</span><span class='line'>          <span class="l-Scalar-Plain">publisher</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">OpenLogic</span>
+</span><span class='line'>          <span class="l-Scalar-Plain">sku</span><span class="p-Indicator">:</span> <span class="s">&#39;7.1&#39;</span>
+</span><span class='line'>          <span class="l-Scalar-Plain">version</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">latest</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now, Ansible will complain that resource group <strong>Testing</strong> is not present, so I add resource group from here <a href="https://docs.ansible.com/ansible/latest/modules/azure_rm_resourcegroup_module.html:">https://docs.ansible.com/ansible/latest/modules/azure_rm_resourcegroup_module.html:</a></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create Azure VM using default samples</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">hosts</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">localhost</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">connection</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">local</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">tasks</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create a resource group</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">azure_rm_resourcegroup</span><span class="p-Indicator">:</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Testing</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">location</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">westus</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">tags</span><span class="p-Indicator">:</span>
+</span><span class='line'>          <span class="l-Scalar-Plain">testing</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">testing</span>
+</span><span class='line'>          <span class="l-Scalar-Plain">delete</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">never</span>
+</span><span class='line'>    <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create VM with defaults</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">azure_rm_virtualmachine</span><span class="p-Indicator">:</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Testing</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">testvm10</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">admin_username</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">chouseknecht</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">admin_password</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">&lt;your password here&gt;</span>
+</span><span class='line'>        <span class="l-Scalar-Plain">image</span><span class="p-Indicator">:</span>
+</span><span class='line'>          <span class="l-Scalar-Plain">offer</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">CentOS</span>
+</span><span class='line'>          <span class="l-Scalar-Plain">publisher</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">OpenLogic</span>
+</span><span class='line'>          <span class="l-Scalar-Plain">sku</span><span class="p-Indicator">:</span> <span class="s">&#39;7.1&#39;</span>
+</span><span class='line'>          <span class="l-Scalar-Plain">version</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">latest</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2508,158 +2882,6 @@ Here&rsquo;s an example of creating a virtual machine via Azure portal and insta
 <p>When update is completed reload the page, and you should see that this time default Apache index page is displayed:</p>
 
 <p><img src="/images/vmss-extension-04.png" alt="VMSS Instances 4" /></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2019/01/23/updating-vmss-images-using-ansible/">Updating Azure Virtual Machine Scale Set Images Using Ansible</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2019-01-23T11:46:27+08:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>23</span><span class='date-suffix'>rd</span>, <span class='date-year'>2019</span></span> <span class='time'>11:46 am</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>This is a new Virtual Machine Scale Set demo I have just released to official <strong>Ansible Playbooks for Azure</strong>.</p>
-
-<p>I have updated Ansible modules to enable:</p>
-
-<ul>
-<li>creating images from existing Azure Virtual Machines</li>
-<li>updating custom image in Azure Virtual Machine Scale Set</li>
-</ul>
-
-
-<p>This demo is divided into a few steps. First it demonstrates how to create two custom images (A and B), and we will create VMSS with image A, and finally we will dynamically change image A to image B.</p>
-
-<p>Before trying the playbooks, clone following repository:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>git clone https://github.com/Azure-Samples/ansible-playbooks.git
-</span><span class='line'><span class="nb">cd </span>ansible-playbooks/vmss_images
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Step One - Create two virtual machines and install HTTPD</h2>
-
-<p>Run following playbook:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>ansible-playbook 01-create-vms.yml --extra-vars <span class="s2">&quot;resource_group=myrg&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>It will:
-- create 2 virtual machines
-- install HTTPD on both of them
-- change index.html to contain <strong>Image A</strong> and <strong>Image B</strong> respectively</p>
-
-<p>Copy and paste IP addresses of both VMs to the browser:</p>
-
-<p><img src="/images/vmss-update-vms-ip-addresses.png" alt="Public IP Address" /></p>
-
-<p>You should see two different versions of VM:</p>
-
-<p><img src="/images/vmss-update-browser-vma.png" alt="VM A" /></p>
-
-<p>and</p>
-
-<p><img src="/images/vmss-update-browser-vmb.png" alt="VM B" /></p>
-
-<h2>Step Two - Capture Images from both Virtual Machines</h2>
-
-<p>Run second playbook to capture the images:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>ansible-playbook 02-capture-images.yml --extra-vars <span class="s2">&quot;resource_group=myrg&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Step Three - Create VMSS using Image A</h2>
-
-<p>In this step we will create following components:
-- public IP address
-- load balancer
-- VMSS referring image A</p>
-
-<p>Run following playbook:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>ansible-playbook 03-create-vmss.yml --extra-vars <span class="s2">&quot;resource_group=myrg&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Check the IP address printed out at the end:</p>
-
-<p><img src="/images/vmss-update-vmss-public-ip.png" alt="Public IP Address" /></p>
-
-<p>check that it works in the browser:</p>
-
-<p><img src="/images/vmss-update-browser-initial-vmss.png" alt="VMSS Image A" /></p>
-
-<h2>Step Four - Update Image Reference in VMSS and Upgrade Instances</h2>
-
-<p>Run final playbook to replace image A with image B:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>ansible-playbook 04-update-vmss-image.yml --extra-vars <span class="s2">&quot;resource_group=myrg&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Now press <strong>F5</strong> in the browser to reload page and see that image gas changed:</p>
-
-<p><img src="/images/vmss-update-browser-updated-vmss.png" alt="VMSS Image B" /></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2019/01/21/some-notes-on-inconsistencies-in-examples/">Some Notes on Inconsistencies in Examples</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2019-01-21T15:39:32+08:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>21</span><span class='date-suffix'>st</span>, <span class='date-year'>2019</span></span> <span class='time'>3:39 pm</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Compute, VirtualMachines - &ldquo;name&rdquo; parameter in body can&rsquo;t be different than one in the URL</p>
-
-<p>adminUsername -> &ldquo;{your-username}&rdquo;
-adminPassword -> &ldquo;{your-password}&rdquo;</p>
 </div>
   
   

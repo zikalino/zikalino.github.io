@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://zikalino.github.io/blog/2019/05/27/idea-of-using-azure-cli-extension-to-test-validate-fix-and-create-azure-swagger-examples/</loc>
+<lastmod>2019-05-27T11:01:54+08:00</lastmod>
+</url>
+<url>
+<loc>http://zikalino.github.io/blog/2019/05/22/ansible-and-azure-cli/</loc>
+<lastmod>2019-05-22T11:25:08+08:00</lastmod>
+</url>
+<url>
 <loc>http://zikalino.github.io/blog/2019/05/14/processing-azure-rest-examples/</loc>
 <lastmod>2019-05-14T11:26:13-07:00</lastmod>
 </url>
@@ -97,5 +105,11 @@
 </url>
 <url>
 <loc>http://zikalino.github.io/</loc>
+</url>
+<url>
+<loc>http://zikalino.github.io/posts/2/</loc>
+</url>
+<url>
+<loc>http://zikalino.github.io/posts/3/</loc>
 </url>
 </urlset>

@@ -1,0 +1,732 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Idea of Using Azure CLI Extension to Test, Validate, Fix and Create Azure Swagger Examples - Zim's Notes</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="This idea occured to me for three reasons: there&rsquo;s no single tool used to create, test and validate Azure Swagger examples
+Azure CLI is the &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://zikalino.github.io/blog/2019/05/27/idea-of-using-azure-cli-extension-to-test-validate-fix-and-create-azure-swagger-examples">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Zim's Notes" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Fjalla+One" rel="stylesheet" type="text/css">
+<!--- MathJax Configuration -->
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Zim's Notes</a></h1>
+  
+    <h2>Just work related notes.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscribe" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS" target="_blank"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="25" height="25" viewbox="0 0 100 100"><path class="social" d="M 13.310204,73.332654 C 5.967347,73.332654 0,79.322448 0,86.621428 c 0,7.338776 5.967347,13.262246 13.310204,13.262246 7.370408,0 13.328572,-5.92245 13.328572,-13.262246 0,-7.29898 -5.958164,-13.288774 -13.328572,-13.288774 z M 0.01530612,33.978572 V 53.143878 C 12.493878,53.143878 24.229592,58.02347 33.068368,66.865306 41.894898,75.685714 46.767346,87.47449 46.767346,100 h 19.25 C 66.017346,63.592858 36.4,33.979592 0.01530612,33.978572 l 0,0 z M 0.03877552,0 V 19.17449 C 44.54796,19.17551 80.77551,55.437756 80.77551,100 H 100 C 100,44.87653 55.15102,0 0.03877552,0 z"></path></svg></a></li>
+  
+</ul>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    
+      <form action="https://www.google.com/search" method="get">
+        <fieldset role="search">
+          <input type="hidden" name="sitesearch" value="zikalino.github.io" />
+    
+          <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+        </fieldset>
+      </form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      
+        <h1 class="entry-title">Idea of Using Azure CLI Extension to Test, Validate, Fix and Create Azure Swagger Examples</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2019-05-27T11:01:54+08:00'><span class='date'><span class='date-month'>May</span> <span class='date-day'>27</span><span class='date-suffix'>th</span>, <span class='date-year'>2019</span></span> <span class='time'>11:01 am</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>This idea occured to me for three reasons:</p>
+
+<ul>
+<li>there&rsquo;s no single tool used to create, test and validate Azure Swagger examples</li>
+<li>Azure CLI is the most commonly used tool to manage Azure resources</li>
+<li>it would be very easy to create an extension based on <strong>az resource</strong> which already allows raw REST API calls meaning it provides entire framework</li>
+</ul>
+
+
+<h2>Running / Validating Existing Examples</h2>
+
+<h3>Overview</h3>
+
+<p>The tool should allow to:
+- run existing examples directly from Azure REST API specs (local or GitHub repo)
+- run examples in their raw form
+- automatically fix problems / adjust naming conventions to match common naming convention
+- allow applying custom parameter fixes
+- generate final adjusted / updated example source code
+- optionally copy example to original source tree or create a pull request in original GitHub repo (fork of Azure REST API specification)</p>
+
+<h3>Command</h3>
+
+<p>To run existing example:</p>
+
+<p><strong>az swagger run &ndash;example {location} [&ndash;raw] [&ndash;override {field}={value}] [&ndash;dependencies] [&ndash;update]</strong></p>
+
+<p>where:</p>
+
+<p><strong>&ndash;example</strong></p>
+
+<p>{location} - either URL of example in GitHub or local path to example in cloned GitHub repo</p>
+
+<p><strong>&ndash;raw</strong></p>
+
+<p>If specified all field values from the example files will be used as is.</p>
+
+<p>By default extension would override existing values using default resource naming conventions.</p>
+
+<p><strong>&ndash;override</strong></p>
+
+<p>{field} - field name or path to a field in</p>
+
+<p><strong>&ndash;dependencies</strong></p>
+
+<p>The tool will attempt to create all the dependencies if they don&rsquo;t exist, e.g. resource group or parent resource (using appropriate examples from swagger).</p>
+
+<p>If this option is note specified, the tool will display appropriate warnings.</p>
+
+<p><strong>&ndash;update</strong></p>
+
+<p>If this option is specified extension will attempt to update existing sample in the local filesystem.
+In the future it could create a branch and pull requests directly to the GitHub Repo.</p>
+
+<p>The attempt will be made if:
+- example was run successfully
+- there are differences between existing example input parameters and overrided input parameters
+- there is difference in return value specified and value actually returned</p>
+
+<p>Sample input could look like that:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>az swagger run --example https://github.com/Azure/azure-rest-api-specs/blob/master/specification/botservice/resource-manager/Microsoft.BotService/preview/2018-07-12/examples/CreateBot.json</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Sample output could look like this:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+<span class='line-number'>128</span>
+<span class='line-number'>129</span>
+<span class='line-number'>130</span>
+<span class='line-number'>131</span>
+<span class='line-number'>132</span>
+<span class='line-number'>133</span>
+<span class='line-number'>134</span>
+<span class='line-number'>135</span>
+<span class='line-number'>136</span>
+<span class='line-number'>137</span>
+<span class='line-number'>138</span>
+<span class='line-number'>139</span>
+<span class='line-number'>140</span>
+<span class='line-number'>141</span>
+<span class='line-number'>142</span>
+<span class='line-number'>143</span>
+<span class='line-number'>144</span>
+<span class='line-number'>145</span>
+<span class='line-number'>146</span>
+<span class='line-number'>147</span>
+<span class='line-number'>148</span>
+<span class='line-number'>149</span>
+<span class='line-number'>150</span>
+<span class='line-number'>151</span>
+<span class='line-number'>152</span>
+<span class='line-number'>153</span>
+<span class='line-number'>154</span>
+<span class='line-number'>155</span>
+<span class='line-number'>156</span>
+<span class='line-number'>157</span>
+<span class='line-number'>158</span>
+<span class='line-number'>159</span>
+<span class='line-number'>160</span>
+<span class='line-number'>161</span>
+<span class='line-number'>162</span>
+<span class='line-number'>163</span>
+<span class='line-number'>164</span>
+<span class='line-number'>165</span>
+<span class='line-number'>166</span>
+<span class='line-number'>167</span>
+<span class='line-number'>168</span>
+<span class='line-number'>169</span>
+<span class='line-number'>170</span>
+<span class='line-number'>171</span>
+<span class='line-number'>172</span>
+<span class='line-number'>173</span>
+<span class='line-number'>174</span>
+<span class='line-number'>175</span>
+<span class='line-number'>176</span>
+<span class='line-number'>177</span>
+<span class='line-number'>178</span>
+<span class='line-number'>179</span>
+<span class='line-number'>180</span>
+<span class='line-number'>181</span>
+<span class='line-number'>182</span>
+<span class='line-number'>183</span>
+<span class='line-number'>184</span>
+<span class='line-number'>185</span>
+<span class='line-number'>186</span>
+<span class='line-number'>187</span>
+<span class='line-number'>188</span>
+<span class='line-number'>189</span>
+<span class='line-number'>190</span>
+<span class='line-number'>191</span>
+<span class='line-number'>192</span>
+<span class='line-number'>193</span>
+<span class='line-number'>194</span>
+<span class='line-number'>195</span>
+<span class='line-number'>196</span>
+<span class='line-number'>197</span>
+<span class='line-number'>198</span>
+<span class='line-number'>199</span>
+<span class='line-number'>200</span>
+<span class='line-number'>201</span>
+<span class='line-number'>202</span>
+<span class='line-number'>203</span>
+<span class='line-number'>204</span>
+<span class='line-number'>205</span>
+<span class='line-number'>206</span>
+<span class='line-number'>207</span>
+<span class='line-number'>208</span>
+<span class='line-number'>209</span>
+<span class='line-number'>210</span>
+<span class='line-number'>211</span>
+<span class='line-number'>212</span>
+<span class='line-number'>213</span>
+<span class='line-number'>214</span>
+<span class='line-number'>215</span>
+<span class='line-number'>216</span>
+<span class='line-number'>217</span>
+<span class='line-number'>218</span>
+<span class='line-number'>219</span>
+<span class='line-number'>220</span>
+<span class='line-number'>221</span>
+<span class='line-number'>222</span>
+<span class='line-number'>223</span>
+<span class='line-number'>224</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>-------- WARNINGS
+</span><span class='line'>- resourceGroupName "OneResourceGroup" was replaced by "myResourceGroup"
+</span><span class='line'>- resourceName "sampleBot" was replaced by "myBot"
+</span><span class='line'>-------- ORIGINAL EXAMPLE
+</span><span class='line'>{
+</span><span class='line'>  "parameters": {
+</span><span class='line'>    "subscriptionId": "subscription-id",
+</span><span class='line'>    "resourceGroupName": "OneResourceGroupName",
+</span><span class='line'>    "api-version": "2017-01-01",
+</span><span class='line'>    "resourceName": "samplebotname",
+</span><span class='line'>    "parameters": {
+</span><span class='line'>      "location": "West US",
+</span><span class='line'>      "sku": {
+</span><span class='line'>        "name": "S1"
+</span><span class='line'>      },
+</span><span class='line'>      "etag": "etag1",
+</span><span class='line'>      "tags": {
+</span><span class='line'>        "tag1": "value1",
+</span><span class='line'>        "tag2": "value2"
+</span><span class='line'>      },
+</span><span class='line'>      "name": "samplename",
+</span><span class='line'>      "type": "sampletype",
+</span><span class='line'>      "id": "someid",
+</span><span class='line'>      "kind": "sdk",
+</span><span class='line'>      "properties": {
+</span><span class='line'>        "description": "The description of the bot",
+</span><span class='line'>        "developerAppInsightKey": "appinsightskey",
+</span><span class='line'>        "developerAppInsightsApiKey": "appinsightsapikey",
+</span><span class='line'>        "developerAppInsightsApplicationId": "appinsightsappid",
+</span><span class='line'>        "displayName": "The Name of the bot",
+</span><span class='line'>        "endpoint": "http://mybot.coffee",
+</span><span class='line'>        "iconUrl": "http://myicon",
+</span><span class='line'>        "luisAppIds": [
+</span><span class='line'>          "luisappid1",
+</span><span class='line'>          "luisappid2"
+</span><span class='line'>        ],
+</span><span class='line'>        "luisKey": "luiskey",
+</span><span class='line'>        "msaAppId": "exampleappid"
+</span><span class='line'>      }
+</span><span class='line'>    }
+</span><span class='line'>  },
+</span><span class='line'>  "responses": {
+</span><span class='line'>    "200": {
+</span><span class='line'>      "body": {
+</span><span class='line'>        "location": "West US",
+</span><span class='line'>        "tags": {
+</span><span class='line'>          "tag1": "value1",
+</span><span class='line'>          "tag2": "value2"
+</span><span class='line'>        },
+</span><span class='line'>        "name": "samplename",
+</span><span class='line'>        "type": "sampletype",
+</span><span class='line'>        "id": "someid",
+</span><span class='line'>        "kind": "sdk",
+</span><span class='line'>        "etag": "etag1",
+</span><span class='line'>        "properties": {
+</span><span class='line'>          "description": "The description of the bot",
+</span><span class='line'>          "developerAppInsightKey": "appinsightskey",
+</span><span class='line'>          "developerAppInsightsApplicationId": "appinsightsappid",
+</span><span class='line'>          "displayName": "The Name of the bot",
+</span><span class='line'>          "endpoint": "http://mybot.coffee",
+</span><span class='line'>          "endpointVersion": "version",
+</span><span class='line'>          "iconUrl": "http://myicon",
+</span><span class='line'>          "luisAppIds": [
+</span><span class='line'>            "luisappid1",
+</span><span class='line'>            "luisappid2"
+</span><span class='line'>          ],
+</span><span class='line'>          "msaAppId": "msaappid",
+</span><span class='line'>          "configuredChannels": [
+</span><span class='line'>            "facebook",
+</span><span class='line'>            "groupme"
+</span><span class='line'>          ],
+</span><span class='line'>          "enabledChannels": [
+</span><span class='line'>            "facebook"
+</span><span class='line'>          ]
+</span><span class='line'>        }
+</span><span class='line'>      }
+</span><span class='line'>    },
+</span><span class='line'>    "201": {
+</span><span class='line'>      "body": {
+</span><span class='line'>        "location": "West US",
+</span><span class='line'>        "tags": {
+</span><span class='line'>          "tag1": "value1",
+</span><span class='line'>          "tag2": "value2"
+</span><span class='line'>        },
+</span><span class='line'>        "name": "samplename",
+</span><span class='line'>        "type": "sampletype",
+</span><span class='line'>        "id": "someid",
+</span><span class='line'>        "kind": "sdk",
+</span><span class='line'>        "properties": {
+</span><span class='line'>          "description": "The description of the bot",
+</span><span class='line'>          "developerAppInsightsApplicationId": "appinsightsappid",
+</span><span class='line'>          "displayName": "The Name of the bot",
+</span><span class='line'>          "endpoint": "http://mybot.coffee",
+</span><span class='line'>          "endpointVersion": "version",
+</span><span class='line'>          "iconUrl": "http://myicon",
+</span><span class='line'>          "luisAppIds": [
+</span><span class='line'>            "luisappid1",
+</span><span class='line'>            "luisappid2"
+</span><span class='line'>          ],
+</span><span class='line'>          "msaAppId": "msaappid",
+</span><span class='line'>          "configuredChannels": [
+</span><span class='line'>            "facebook",
+</span><span class='line'>            "groupme"
+</span><span class='line'>          ],
+</span><span class='line'>          "enabledChannels": [
+</span><span class='line'>            "facebook"
+</span><span class='line'>          ]
+</span><span class='line'>        }
+</span><span class='line'>      }
+</span><span class='line'>    }
+</span><span class='line'>  }
+</span><span class='line'>}
+</span><span class='line'>-------- UPDATED EXAMPLE (createbot.json)
+</span><span class='line'>{
+</span><span class='line'>  "parameters": {
+</span><span class='line'>    "subscriptionId": "subscription-id",
+</span><span class='line'>    "resourceGroupName": "myResourceGroup",
+</span><span class='line'>    "api-version": "2017-01-01",
+</span><span class='line'>    "resourceName": "myBot",
+</span><span class='line'>    "parameters": {
+</span><span class='line'>      "location": "West US",
+</span><span class='line'>      "sku": {
+</span><span class='line'>        "name": "S1"
+</span><span class='line'>      },
+</span><span class='line'>      "etag": "etag1",
+</span><span class='line'>      "tags": {
+</span><span class='line'>        "tag1": "value1",
+</span><span class='line'>        "tag2": "value2"
+</span><span class='line'>      },
+</span><span class='line'>      "name": "samplename",
+</span><span class='line'>      "type": "sampletype",
+</span><span class='line'>      "id": "someid",
+</span><span class='line'>      "kind": "sdk",
+</span><span class='line'>      "properties": {
+</span><span class='line'>        "description": "The description of the bot",
+</span><span class='line'>        "developerAppInsightKey": "appinsightskey",
+</span><span class='line'>        "developerAppInsightsApiKey": "appinsightsapikey",
+</span><span class='line'>        "developerAppInsightsApplicationId": "appinsightsappid",
+</span><span class='line'>        "displayName": "The Name of the bot",
+</span><span class='line'>        "endpoint": "http://mybot.coffee",
+</span><span class='line'>        "iconUrl": "http://myicon",
+</span><span class='line'>        "luisAppIds": [
+</span><span class='line'>          "luisappid1",
+</span><span class='line'>          "luisappid2"
+</span><span class='line'>        ],
+</span><span class='line'>        "luisKey": "luiskey",
+</span><span class='line'>        "msaAppId": "exampleappid"
+</span><span class='line'>      }
+</span><span class='line'>    }
+</span><span class='line'>  },
+</span><span class='line'>  "responses": {
+</span><span class='line'>    "200": {
+</span><span class='line'>      "body": {
+</span><span class='line'>        "location": "West US",
+</span><span class='line'>        "tags": {
+</span><span class='line'>          "tag1": "value1",
+</span><span class='line'>          "tag2": "value2"
+</span><span class='line'>        },
+</span><span class='line'>        "name": "samplename",
+</span><span class='line'>        "type": "sampletype",
+</span><span class='line'>        "id": "someid",
+</span><span class='line'>        "kind": "sdk",
+</span><span class='line'>        "etag": "etag1",
+</span><span class='line'>        "properties": {
+</span><span class='line'>          "description": "The description of the bot",
+</span><span class='line'>          "developerAppInsightKey": "appinsightskey",
+</span><span class='line'>          "developerAppInsightsApplicationId": "appinsightsappid",
+</span><span class='line'>          "displayName": "The Name of the bot",
+</span><span class='line'>          "endpoint": "http://mybot.coffee",
+</span><span class='line'>          "endpointVersion": "version",
+</span><span class='line'>          "iconUrl": "http://myicon",
+</span><span class='line'>          "luisAppIds": [
+</span><span class='line'>            "luisappid1",
+</span><span class='line'>            "luisappid2"
+</span><span class='line'>          ],
+</span><span class='line'>          "msaAppId": "msaappid",
+</span><span class='line'>          "configuredChannels": [
+</span><span class='line'>            "facebook",
+</span><span class='line'>            "groupme"
+</span><span class='line'>          ],
+</span><span class='line'>          "enabledChannels": [
+</span><span class='line'>            "facebook"
+</span><span class='line'>          ]
+</span><span class='line'>        }
+</span><span class='line'>      }
+</span><span class='line'>    },
+</span><span class='line'>    "201": {
+</span><span class='line'>      "body": {
+</span><span class='line'>        "location": "West US",
+</span><span class='line'>        "tags": {
+</span><span class='line'>          "tag1": "value1",
+</span><span class='line'>          "tag2": "value2"
+</span><span class='line'>        },
+</span><span class='line'>        "name": "samplename",
+</span><span class='line'>        "type": "sampletype",
+</span><span class='line'>        "id": "someid",
+</span><span class='line'>        "kind": "sdk",
+</span><span class='line'>        "properties": {
+</span><span class='line'>          "description": "The description of the bot",
+</span><span class='line'>          "developerAppInsightsApplicationId": "appinsightsappid",
+</span><span class='line'>          "displayName": "The Name of the bot",
+</span><span class='line'>          "endpoint": "http://mybot.coffee",
+</span><span class='line'>          "endpointVersion": "version",
+</span><span class='line'>          "iconUrl": "http://myicon",
+</span><span class='line'>          "luisAppIds": [
+</span><span class='line'>            "luisappid1",
+</span><span class='line'>            "luisappid2"
+</span><span class='line'>          ],
+</span><span class='line'>          "msaAppId": "msaappid",
+</span><span class='line'>          "configuredChannels": [
+</span><span class='line'>            "facebook",
+</span><span class='line'>            "groupme"
+</span><span class='line'>          ],
+</span><span class='line'>          "enabledChannels": [
+</span><span class='line'>            "facebook"
+</span><span class='line'>          ]
+</span><span class='line'>        }
+</span><span class='line'>      }
+</span><span class='line'>    }
+</span><span class='line'>  }
+</span><span class='line'>}
+</span><span class='line'>-------- RESULT
+</span><span class='line'>UPDATED: YES
+</span><span class='line'>RUN: SUCCESS</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Scaffolding Examples</h2>
+
+<h3>Overview</h3>
+
+<p>If example doesn&rsquo;t exist, the tool will allow creating a template based on REST API specs.
+In the next step user should update the template and rerun the tool to validate example until it runs correctly.</p>
+
+<h3>Command</h3>
+
+<p><strong>az swagger scaffold &ndash;swagger {location} &ndash;uri {resource-uri} &ndash;method {method} [&ndash;update]</strong></p>
+
+<p><strong>&ndash;example</strong></p>
+
+<p>{location} - either URL of specific swagger json file or path in local</p>
+
+<p><strong>&ndash;uri</strong></p>
+
+<p>Resource URI as appears in swagger specification / documentation.</p>
+
+<p><strong>&ndash;method</strong></p>
+
+<p>Method for which scaffolding should be done, e.g. <strong>put</strong>, <strong>get</strong>, etc&hellip;</p>
+
+<p><strong>&ndash;update</strong></p>
+
+<p>If this option is specified extension will attempt to update existing sample in the local filesystem.
+In the future it could create a branch and pull requests directly to the GitHub Repo.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+
+
+  <span class="byline author vcard">Authored by <span class="fn">
+  
+    Your Name
+  
+  </span></span>
+
+
+      
+
+
+
+
+<time class='entry-date' datetime='2019-05-27T11:01:54+08:00'><span class='date'><span class='date-month'>May</span> <span class='date-day'>27</span><span class='date-suffix'>th</span>, <span class='date-year'>2019</span></span> <span class='time'>11:01 am</span></time>
+      
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://zikalino.github.io/blog/2019/05/27/idea-of-using-azure-cli-extension-to-test-validate-fix-and-create-azure-swagger-examples/" data-via="" data-counturl="http://zikalino.github.io/blog/2019/05/27/idea-of-using-azure-cli-extension-to-test-validate-fix-and-create-azure-swagger-examples/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2019/05/22/ansible-and-azure-cli/" title="Previous Post: Ansible and Azure CLI">&laquo; Ansible and Azure CLI</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+
+</div>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2019 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a> | Themed with <a href="https://github.com/lucaslew/whitespace">Whitespace</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

@@ -9,9 +9,8 @@
   <meta name="author" content="Your Name">
 
   
-  <meta name="description" content="Some Issues with Azure REST API Examples Examples are currently not tested
-No naming conventions
-Missing Examples (for instance Web App, Function App &hellip;">
+  <meta name="description" content="This idea occured to me for three reasons: there&rsquo;s no single tool used to create, test and validate Azure Swagger examples
+Azure CLI is the &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -80,6 +79,646 @@ Missing Examples (for instance Web App, Function App &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2019/05/27/idea-of-using-azure-cli-extension-to-test-validate-fix-and-create-azure-swagger-examples/">Idea of Using Azure CLI Extension to Test, Validate, Fix and Create Azure Swagger Examples</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2019-05-27T11:01:54+08:00'><span class='date'><span class='date-month'>May</span> <span class='date-day'>27</span><span class='date-suffix'>th</span>, <span class='date-year'>2019</span></span> <span class='time'>11:01 am</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>This idea occured to me for three reasons:</p>
+
+<ul>
+<li>there&rsquo;s no single tool used to create, test and validate Azure Swagger examples</li>
+<li>Azure CLI is the most commonly used tool to manage Azure resources</li>
+<li>it would be very easy to create an extension based on <strong>az resource</strong> which already allows raw REST API calls meaning it provides entire framework</li>
+</ul>
+
+
+<h2>Running / Validating Existing Examples</h2>
+
+<h3>Overview</h3>
+
+<p>The tool should allow to:
+- run existing examples directly from Azure REST API specs (local or GitHub repo)
+- run examples in their raw form
+- automatically fix problems / adjust naming conventions to match common naming convention
+- allow applying custom parameter fixes
+- generate final adjusted / updated example source code
+- optionally copy example to original source tree or create a pull request in original GitHub repo (fork of Azure REST API specification)</p>
+
+<h3>Command</h3>
+
+<p>To run existing example:</p>
+
+<p><strong>az swagger run &ndash;example {location} [&ndash;raw] [&ndash;override {field}={value}] [&ndash;dependencies] [&ndash;update]</strong></p>
+
+<p>where:</p>
+
+<p><strong>&ndash;example</strong></p>
+
+<p>{location} - either URL of example in GitHub or local path to example in cloned GitHub repo</p>
+
+<p><strong>&ndash;raw</strong></p>
+
+<p>If specified all field values from the example files will be used as is.</p>
+
+<p>By default extension would override existing values using default resource naming conventions.</p>
+
+<p><strong>&ndash;override</strong></p>
+
+<p>{field} - field name or path to a field in</p>
+
+<p><strong>&ndash;dependencies</strong></p>
+
+<p>The tool will attempt to create all the dependencies if they don&rsquo;t exist, e.g. resource group or parent resource (using appropriate examples from swagger).</p>
+
+<p>If this option is note specified, the tool will display appropriate warnings.</p>
+
+<p><strong>&ndash;update</strong></p>
+
+<p>If this option is specified extension will attempt to update existing sample in the local filesystem.
+In the future it could create a branch and pull requests directly to the GitHub Repo.</p>
+
+<p>The attempt will be made if:
+- example was run successfully
+- there are differences between existing example input parameters and overrided input parameters
+- there is difference in return value specified and value actually returned</p>
+
+<p>Sample input could look like that:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>az swagger run --example https://github.com/Azure/azure-rest-api-specs/blob/master/specification/botservice/resource-manager/Microsoft.BotService/preview/2018-07-12/examples/CreateBot.json</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Sample output could look like this:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+<span class='line-number'>128</span>
+<span class='line-number'>129</span>
+<span class='line-number'>130</span>
+<span class='line-number'>131</span>
+<span class='line-number'>132</span>
+<span class='line-number'>133</span>
+<span class='line-number'>134</span>
+<span class='line-number'>135</span>
+<span class='line-number'>136</span>
+<span class='line-number'>137</span>
+<span class='line-number'>138</span>
+<span class='line-number'>139</span>
+<span class='line-number'>140</span>
+<span class='line-number'>141</span>
+<span class='line-number'>142</span>
+<span class='line-number'>143</span>
+<span class='line-number'>144</span>
+<span class='line-number'>145</span>
+<span class='line-number'>146</span>
+<span class='line-number'>147</span>
+<span class='line-number'>148</span>
+<span class='line-number'>149</span>
+<span class='line-number'>150</span>
+<span class='line-number'>151</span>
+<span class='line-number'>152</span>
+<span class='line-number'>153</span>
+<span class='line-number'>154</span>
+<span class='line-number'>155</span>
+<span class='line-number'>156</span>
+<span class='line-number'>157</span>
+<span class='line-number'>158</span>
+<span class='line-number'>159</span>
+<span class='line-number'>160</span>
+<span class='line-number'>161</span>
+<span class='line-number'>162</span>
+<span class='line-number'>163</span>
+<span class='line-number'>164</span>
+<span class='line-number'>165</span>
+<span class='line-number'>166</span>
+<span class='line-number'>167</span>
+<span class='line-number'>168</span>
+<span class='line-number'>169</span>
+<span class='line-number'>170</span>
+<span class='line-number'>171</span>
+<span class='line-number'>172</span>
+<span class='line-number'>173</span>
+<span class='line-number'>174</span>
+<span class='line-number'>175</span>
+<span class='line-number'>176</span>
+<span class='line-number'>177</span>
+<span class='line-number'>178</span>
+<span class='line-number'>179</span>
+<span class='line-number'>180</span>
+<span class='line-number'>181</span>
+<span class='line-number'>182</span>
+<span class='line-number'>183</span>
+<span class='line-number'>184</span>
+<span class='line-number'>185</span>
+<span class='line-number'>186</span>
+<span class='line-number'>187</span>
+<span class='line-number'>188</span>
+<span class='line-number'>189</span>
+<span class='line-number'>190</span>
+<span class='line-number'>191</span>
+<span class='line-number'>192</span>
+<span class='line-number'>193</span>
+<span class='line-number'>194</span>
+<span class='line-number'>195</span>
+<span class='line-number'>196</span>
+<span class='line-number'>197</span>
+<span class='line-number'>198</span>
+<span class='line-number'>199</span>
+<span class='line-number'>200</span>
+<span class='line-number'>201</span>
+<span class='line-number'>202</span>
+<span class='line-number'>203</span>
+<span class='line-number'>204</span>
+<span class='line-number'>205</span>
+<span class='line-number'>206</span>
+<span class='line-number'>207</span>
+<span class='line-number'>208</span>
+<span class='line-number'>209</span>
+<span class='line-number'>210</span>
+<span class='line-number'>211</span>
+<span class='line-number'>212</span>
+<span class='line-number'>213</span>
+<span class='line-number'>214</span>
+<span class='line-number'>215</span>
+<span class='line-number'>216</span>
+<span class='line-number'>217</span>
+<span class='line-number'>218</span>
+<span class='line-number'>219</span>
+<span class='line-number'>220</span>
+<span class='line-number'>221</span>
+<span class='line-number'>222</span>
+<span class='line-number'>223</span>
+<span class='line-number'>224</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>-------- WARNINGS
+</span><span class='line'>- resourceGroupName "OneResourceGroup" was replaced by "myResourceGroup"
+</span><span class='line'>- resourceName "sampleBot" was replaced by "myBot"
+</span><span class='line'>-------- ORIGINAL EXAMPLE
+</span><span class='line'>{
+</span><span class='line'>  "parameters": {
+</span><span class='line'>    "subscriptionId": "subscription-id",
+</span><span class='line'>    "resourceGroupName": "OneResourceGroupName",
+</span><span class='line'>    "api-version": "2017-01-01",
+</span><span class='line'>    "resourceName": "samplebotname",
+</span><span class='line'>    "parameters": {
+</span><span class='line'>      "location": "West US",
+</span><span class='line'>      "sku": {
+</span><span class='line'>        "name": "S1"
+</span><span class='line'>      },
+</span><span class='line'>      "etag": "etag1",
+</span><span class='line'>      "tags": {
+</span><span class='line'>        "tag1": "value1",
+</span><span class='line'>        "tag2": "value2"
+</span><span class='line'>      },
+</span><span class='line'>      "name": "samplename",
+</span><span class='line'>      "type": "sampletype",
+</span><span class='line'>      "id": "someid",
+</span><span class='line'>      "kind": "sdk",
+</span><span class='line'>      "properties": {
+</span><span class='line'>        "description": "The description of the bot",
+</span><span class='line'>        "developerAppInsightKey": "appinsightskey",
+</span><span class='line'>        "developerAppInsightsApiKey": "appinsightsapikey",
+</span><span class='line'>        "developerAppInsightsApplicationId": "appinsightsappid",
+</span><span class='line'>        "displayName": "The Name of the bot",
+</span><span class='line'>        "endpoint": "http://mybot.coffee",
+</span><span class='line'>        "iconUrl": "http://myicon",
+</span><span class='line'>        "luisAppIds": [
+</span><span class='line'>          "luisappid1",
+</span><span class='line'>          "luisappid2"
+</span><span class='line'>        ],
+</span><span class='line'>        "luisKey": "luiskey",
+</span><span class='line'>        "msaAppId": "exampleappid"
+</span><span class='line'>      }
+</span><span class='line'>    }
+</span><span class='line'>  },
+</span><span class='line'>  "responses": {
+</span><span class='line'>    "200": {
+</span><span class='line'>      "body": {
+</span><span class='line'>        "location": "West US",
+</span><span class='line'>        "tags": {
+</span><span class='line'>          "tag1": "value1",
+</span><span class='line'>          "tag2": "value2"
+</span><span class='line'>        },
+</span><span class='line'>        "name": "samplename",
+</span><span class='line'>        "type": "sampletype",
+</span><span class='line'>        "id": "someid",
+</span><span class='line'>        "kind": "sdk",
+</span><span class='line'>        "etag": "etag1",
+</span><span class='line'>        "properties": {
+</span><span class='line'>          "description": "The description of the bot",
+</span><span class='line'>          "developerAppInsightKey": "appinsightskey",
+</span><span class='line'>          "developerAppInsightsApplicationId": "appinsightsappid",
+</span><span class='line'>          "displayName": "The Name of the bot",
+</span><span class='line'>          "endpoint": "http://mybot.coffee",
+</span><span class='line'>          "endpointVersion": "version",
+</span><span class='line'>          "iconUrl": "http://myicon",
+</span><span class='line'>          "luisAppIds": [
+</span><span class='line'>            "luisappid1",
+</span><span class='line'>            "luisappid2"
+</span><span class='line'>          ],
+</span><span class='line'>          "msaAppId": "msaappid",
+</span><span class='line'>          "configuredChannels": [
+</span><span class='line'>            "facebook",
+</span><span class='line'>            "groupme"
+</span><span class='line'>          ],
+</span><span class='line'>          "enabledChannels": [
+</span><span class='line'>            "facebook"
+</span><span class='line'>          ]
+</span><span class='line'>        }
+</span><span class='line'>      }
+</span><span class='line'>    },
+</span><span class='line'>    "201": {
+</span><span class='line'>      "body": {
+</span><span class='line'>        "location": "West US",
+</span><span class='line'>        "tags": {
+</span><span class='line'>          "tag1": "value1",
+</span><span class='line'>          "tag2": "value2"
+</span><span class='line'>        },
+</span><span class='line'>        "name": "samplename",
+</span><span class='line'>        "type": "sampletype",
+</span><span class='line'>        "id": "someid",
+</span><span class='line'>        "kind": "sdk",
+</span><span class='line'>        "properties": {
+</span><span class='line'>          "description": "The description of the bot",
+</span><span class='line'>          "developerAppInsightsApplicationId": "appinsightsappid",
+</span><span class='line'>          "displayName": "The Name of the bot",
+</span><span class='line'>          "endpoint": "http://mybot.coffee",
+</span><span class='line'>          "endpointVersion": "version",
+</span><span class='line'>          "iconUrl": "http://myicon",
+</span><span class='line'>          "luisAppIds": [
+</span><span class='line'>            "luisappid1",
+</span><span class='line'>            "luisappid2"
+</span><span class='line'>          ],
+</span><span class='line'>          "msaAppId": "msaappid",
+</span><span class='line'>          "configuredChannels": [
+</span><span class='line'>            "facebook",
+</span><span class='line'>            "groupme"
+</span><span class='line'>          ],
+</span><span class='line'>          "enabledChannels": [
+</span><span class='line'>            "facebook"
+</span><span class='line'>          ]
+</span><span class='line'>        }
+</span><span class='line'>      }
+</span><span class='line'>    }
+</span><span class='line'>  }
+</span><span class='line'>}
+</span><span class='line'>-------- UPDATED EXAMPLE (createbot.json)
+</span><span class='line'>{
+</span><span class='line'>  "parameters": {
+</span><span class='line'>    "subscriptionId": "subscription-id",
+</span><span class='line'>    "resourceGroupName": "myResourceGroup",
+</span><span class='line'>    "api-version": "2017-01-01",
+</span><span class='line'>    "resourceName": "myBot",
+</span><span class='line'>    "parameters": {
+</span><span class='line'>      "location": "West US",
+</span><span class='line'>      "sku": {
+</span><span class='line'>        "name": "S1"
+</span><span class='line'>      },
+</span><span class='line'>      "etag": "etag1",
+</span><span class='line'>      "tags": {
+</span><span class='line'>        "tag1": "value1",
+</span><span class='line'>        "tag2": "value2"
+</span><span class='line'>      },
+</span><span class='line'>      "name": "samplename",
+</span><span class='line'>      "type": "sampletype",
+</span><span class='line'>      "id": "someid",
+</span><span class='line'>      "kind": "sdk",
+</span><span class='line'>      "properties": {
+</span><span class='line'>        "description": "The description of the bot",
+</span><span class='line'>        "developerAppInsightKey": "appinsightskey",
+</span><span class='line'>        "developerAppInsightsApiKey": "appinsightsapikey",
+</span><span class='line'>        "developerAppInsightsApplicationId": "appinsightsappid",
+</span><span class='line'>        "displayName": "The Name of the bot",
+</span><span class='line'>        "endpoint": "http://mybot.coffee",
+</span><span class='line'>        "iconUrl": "http://myicon",
+</span><span class='line'>        "luisAppIds": [
+</span><span class='line'>          "luisappid1",
+</span><span class='line'>          "luisappid2"
+</span><span class='line'>        ],
+</span><span class='line'>        "luisKey": "luiskey",
+</span><span class='line'>        "msaAppId": "exampleappid"
+</span><span class='line'>      }
+</span><span class='line'>    }
+</span><span class='line'>  },
+</span><span class='line'>  "responses": {
+</span><span class='line'>    "200": {
+</span><span class='line'>      "body": {
+</span><span class='line'>        "location": "West US",
+</span><span class='line'>        "tags": {
+</span><span class='line'>          "tag1": "value1",
+</span><span class='line'>          "tag2": "value2"
+</span><span class='line'>        },
+</span><span class='line'>        "name": "samplename",
+</span><span class='line'>        "type": "sampletype",
+</span><span class='line'>        "id": "someid",
+</span><span class='line'>        "kind": "sdk",
+</span><span class='line'>        "etag": "etag1",
+</span><span class='line'>        "properties": {
+</span><span class='line'>          "description": "The description of the bot",
+</span><span class='line'>          "developerAppInsightKey": "appinsightskey",
+</span><span class='line'>          "developerAppInsightsApplicationId": "appinsightsappid",
+</span><span class='line'>          "displayName": "The Name of the bot",
+</span><span class='line'>          "endpoint": "http://mybot.coffee",
+</span><span class='line'>          "endpointVersion": "version",
+</span><span class='line'>          "iconUrl": "http://myicon",
+</span><span class='line'>          "luisAppIds": [
+</span><span class='line'>            "luisappid1",
+</span><span class='line'>            "luisappid2"
+</span><span class='line'>          ],
+</span><span class='line'>          "msaAppId": "msaappid",
+</span><span class='line'>          "configuredChannels": [
+</span><span class='line'>            "facebook",
+</span><span class='line'>            "groupme"
+</span><span class='line'>          ],
+</span><span class='line'>          "enabledChannels": [
+</span><span class='line'>            "facebook"
+</span><span class='line'>          ]
+</span><span class='line'>        }
+</span><span class='line'>      }
+</span><span class='line'>    },
+</span><span class='line'>    "201": {
+</span><span class='line'>      "body": {
+</span><span class='line'>        "location": "West US",
+</span><span class='line'>        "tags": {
+</span><span class='line'>          "tag1": "value1",
+</span><span class='line'>          "tag2": "value2"
+</span><span class='line'>        },
+</span><span class='line'>        "name": "samplename",
+</span><span class='line'>        "type": "sampletype",
+</span><span class='line'>        "id": "someid",
+</span><span class='line'>        "kind": "sdk",
+</span><span class='line'>        "properties": {
+</span><span class='line'>          "description": "The description of the bot",
+</span><span class='line'>          "developerAppInsightsApplicationId": "appinsightsappid",
+</span><span class='line'>          "displayName": "The Name of the bot",
+</span><span class='line'>          "endpoint": "http://mybot.coffee",
+</span><span class='line'>          "endpointVersion": "version",
+</span><span class='line'>          "iconUrl": "http://myicon",
+</span><span class='line'>          "luisAppIds": [
+</span><span class='line'>            "luisappid1",
+</span><span class='line'>            "luisappid2"
+</span><span class='line'>          ],
+</span><span class='line'>          "msaAppId": "msaappid",
+</span><span class='line'>          "configuredChannels": [
+</span><span class='line'>            "facebook",
+</span><span class='line'>            "groupme"
+</span><span class='line'>          ],
+</span><span class='line'>          "enabledChannels": [
+</span><span class='line'>            "facebook"
+</span><span class='line'>          ]
+</span><span class='line'>        }
+</span><span class='line'>      }
+</span><span class='line'>    }
+</span><span class='line'>  }
+</span><span class='line'>}
+</span><span class='line'>-------- RESULT
+</span><span class='line'>UPDATED: YES
+</span><span class='line'>RUN: SUCCESS</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Scaffolding Examples</h2>
+
+<h3>Overview</h3>
+
+<p>If example doesn&rsquo;t exist, the tool will allow creating a template based on REST API specs.
+In the next step user should update the template and rerun the tool to validate example until it runs correctly.</p>
+
+<h3>Command</h3>
+
+<p><strong>az swagger scaffold &ndash;swagger {location} &ndash;uri {resource-uri} &ndash;method {method} [&ndash;update]</strong></p>
+
+<p><strong>&ndash;example</strong></p>
+
+<p>{location} - either URL of specific swagger json file or path in local</p>
+
+<p><strong>&ndash;uri</strong></p>
+
+<p>Resource URI as appears in swagger specification / documentation.</p>
+
+<p><strong>&ndash;method</strong></p>
+
+<p>Method for which scaffolding should be done, e.g. <strong>put</strong>, <strong>get</strong>, etc&hellip;</p>
+
+<p><strong>&ndash;update</strong></p>
+
+<p>If this option is specified extension will attempt to update existing sample in the local filesystem.
+In the future it could create a branch and pull requests directly to the GitHub Repo.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2019/05/22/ansible-and-azure-cli/">Ansible and Azure CLI</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2019-05-22T11:25:08+08:00'><span class='date'><span class='date-month'>May</span> <span class='date-day'>22</span><span class='date-suffix'>nd</span>, <span class='date-year'>2019</span></span> <span class='time'>11:25 am</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>What if&hellip;</h3>
+
+<p>&hellip; Ansible support for Azure was based on <strong>Azure CLI</strong>?</p>
+
+<p>We could have a single base <strong>az</strong> Ansible module to encapsulate <strong>Azure CLI</strong>.</p>
+
+<p>This module would just handle all the interaction with unerlying <strong>Azure CLI</strong>, including:
+- handling currently selected subscription if necessary
+- handling authentication</p>
+
+<p>On the top of that we could just create symbolic links to that module for every Azure resource, for instance:</p>
+
+<ul>
+<li><strong>az_vm</strong></li>
+<li><strong>az_acr</strong></li>
+<li><strong>az_vmss</strong></li>
+</ul>
+
+
+<p><strong>az</strong> module knows through which link it was called, so it could generate documentation and argument specification dynamically.</p>
+
+<h3>Benefits</h3>
+
+<ul>
+<li>Azure CLI has extremely well maintained UX, which just appears ideal for tools like Ansible</li>
+<li>Examples are curated for every resource and well tested</li>
+<li>Documentation could be just reused without any changes</li>
+</ul>
+
+
+<h3>What&rsquo;s missing?</h3>
+
+<ul>
+<li>idempotence</li>
+<li>idempotence</li>
+<li>idempotence</li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2555,380 +3194,6 @@ Below task will increment number of nodes from 1 to 2.</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2019/03/22/new-ansible-module-azure-rm-cosmosdbaccount/">New Ansible Module Azure_rm_cosmosdbaccount</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2019-03-22T09:00:13+08:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>22</span><span class='date-suffix'>nd</span>, <span class='date-year'>2019</span></span> <span class='time'>9:00 am</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Cosmos DB Account sample is available here:</p>
-
-<p><a href="https://github.com/Azure-Samples/ansible-playbooks/blob/master/cosmosdb-create.yml">https://github.com/Azure-Samples/ansible-playbooks/blob/master/cosmosdb-create.yml</a></p>
-
-<p>This sample:</p>
-
-<ul>
-<li>creates random postfix to use in CosmosDB account name</li>
-<li>creates resource group</li>
-<li>creates virtual network</li>
-<li>creates subnet</li>
-<li>creates CosmosDB account</li>
-<li>queries and prints CosmosDB keys</li>
-</ul>
-
-
-<h2>Create Random Postfix</h2>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">hosts</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">localhost</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">tasks</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Prepare random postfix</span>
-</span><span class='line'>      <span class="l-Scalar-Plain">set_fact</span><span class="p-Indicator">:</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">rpfx</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">1000</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">random</span><span class="nv"> </span><span class="s">}}&quot;</span>
-</span><span class='line'>      <span class="l-Scalar-Plain">run_once</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">yes</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Variables</h2>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='yaml'><span class='line'>  <span class="l-Scalar-Plain">vars</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">resource_group_name</span><span class="nv"> </span><span class="s">}}&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">location</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">eastus</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">vnet_name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">myVirtualNetwork</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">subnet_name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">mySubnet</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">cosmosdbaccount_name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">cosmos{{ rpfx }}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Following variables can be set in <strong>vars</strong> section of the playbook:</p>
-
-<table>
-<thead>
-<tr>
-<th>Variable Name</th>
-<th>Description</th>
-<th>Notes</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>resource_group</td>
-<td>resource group where resources will be created</td>
-<td>by default it&rsquo;s using <strong>resource_group_name</strong> parameter passed when running the playbook</td>
-</tr>
-<tr>
-<td>location</td>
-<td>location where resources should be created</td>
-<td></td>
-</tr>
-<tr>
-<td>vnet_name</td>
-<td>virtual network name</td>
-<td></td>
-</tr>
-<tr>
-<td>subnet</td>
-<td>subnet name</td>
-<td></td>
-</tr>
-<tr>
-<td>cosmosdbaccount_name</td>
-<td>CosmosDB account name</td>
-<td>should include only lowercase characters and be globally unique</td>
-</tr>
-</tbody>
-</table>
-
-
-<h2>Create Resource Group</h2>
-
-<p>This simple task creates a resource group if doesn&rsquo;t exist yet.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create a resource group</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_resourcegroup</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">resource_group</span><span class="nv"> </span><span class="s">}}&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">location</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">location</span><span class="nv"> </span><span class="s">}}&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Create Virtual Network and Subnet</h2>
-
-<p>This task created prerequisites for CosmosDB account:</p>
-
-<ul>
-<li>virtual network</li>
-<li>subnet</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create virtual network</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_virtualnetwork</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">resource_group</span><span class="nv"> </span><span class="s">}}&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">vnet_name</span><span class="nv"> </span><span class="s">}}&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">address_prefixes_cidr</span><span class="p-Indicator">:</span>
-</span><span class='line'>      <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">10.1.0.0/16</span>
-</span><span class='line'>      <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">172.100.0.0/16</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">dns_servers</span><span class="p-Indicator">:</span>
-</span><span class='line'>      <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">127.0.0.1</span>
-</span><span class='line'>      <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">127.0.0.3</span>
-</span><span class='line'>
-</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Add subnet</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_subnet</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">subnet_name</span><span class="nv"> </span><span class="s">}}&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">virtual_network_name</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">vnet_name</span><span class="nv"> </span><span class="s">}}&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">resource_group</span><span class="nv"> </span><span class="s">}}&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">address_prefix_cidr</span><span class="p-Indicator">:</span> <span class="s">&quot;10.1.0.0/24&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Create CosmosDB Account</h2>
-
-<p>This task creates actual CosmosDB account.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create instance of Cosmos DB Account</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_cosmosdbaccount</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">resource_group</span><span class="nv"> </span><span class="s">}}&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">cosmosdbaccount_name</span><span class="nv"> </span><span class="s">}}&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">location</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">location</span><span class="nv"> </span><span class="s">}}&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">kind</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">global_document_db</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">geo_rep_locations</span><span class="p-Indicator">:</span>
-</span><span class='line'>      <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">eastus</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">failover_priority</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">0</span>
-</span><span class='line'>      <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">westus</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">failover_priority</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">1</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">database_account_offer_type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Standard</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">is_virtual_network_filter_enabled</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">yes</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">virtual_network_rules</span><span class="p-Indicator">:</span>
-</span><span class='line'>      <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">subnet</span><span class="p-Indicator">:</span>
-</span><span class='line'>          <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">resource_group</span><span class="nv"> </span><span class="s">}}&quot;</span>
-</span><span class='line'>          <span class="l-Scalar-Plain">virtual_network_name</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">vnet_name</span><span class="nv"> </span><span class="s">}}&quot;</span>
-</span><span class='line'>          <span class="l-Scalar-Plain">subnet_name</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">subnet_name</span><span class="nv"> </span><span class="s">}}&quot;</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">ignore_missing_vnet_service_endpoint</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">yes</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">enable_automatic_failover</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">yes</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Retrieve Keys</h2>
-
-<p>This task shows how to retrieve CosmosDB account keys that should be used later by any application using the database:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Get Cosmos DB Account facts with keys</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_cosmosdbaccount_facts</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">resource_group</span><span class="nv"> </span><span class="s">}}&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="s">&quot;{{</span><span class="nv"> </span><span class="s">cosmosdbaccount_name</span><span class="nv"> </span><span class="s">}}&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">retrieve_keys</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">all</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">register</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
-</span><span class='line'>
-</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Display Cosmos DB Acccount facts output</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">debug</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">var</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">output</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Use in your application</h2>
-
-<p>&hellip;</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2019/03/19/note-on-ansible-examples/">Note on Ansible Examples</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2019-03-19T06:42:26+08:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>19</span><span class='date-suffix'>th</span>, <span class='date-year'>2019</span></span> <span class='time'>6:42 am</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>When I started working with Ansible I wa</p>
-
-<p>Let&rsquo;s do following exercise. I want to create an Azure Virtual Machine using examples from documentation.</p>
-
-<p>Let&rsquo;s start with default virtual machine example (<a href="https://docs.ansible.com/ansible/latest/modules/azure_rm_virtualmachine_module.html">https://docs.ansible.com/ansible/latest/modules/azure_rm_virtualmachine_module.html</a>)</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create Azure VM using default samples</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">hosts</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">localhost</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">connection</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">local</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">tasks</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create VM with defaults</span>
-</span><span class='line'>      <span class="l-Scalar-Plain">azure_rm_virtualmachine</span><span class="p-Indicator">:</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Testing</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">testvm10</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">admin_username</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">chouseknecht</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">admin_password</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">&lt;your password here&gt;</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">image</span><span class="p-Indicator">:</span>
-</span><span class='line'>          <span class="l-Scalar-Plain">offer</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">CentOS</span>
-</span><span class='line'>          <span class="l-Scalar-Plain">publisher</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">OpenLogic</span>
-</span><span class='line'>          <span class="l-Scalar-Plain">sku</span><span class="p-Indicator">:</span> <span class="s">&#39;7.1&#39;</span>
-</span><span class='line'>          <span class="l-Scalar-Plain">version</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">latest</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Now, Ansible will complain that resource group <strong>Testing</strong> is not present, so I add resource group from here <a href="https://docs.ansible.com/ansible/latest/modules/azure_rm_resourcegroup_module.html:">https://docs.ansible.com/ansible/latest/modules/azure_rm_resourcegroup_module.html:</a></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create Azure VM using default samples</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">hosts</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">localhost</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">connection</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">local</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">tasks</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create a resource group</span>
-</span><span class='line'>      <span class="l-Scalar-Plain">azure_rm_resourcegroup</span><span class="p-Indicator">:</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Testing</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">location</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">westus</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">tags</span><span class="p-Indicator">:</span>
-</span><span class='line'>          <span class="l-Scalar-Plain">testing</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">testing</span>
-</span><span class='line'>          <span class="l-Scalar-Plain">delete</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">never</span>
-</span><span class='line'>    <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create VM with defaults</span>
-</span><span class='line'>      <span class="l-Scalar-Plain">azure_rm_virtualmachine</span><span class="p-Indicator">:</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Testing</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">testvm10</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">admin_username</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">chouseknecht</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">admin_password</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">&lt;your password here&gt;</span>
-</span><span class='line'>        <span class="l-Scalar-Plain">image</span><span class="p-Indicator">:</span>
-</span><span class='line'>          <span class="l-Scalar-Plain">offer</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">CentOS</span>
-</span><span class='line'>          <span class="l-Scalar-Plain">publisher</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">OpenLogic</span>
-</span><span class='line'>          <span class="l-Scalar-Plain">sku</span><span class="p-Indicator">:</span> <span class="s">&#39;7.1&#39;</span>
-</span><span class='line'>          <span class="l-Scalar-Plain">version</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">latest</span>
-</span></code></pre></td></tr></table></div></figure>
 
 </div>
   

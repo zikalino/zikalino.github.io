@@ -9,8 +9,7 @@
   <meta name="author" content="Your Name">
 
   
-  <meta name="description" content="Just go to examples folder and run following playbook: 1
-ansible-playbook compute_virtualmachines_put.yml Please note that it will create all the &hellip;">
+  <meta name="description" content="This is a new Virtual Machine Scale Set demo I have just released to official Ansible Playbooks for Azure. I have updated Ansible modules to enable: &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -79,6 +78,158 @@ ansible-playbook compute_virtualmachines_put.yml Please note that it will create
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2019/01/23/updating-vmss-images-using-ansible/">Updating Azure Virtual Machine Scale Set Images Using Ansible</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2019-01-23T11:46:27+08:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>23</span><span class='date-suffix'>rd</span>, <span class='date-year'>2019</span></span> <span class='time'>11:46 am</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>This is a new Virtual Machine Scale Set demo I have just released to official <strong>Ansible Playbooks for Azure</strong>.</p>
+
+<p>I have updated Ansible modules to enable:</p>
+
+<ul>
+<li>creating images from existing Azure Virtual Machines</li>
+<li>updating custom image in Azure Virtual Machine Scale Set</li>
+</ul>
+
+
+<p>This demo is divided into a few steps. First it demonstrates how to create two custom images (A and B), and we will create VMSS with image A, and finally we will dynamically change image A to image B.</p>
+
+<p>Before trying the playbooks, clone following repository:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>git clone https://github.com/Azure-Samples/ansible-playbooks.git
+</span><span class='line'><span class="nb">cd </span>ansible-playbooks/vmss_images
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Step One - Create two virtual machines and install HTTPD</h2>
+
+<p>Run following playbook:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ansible-playbook 01-create-vms.yml --extra-vars <span class="s2">&quot;resource_group=myrg&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>It will:
+- create 2 virtual machines
+- install HTTPD on both of them
+- change index.html to contain <strong>Image A</strong> and <strong>Image B</strong> respectively</p>
+
+<p>Copy and paste IP addresses of both VMs to the browser:</p>
+
+<p><img src="/images/vmss-update-vms-ip-addresses.png" alt="Public IP Address" /></p>
+
+<p>You should see two different versions of VM:</p>
+
+<p><img src="/images/vmss-update-browser-vma.png" alt="VM A" /></p>
+
+<p>and</p>
+
+<p><img src="/images/vmss-update-browser-vmb.png" alt="VM B" /></p>
+
+<h2>Step Two - Capture Images from both Virtual Machines</h2>
+
+<p>Run second playbook to capture the images:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ansible-playbook 02-capture-images.yml --extra-vars <span class="s2">&quot;resource_group=myrg&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Step Three - Create VMSS using Image A</h2>
+
+<p>In this step we will create following components:
+- public IP address
+- load balancer
+- VMSS referring image A</p>
+
+<p>Run following playbook:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ansible-playbook 03-create-vmss.yml --extra-vars <span class="s2">&quot;resource_group=myrg&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Check the IP address printed out at the end:</p>
+
+<p><img src="/images/vmss-update-vmss-public-ip.png" alt="Public IP Address" /></p>
+
+<p>check that it works in the browser:</p>
+
+<p><img src="/images/vmss-update-browser-initial-vmss.png" alt="VMSS Image A" /></p>
+
+<h2>Step Four - Update Image Reference in VMSS and Upgrade Instances</h2>
+
+<p>Run final playbook to replace image A with image B:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ansible-playbook 04-update-vmss-image.yml --extra-vars <span class="s2">&quot;resource_group=myrg&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now press <strong>F5</strong> in the browser to reload page and see that image gas changed:</p>
+
+<p><img src="/images/vmss-update-browser-updated-vmss.png" alt="VMSS Image B" /></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2019/01/21/some-notes-on-inconsistencies-in-examples/">Some Notes on Inconsistencies in Examples</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2019-01-21T15:39:32+08:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>21</span><span class='date-suffix'>st</span>, <span class='date-year'>2019</span></span> <span class='time'>3:39 pm</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Compute, VirtualMachines - &ldquo;name&rdquo; parameter in body can&rsquo;t be different than one in the URL</p>
+
+<p>adminUsername -> &ldquo;{your-username}&rdquo;
+adminPassword -> &ldquo;{your-password}&rdquo;</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
