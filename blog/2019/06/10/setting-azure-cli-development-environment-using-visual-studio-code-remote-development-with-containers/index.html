@@ -1,0 +1,345 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Setting Azure CLI Development Environment Using Visual Studio Code Remote Development With Containers - Zim's Notes</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="I have tested new Visual Studio Code Remote Development feature with Azure CLI. Now you can start developing Azure CLI in a few simple steps: Install &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://zikalino.github.io/blog/2019/06/10/setting-azure-cli-development-environment-using-visual-studio-code-remote-development-with-containers">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Zim's Notes" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Fjalla+One" rel="stylesheet" type="text/css">
+<!--- MathJax Configuration -->
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Zim's Notes</a></h1>
+  
+    <h2>Just work related notes.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscribe" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS" target="_blank"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="25" height="25" viewbox="0 0 100 100"><path class="social" d="M 13.310204,73.332654 C 5.967347,73.332654 0,79.322448 0,86.621428 c 0,7.338776 5.967347,13.262246 13.310204,13.262246 7.370408,0 13.328572,-5.92245 13.328572,-13.262246 0,-7.29898 -5.958164,-13.288774 -13.328572,-13.288774 z M 0.01530612,33.978572 V 53.143878 C 12.493878,53.143878 24.229592,58.02347 33.068368,66.865306 41.894898,75.685714 46.767346,87.47449 46.767346,100 h 19.25 C 66.017346,63.592858 36.4,33.979592 0.01530612,33.978572 l 0,0 z M 0.03877552,0 V 19.17449 C 44.54796,19.17551 80.77551,55.437756 80.77551,100 H 100 C 100,44.87653 55.15102,0 0.03877552,0 z"></path></svg></a></li>
+  
+</ul>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    
+      <form action="https://www.google.com/search" method="get">
+        <fieldset role="search">
+          <input type="hidden" name="sitesearch" value="zikalino.github.io" />
+    
+          <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+        </fieldset>
+      </form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      
+        <h1 class="entry-title">Setting Azure CLI Development Environment Using Visual Studio Code Remote Development With Containers</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2019-06-10T19:22:11+08:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>10</span><span class='date-suffix'>th</span>, <span class='date-year'>2019</span></span> <span class='time'>7:22 pm</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>I have tested new Visual Studio Code Remote Development feature with Azure CLI. Now you can start developing Azure CLI in a few simple steps:</p>
+
+<ul>
+<li>Install Visual Studio Code Insiders Edition</li>
+<li>Clone Azure CLI Repository</li>
+<li>Launch Visual Studio Code and wait for a few minutes</li>
+<li>Set a breakpoint and press F5</li>
+</ul>
+
+
+<p>To replicate this you need do download Visual Studio Code from here:</p>
+
+<p><a href="https://code.visualstudio.com/insiders/">https://code.visualstudio.com/insiders/</a></p>
+
+<p>Clone my fork of Azure CLI repository and switch to <strong>adding-devcontainer-setup</strong> branch.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>git clone https://github.com/zikalino/azure-cli.git
+</span><span class='line'><span class="nb">cd </span>azure-cli
+</span><span class='line'>git checkout adding-devcontainer-setup
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then run Visual Code from cloned repository:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>code-insiders .
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Visual Studio Code should detect that <strong>.devcontainer</strong> folder is present, and will ask whether you want to use container.</p>
+
+<p><img src="/images/devcontainer-reopen.png" alt="Reopen in Container" /></p>
+
+<p>When you choose <strong>Reopen in Container</strong>, VSC will build the image from docker file, that may take a few minutes, but it will be done only once (for current folder).</p>
+
+<p><img src="/images/devcontainer-build.png" alt="Build Container" /></p>
+
+<p>When container is ready, just set a breakpoint, for instance in <strong>azure-cli/src/azure-cli/<strong>main</strong>.py</strong> and press <strong>F5</strong>.</p>
+
+<p><img src="/images/devcontainer-run.png" alt="Run Container" /></p>
+
+<h2>More Details on the Container</h2>
+
+<p>My Dockerfile is pretty simple.
+As a base I used Ubuntu 16.04, and:</p>
+
+<ul>
+<li>Installed Python 3.6</li>
+<li>Cloned Azure CLI repo (just to install dependencies)</li>
+<li>Created virtual environment located at <strong>/env</strong> (outside Azure CLI repo)</li>
+<li>Installed <strong>azdev</strong> using <strong>pip</strong></li>
+<li>Installed Azure CLI dependencies using <strong>azdev setup</strong></li>
+<li>Made sure that <strong>/env</strong> is activated every time <strong>bash</strong> is started by Visual Studio Code.</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># start from Ubuntu 16.04</span>
+</span><span class='line'>FROM ubuntu:xenial
+</span><span class='line'>
+</span><span class='line'><span class="c"># install python 3.6, pip, venv and git</span>
+</span><span class='line'>RUN apt-get update
+</span><span class='line'>RUN apt-get -y install software-properties-common
+</span><span class='line'>RUN add-apt-repository ppa:deadsnakes/ppa
+</span><span class='line'>RUN apt-get update
+</span><span class='line'>RUN apt-get -y install python3.6 python3-pip python3-venv git
+</span><span class='line'>
+</span><span class='line'><span class="c"># clone azure cli into /workspaces/azure-cli</span>
+</span><span class='line'>RUN mkdir /workspaces<span class="p">;</span> <span class="nb">cd</span> /workspaces<span class="p">;</span> git clone https://github.com/Azure/azure-cli.git
+</span><span class='line'>
+</span><span class='line'><span class="c"># create environment in /env and set up </span>
+</span><span class='line'>RUN python3 -m venv env
+</span><span class='line'>RUN /bin/bash -c <span class="s2">&quot;source /env/bin/activate; pip3 install azdev; azdev setup --cli /workspaces/azure-cli&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># remove azure-cli as it will be used </span>
+</span><span class='line'>RUN rm -rf ./workspaces/azure-cli
+</span><span class='line'>
+</span><span class='line'><span class="c"># add environment activation to .bashrc</span>
+</span><span class='line'>RUN <span class="nb">echo</span> <span class="s2">&quot;source /env/bin/activate&quot;</span> &gt;&gt; ~/.bashrc
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>And Configuration File</h2>
+
+<p>Configuration file <strong>devcontainer.json</strong> is pretty simple. It specifies <strong>Dockerfile</strong> and a path to Python interpreter inside <strong>/env</strong>.</p>
+
+<p>Please note that instead of specifying <strong>dockerFile</strong> it&rsquo;s possible to specify existing <strong>image</strong>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">{</span>
+</span><span class='line'>  <span class="s2">&quot;name&quot;</span>: <span class="s2">&quot;Azure CLI Dev&quot;</span>,
+</span><span class='line'>  <span class="s2">&quot;dockerFile&quot;</span>: <span class="s2">&quot;Dockerfile&quot;</span>,
+</span><span class='line'>  <span class="s2">&quot;context&quot;</span>: <span class="s2">&quot;.&quot;</span>,
+</span><span class='line'>  <span class="s2">&quot;extensions&quot;</span>: <span class="o">[</span>
+</span><span class='line'>      <span class="s2">&quot;ms-python.python&quot;</span>
+</span><span class='line'>  <span class="o">]</span>,
+</span><span class='line'>  <span class="s2">&quot;settings&quot;</span>: <span class="o">{</span>
+</span><span class='line'>      <span class="s2">&quot;python.pythonPath&quot;</span>: <span class="s2">&quot;/env/bin/python3&quot;</span>
+</span><span class='line'>  <span class="o">}</span>,
+</span><span class='line'>  <span class="s2">&quot;postCreateCommand&quot;</span>: <span class="s2">&quot;bash&quot;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Other Considerations</h2>
+
+<p>(1) It&rsquo;s possible to specify existing image instead of dockerfile. If we have existing development image that would make setup even faster.</p>
+
+<p>(2) Perhaps it would be a good idea to clone all <strong>azure-cli</strong>, <strong>azure-cli-dev-tools</strong>, <strong>azure-cli-extensions</strong> under workspaces. Then it should be possible to map all three of them when starting the container.</p>
+
+<p>(3) Perhaps leaving <strong>azure-cli</strong> (I currently delete it) would be a good idea, this way the container could be used as a standalone dev environment with source code cloned inside.</p>
+
+<p>(4) Instead of cloning <strong>azure-cli</strong> it&rsquo;s possible to map external repository. I am not doing it right now, as there&rsquo;s <strong>.dockerignore</strong> file that would need to be modified in order to make this solution to work, and that could affect</p>
+
+<h2>Documents</h2>
+
+<p>Development environment setup instructions:</p>
+
+<p><a href="https://github.com/Azure/azure-cli-dev-tools">https://github.com/Azure/azure-cli-dev-tools</a></p>
+
+<p>About VSC Remote Development</p>
+
+<p><a href="https://code.visualstudio.com/docs/remote/remote-overview">https://code.visualstudio.com/docs/remote/remote-overview</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+
+
+  <span class="byline author vcard">Authored by <span class="fn">
+  
+    Your Name
+  
+  </span></span>
+
+
+      
+
+
+
+
+<time class='entry-date' datetime='2019-06-10T19:22:11+08:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>10</span><span class='date-suffix'>th</span>, <span class='date-year'>2019</span></span> <span class='time'>7:22 pm</span></time>
+      
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://zikalino.github.io/blog/2019/06/10/setting-azure-cli-development-environment-using-visual-studio-code-remote-development-with-containers/" data-via="" data-counturl="http://zikalino.github.io/blog/2019/06/10/setting-azure-cli-development-environment-using-visual-studio-code-remote-development-with-containers/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2019/05/27/idea-of-using-azure-cli-extension-to-test-validate-fix-and-create-azure-swagger-examples/" title="Previous Post: Idea of Using Azure CLI Extension to Test, Validate, Fix and Create Azure Swagger Examples">&laquo; Idea of Using Azure CLI Extension to Test, Validate, Fix and Create Azure Swagger Examples</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+
+</div>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2019 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a> | Themed with <a href="https://github.com/lucaslew/whitespace">Whitespace</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

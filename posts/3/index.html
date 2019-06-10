@@ -9,7 +9,7 @@
   <meta name="author" content="Your Name">
 
   
-  <meta name="description" content="This is a new Virtual Machine Scale Set demo I have just released to official Ansible Playbooks for Azure. I have updated Ansible modules to enable: &hellip;">
+  <meta name="description" content="There are two (or three) proper ways of updating Virtual Machine Scale Set instances: use custom images and update instances whenever something &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -78,6 +78,164 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2019/01/24/installing-httpd-on-vmss-using-vmss-extension/">Installing HTTPD on VMSS Using VMSS Extension</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2019-01-24T09:33:49+08:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>24</span><span class='date-suffix'>th</span>, <span class='date-year'>2019</span></span> <span class='time'>9:33 am</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>There are two (or three) proper ways of updating Virtual Machine Scale Set instances:</p>
+
+<ul>
+<li>use custom images and update instances whenever something changes</li>
+<li>use VMSS Extension to install additional software on all the VM instances</li>
+<li>combine both</li>
+</ul>
+
+
+<p>Possibly there&rsquo;s a fourth way, but I haven&rsquo;t investigated that yet. I am thinking of updating VMSS data disks on the fly, but I haven&rsquo;t tried that yet. Let&rsquo;s focus on using VMSS Extension. In this article I will show how to use new <strong>azure_rm_virtualmachinescalesetextension</strong> module. It&rsquo;s already available in <strong>azure_preview_modules</strong> and will be released in <strong>Ansible 2.8</strong>.</p>
+
+<h2>Prerequisites</h2>
+
+<p>Before trying the playbooks, clone following repository:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>git clone https://github.com/Azure-Samples/ansible-playbooks.git
+</span><span class='line'><span class="nb">cd </span>ansible-playbooks/vmss_extension
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Step 1: Create VMSS using Ubuntu 16.04 Image</h2>
+
+<p>In this step we will just create Azure Virtual Machine Scaleset based using standard Ubuntu 16.04 image and all prerequisites.</p>
+
+<p>Run following playbook:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ansible-playbook 01-create-vmss.yml --extra-vars <span class="s2">&quot;resource_group=myrg&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>After this playbook is executed you will see an IP addres. Copy it to the browser. The page should fail to open as initial Ubuntu 16.04 image doesn&rsquo;t have web server installed.</p>
+
+<p>You can also go to Azure Portal and check the status of VMSS instances:</p>
+
+<p><img src="/images/vmss-extension-01.png" alt="VMSS Instances 1" /></p>
+
+<h2>Step 2: Install VMSS extension</h2>
+
+<p>In second step we will install a <strong>Custom Script</strong> VMSS extension that will install <strong>httpd</strong>.</p>
+
+<p>Run following playbook:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ansible-playbook 02-setup-httpd.yml --extra-vars <span class="s2">&quot;resource_group=myrg&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In this step we use <strong>azure_rm_virtualmachinescalesetextension</strong> module:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create VM Extension - HTTPD</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_virtualmachinescalesetextension</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">vmss_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">testVMExtension</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">publisher</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Microsoft.Azure.Extensions</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">CustomScript</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">type_handler_version</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">2.0</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">auto_upgrade_minor_version</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">true</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">settings</span><span class="p-Indicator">:</span> <span class="p-Indicator">{</span><span class="s">&quot;commandToExecute&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;sudo</span><span class="nv"> </span><span class="s">apt-get</span><span class="nv"> </span><span class="s">-y</span><span class="nv"> </span><span class="s">install</span><span class="nv"> </span><span class="s">apache2&quot;</span><span class="p-Indicator">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Please note that creating extension didn&rsquo;t update existing instances. You can check how it looks in the portal again - as you see all the instances are not up to date:</p>
+
+<p><img src="/images/vmss-extension-02.png" alt="VMSS Instances 2" /></p>
+
+<h2>Step 3: Update all the instances</h2>
+
+<p>In this step we will actually upgrade all VM instances. Run following script:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="l-Scalar-Plain">ansible-playbook 03-update-instances.yml --extra-vars &quot;resource_group=myrg&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>First <strong>azure_rm_virtualmachinescalesetinstance_facts</strong> module is used to get list of instances:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">List all of the instances</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_virtualmachinescalesetinstance_facts</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">vmss_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">register</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">instances</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And then <strong>azure_rm_virtualmachinescalesetinstance</strong> module to set <strong>latest_version</strong> to <strong>yes</strong>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">manually upgrade all the instances</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_virtualmachinescalesetinstance</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">vmss_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">instance_id</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">latest_model</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">yes</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">with_items</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Again, you can see in the portal how instances are being updated one by one:</p>
+
+<p><img src="/images/vmss-extension-03.png" alt="VMSS Instances 3" /></p>
+
+<p>When update is completed reload the page, and you should see that this time default Apache index page is displayed:</p>
+
+<p><img src="/images/vmss-extension-04.png" alt="VMSS Instances 4" /></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>

@@ -4,7 +4,7 @@
   <title><![CDATA[Zim's Notes]]></title>
   <link href="http://zikalino.github.io/atom.xml" rel="self"/>
   <link href="http://zikalino.github.io/"/>
-  <updated>2019-05-27T12:13:03+08:00</updated>
+  <updated>2019-06-10T20:03:20+08:00</updated>
   <id>http://zikalino.github.io/</id>
   <author>
     <name><![CDATA[Your Name]]></name>
@@ -12,6 +12,172 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Setting Azure CLI Development Environment Using Visual Studio Code Remote Development With Containers]]></title>
+    <link href="http://zikalino.github.io/blog/2019/06/10/setting-azure-cli-development-environment-using-visual-studio-code-remote-development-with-containers/"/>
+    <updated>2019-06-10T19:22:11+08:00</updated>
+    <id>http://zikalino.github.io/blog/2019/06/10/setting-azure-cli-development-environment-using-visual-studio-code-remote-development-with-containers</id>
+    <content type="html"><![CDATA[<p>I have tested new Visual Studio Code Remote Development feature with Azure CLI. Now you can start developing Azure CLI in a few simple steps:</p>
+
+<ul>
+<li>Install Visual Studio Code Insiders Edition</li>
+<li>Clone Azure CLI Repository</li>
+<li>Launch Visual Studio Code and wait for a few minutes</li>
+<li>Set a breakpoint and press F5</li>
+</ul>
+
+
+<p>To replicate this you need do download Visual Studio Code from here:</p>
+
+<p><a href="https://code.visualstudio.com/insiders/">https://code.visualstudio.com/insiders/</a></p>
+
+<p>Clone my fork of Azure CLI repository and switch to <strong>adding-devcontainer-setup</strong> branch.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>git clone https://github.com/zikalino/azure-cli.git
+</span><span class='line'><span class="nb">cd </span>azure-cli
+</span><span class='line'>git checkout adding-devcontainer-setup
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then run Visual Code from cloned repository:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>code-insiders .
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Visual Studio Code should detect that <strong>.devcontainer</strong> folder is present, and will ask whether you want to use container.</p>
+
+<p><img src="http://zikalino.github.io/images/devcontainer-reopen.png" alt="Reopen in Container" /></p>
+
+<p>When you choose <strong>Reopen in Container</strong>, VSC will build the image from docker file, that may take a few minutes, but it will be done only once (for current folder).</p>
+
+<p><img src="http://zikalino.github.io/images/devcontainer-build.png" alt="Build Container" /></p>
+
+<p>When container is ready, just set a breakpoint, for instance in <strong>azure-cli/src/azure-cli/<strong>main</strong>.py</strong> and press <strong>F5</strong>.</p>
+
+<p><img src="http://zikalino.github.io/images/devcontainer-run.png" alt="Run Container" /></p>
+
+<h2>More Details on the Container</h2>
+
+<p>My Dockerfile is pretty simple.
+As a base I used Ubuntu 16.04, and:</p>
+
+<ul>
+<li>Installed Python 3.6</li>
+<li>Cloned Azure CLI repo (just to install dependencies)</li>
+<li>Created virtual environment located at <strong>/env</strong> (outside Azure CLI repo)</li>
+<li>Installed <strong>azdev</strong> using <strong>pip</strong></li>
+<li>Installed Azure CLI dependencies using <strong>azdev setup</strong></li>
+<li>Made sure that <strong>/env</strong> is activated every time <strong>bash</strong> is started by Visual Studio Code.</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># start from Ubuntu 16.04</span>
+</span><span class='line'>FROM ubuntu:xenial
+</span><span class='line'>
+</span><span class='line'><span class="c"># install python 3.6, pip, venv and git</span>
+</span><span class='line'>RUN apt-get update
+</span><span class='line'>RUN apt-get -y install software-properties-common
+</span><span class='line'>RUN add-apt-repository ppa:deadsnakes/ppa
+</span><span class='line'>RUN apt-get update
+</span><span class='line'>RUN apt-get -y install python3.6 python3-pip python3-venv git
+</span><span class='line'>
+</span><span class='line'><span class="c"># clone azure cli into /workspaces/azure-cli</span>
+</span><span class='line'>RUN mkdir /workspaces<span class="p">;</span> <span class="nb">cd</span> /workspaces<span class="p">;</span> git clone https://github.com/Azure/azure-cli.git
+</span><span class='line'>
+</span><span class='line'><span class="c"># create environment in /env and set up </span>
+</span><span class='line'>RUN python3 -m venv env
+</span><span class='line'>RUN /bin/bash -c <span class="s2">&quot;source /env/bin/activate; pip3 install azdev; azdev setup --cli /workspaces/azure-cli&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># remove azure-cli as it will be used </span>
+</span><span class='line'>RUN rm -rf ./workspaces/azure-cli
+</span><span class='line'>
+</span><span class='line'><span class="c"># add environment activation to .bashrc</span>
+</span><span class='line'>RUN <span class="nb">echo</span> <span class="s2">&quot;source /env/bin/activate&quot;</span> &gt;&gt; ~/.bashrc
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>And Configuration File</h2>
+
+<p>Configuration file <strong>devcontainer.json</strong> is pretty simple. It specifies <strong>Dockerfile</strong> and a path to Python interpreter inside <strong>/env</strong>.</p>
+
+<p>Please note that instead of specifying <strong>dockerFile</strong> it&rsquo;s possible to specify existing <strong>image</strong>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">{</span>
+</span><span class='line'>  <span class="s2">&quot;name&quot;</span>: <span class="s2">&quot;Azure CLI Dev&quot;</span>,
+</span><span class='line'>  <span class="s2">&quot;dockerFile&quot;</span>: <span class="s2">&quot;Dockerfile&quot;</span>,
+</span><span class='line'>  <span class="s2">&quot;context&quot;</span>: <span class="s2">&quot;.&quot;</span>,
+</span><span class='line'>  <span class="s2">&quot;extensions&quot;</span>: <span class="o">[</span>
+</span><span class='line'>      <span class="s2">&quot;ms-python.python&quot;</span>
+</span><span class='line'>  <span class="o">]</span>,
+</span><span class='line'>  <span class="s2">&quot;settings&quot;</span>: <span class="o">{</span>
+</span><span class='line'>      <span class="s2">&quot;python.pythonPath&quot;</span>: <span class="s2">&quot;/env/bin/python3&quot;</span>
+</span><span class='line'>  <span class="o">}</span>,
+</span><span class='line'>  <span class="s2">&quot;postCreateCommand&quot;</span>: <span class="s2">&quot;bash&quot;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Other Considerations</h2>
+
+<p>(1) It&rsquo;s possible to specify existing image instead of dockerfile. If we have existing development image that would make setup even faster.</p>
+
+<p>(2) Perhaps it would be a good idea to clone all <strong>azure-cli</strong>, <strong>azure-cli-dev-tools</strong>, <strong>azure-cli-extensions</strong> under workspaces. Then it should be possible to map all three of them when starting the container.</p>
+
+<p>(3) Perhaps leaving <strong>azure-cli</strong> (I currently delete it) would be a good idea, this way the container could be used as a standalone dev environment with source code cloned inside.</p>
+
+<p>(4) Instead of cloning <strong>azure-cli</strong> it&rsquo;s possible to map external repository. I am not doing it right now, as there&rsquo;s <strong>.dockerignore</strong> file that would need to be modified in order to make this solution to work, and that could affect</p>
+
+<h2>Documents</h2>
+
+<p>Development environment setup instructions:</p>
+
+<p><a href="https://github.com/Azure/azure-cli-dev-tools">https://github.com/Azure/azure-cli-dev-tools</a></p>
+
+<p>About VSC Remote Development</p>
+
+<p><a href="https://code.visualstudio.com/docs/remote/remote-overview">https://code.visualstudio.com/docs/remote/remote-overview</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Idea of Using Azure CLI Extension to Test, Validate, Fix and Create Azure Swagger Examples]]></title>
@@ -588,7 +754,7 @@ In the future it could create a branch and pull requests directly to the GitHub 
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Ansible and Azure CLI]]></title>
+    <title type="html"><![CDATA[Ansible and Azure CLI - Closer Than I Thought]]></title>
     <link href="http://zikalino.github.io/blog/2019/05/22/ansible-and-azure-cli/"/>
     <updated>2019-05-22T11:25:08+08:00</updated>
     <id>http://zikalino.github.io/blog/2019/05/22/ansible-and-azure-cli</id>
@@ -596,20 +762,116 @@ In the future it could create a branch and pull requests directly to the GitHub 
 
 <p>&hellip; Ansible support for Azure was based on <strong>Azure CLI</strong>?</p>
 
-<p>We could have a single base <strong>az</strong> Ansible module to encapsulate <strong>Azure CLI</strong>.</p>
+<h2>Similarities and Differences</h2>
+
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Azure CLI</th>
+<th>Ansible</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Implementation</td>
+<td>Python/Python SDK</td>
+<td>Python/Python SDK</td>
+</tr>
+<tr>
+<td>UX</td>
+<td>Azure CLI Options are flattened, simplified and well designed</td>
+<td>Ansible options are flattened and we strive to simplify the structure. The level of simplification of Azure CLI is our ultimate goal.</td>
+</tr>
+<tr>
+<td>Error Handling</td>
+<td>Excellent. Azure CLI has a lot of checks and gracefully handles critical situations. User can easily create any new resource by reading documentation and reading error responses when something goes wrong.</td>
+<td>Poor, if user specifies wrong parameters in most cases module propagates error received from Azure, which in most cases is meaningless</td>
+</tr>
+<tr>
+<td>Idempotence</td>
+<td>Not a major goal of Azure CLI, however the idea is that Azure CLI commands should be idempotent</td>
+<td>Idempotence is a major feature of Ansible, however we have several implementation problems, for instance not handling non-updatable fiels correctly, not detecting changes in parameters corectly. A lot of inconsistencies in the implementation</td>
+</tr>
+<tr>
+<td>Documentation</td>
+<td>Excellent</td>
+<td>Good, but sometimes not complete or directly copied from REST API Specification</td>
+</tr>
+<tr>
+<td>Check Mode</td>
+<td>NO</td>
+<td>YES (see notes on idempotence)</td>
+</tr>
+<tr>
+<td>Coverage</td>
+<td>Around 60% of Azure API</td>
+<td>Around 12% of Azure API</td>
+</tr>
+</tbody>
+</table>
+
+
+<h2>How it Could Be Done?</h2>
+
+<p>Implementation could be extremely simple</p>
+
+<p>We could have entire implementation in a single base <strong>az.py</strong> Ansible module to encapsulate <strong>Azure CLI</strong>.</p>
+
+<p>Instead of implementing hundreds of modules for every single resource, we could just have symbolic links to the base module:</p>
+
+<ul>
+<li><strong>az_vm.py</strong></li>
+<li><strong>az_acr.py</strong></li>
+<li><strong>az_vmss.py</strong></li>
+</ul>
+
+
+<p>Base module implementation knows via which link it was loaded, so based on that it can dynamically create:</p>
+
+<ul>
+<li>appropriate documentation</li>
+<li>appropriate argument spec</li>
+<li>handle arguments correctly and call correct commands</li>
+</ul>
+
+
+<p>On the top of that module can:
+- recognise which options are updatable by comparing <strong>create</strong> and <strong>update</strong> parameters (using distilled knowledge from Azure CLI)</p>
+
+<h3>How module would work?</h3>
+
+<p>(1) call <strong>az xxx get</strong> to check whether resource exists, get current state
+(2) call <strong>az xxx create</strong> or <strong>az xxx update</strong> if resource exists
+(3) compare output of initial <strong>get</strong> with output of <strong>update</strong>, to check whether anything has changed</p>
+
+<h2>What&rsquo;s missing?</h2>
+
+<h3>Check Mode</h3>
+
+<p>Check mode is probably the only missing feature that Ansible has (but we are struggling to implement it correctly) and Azure CLI doesn&rsquo;t.</p>
+
+<p>As far as I know Azure CLI is striving to implement idempotency. I need to collect more details on that.</p>
+
+<p>Anyway, a new option called <strong>&ndash;check-mode</strong> would be nice to have.
+It could work as follows:</p>
+
+<p>User calls:</p>
+
+<p><strong>az xxxx create &hellip;.. params &hellip;..</strong></p>
+
+<p>Azure CLI calls <strong>get</strong> method on the resource to be created.
+Azure CLI prepares the structure to call Python SDK API.
+Acure CLI compares structure returned by <strong>get</strong> and structure prepared for <strong>create</strong> call.
+If the structures match, return <strong>no change required</strong>, if structures don&rsquo;t match return list of changes detected.</p>
+
+<p>This method would probably work for around 90% of Azure resources, it would fail with</p>
 
 <p>This module would just handle all the interaction with unerlying <strong>Azure CLI</strong>, including:
 - handling currently selected subscription if necessary
 - handling authentication</p>
 
 <p>On the top of that we could just create symbolic links to that module for every Azure resource, for instance:</p>
-
-<ul>
-<li><strong>az_vm</strong></li>
-<li><strong>az_acr</strong></li>
-<li><strong>az_vmss</strong></li>
-</ul>
-
 
 <p><strong>az</strong> module knows through which link it was called, so it could generate documentation and argument specification dynamically.</p>
 
@@ -5407,143 +5669,6 @@ Here&rsquo;s an example of creating a virtual machine via Azure portal and insta
 
 <p>Ansible documentation on do-until loops:
 <a href="https://docs.ansible.com/ansible/latest/user_guide/playbooks_loops.html#do-until-loops">https://docs.ansible.com/ansible/latest/user_guide/playbooks_loops.html#do-until-loops</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Installing HTTPD on VMSS Using VMSS Extension]]></title>
-    <link href="http://zikalino.github.io/blog/2019/01/24/installing-httpd-on-vmss-using-vmss-extension/"/>
-    <updated>2019-01-24T09:33:49+08:00</updated>
-    <id>http://zikalino.github.io/blog/2019/01/24/installing-httpd-on-vmss-using-vmss-extension</id>
-    <content type="html"><![CDATA[<p>There are two (or three) proper ways of updating Virtual Machine Scale Set instances:</p>
-
-<ul>
-<li>use custom images and update instances whenever something changes</li>
-<li>use VMSS Extension to install additional software on all the VM instances</li>
-<li>combine both</li>
-</ul>
-
-
-<p>Possibly there&rsquo;s a fourth way, but I haven&rsquo;t investigated that yet. I am thinking of updating VMSS data disks on the fly, but I haven&rsquo;t tried that yet. Let&rsquo;s focus on using VMSS Extension. In this article I will show how to use new <strong>azure_rm_virtualmachinescalesetextension</strong> module. It&rsquo;s already available in <strong>azure_preview_modules</strong> and will be released in <strong>Ansible 2.8</strong>.</p>
-
-<h2>Prerequisites</h2>
-
-<p>Before trying the playbooks, clone following repository:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>git clone https://github.com/Azure-Samples/ansible-playbooks.git
-</span><span class='line'><span class="nb">cd </span>ansible-playbooks/vmss_extension
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Step 1: Create VMSS using Ubuntu 16.04 Image</h2>
-
-<p>In this step we will just create Azure Virtual Machine Scaleset based using standard Ubuntu 16.04 image and all prerequisites.</p>
-
-<p>Run following playbook:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>ansible-playbook 01-create-vmss.yml --extra-vars <span class="s2">&quot;resource_group=myrg&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>After this playbook is executed you will see an IP addres. Copy it to the browser. The page should fail to open as initial Ubuntu 16.04 image doesn&rsquo;t have web server installed.</p>
-
-<p>You can also go to Azure Portal and check the status of VMSS instances:</p>
-
-<p><img src="http://zikalino.github.io/images/vmss-extension-01.png" alt="VMSS Instances 1" /></p>
-
-<h2>Step 2: Install VMSS extension</h2>
-
-<p>In second step we will install a <strong>Custom Script</strong> VMSS extension that will install <strong>httpd</strong>.</p>
-
-<p>Run following playbook:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>ansible-playbook 02-setup-httpd.yml --extra-vars <span class="s2">&quot;resource_group=myrg&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>In this step we use <strong>azure_rm_virtualmachinescalesetextension</strong> module:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Create VM Extension - HTTPD</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_virtualmachinescalesetextension</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">vmss_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">testVMExtension</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">publisher</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Microsoft.Azure.Extensions</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">CustomScript</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">type_handler_version</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">2.0</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">auto_upgrade_minor_version</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">true</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">settings</span><span class="p-Indicator">:</span> <span class="p-Indicator">{</span><span class="s">&quot;commandToExecute&quot;</span><span class="p-Indicator">:</span> <span class="s">&quot;sudo</span><span class="nv"> </span><span class="s">apt-get</span><span class="nv"> </span><span class="s">-y</span><span class="nv"> </span><span class="s">install</span><span class="nv"> </span><span class="s">apache2&quot;</span><span class="p-Indicator">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Please note that creating extension didn&rsquo;t update existing instances. You can check how it looks in the portal again - as you see all the instances are not up to date:</p>
-
-<p><img src="http://zikalino.github.io/images/vmss-extension-02.png" alt="VMSS Instances 2" /></p>
-
-<h2>Step 3: Update all the instances</h2>
-
-<p>In this step we will actually upgrade all VM instances. Run following script:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="l-Scalar-Plain">ansible-playbook 03-update-instances.yml --extra-vars &quot;resource_group=myrg&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>First <strong>azure_rm_virtualmachinescalesetinstance_facts</strong> module is used to get list of instances:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">List all of the instances</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_virtualmachinescalesetinstance_facts</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">vmss_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">register</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">instances</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>And then <strong>azure_rm_virtualmachinescalesetinstance</strong> module to set <strong>latest_version</strong> to <strong>yes</strong>:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">manually upgrade all the instances</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">azure_rm_virtualmachinescalesetinstance</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">resource_group</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">vmss_name</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">instance_id</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">latest_model</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">yes</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">with_items</span><span class="p-Indicator">:</span> <span class="s">&quot;&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Again, you can see in the portal how instances are being updated one by one:</p>
-
-<p><img src="http://zikalino.github.io/images/vmss-extension-03.png" alt="VMSS Instances 3" /></p>
-
-<p>When update is completed reload the page, and you should see that this time default Apache index page is displayed:</p>
-
-<p><img src="http://zikalino.github.io/images/vmss-extension-04.png" alt="VMSS Instances 4" /></p>
 ]]></content>
   </entry>
   

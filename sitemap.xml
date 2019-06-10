@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://zikalino.github.io/blog/2019/06/10/setting-azure-cli-development-environment-using-visual-studio-code-remote-development-with-containers/</loc>
+<lastmod>2019-06-10T19:22:11+08:00</lastmod>
+</url>
+<url>
 <loc>http://zikalino.github.io/blog/2019/05/27/idea-of-using-azure-cli-extension-to-test-validate-fix-and-create-azure-swagger-examples/</loc>
 <lastmod>2019-05-27T11:01:54+08:00</lastmod>
 </url>
