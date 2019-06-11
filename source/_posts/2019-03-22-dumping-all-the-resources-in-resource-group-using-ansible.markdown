@@ -10,11 +10,28 @@ Now, this is pretty cool. With a very small Ansible playbook you can dump entire
 
 Please note it requires Ansible 2.8.
 
+## Running the Example
+
+The example is now available in official **Azure-Samples**:
+
+    https://github.com/Azure-Samples/ansible-playbooks/blob/master/rest/resourcegroup_dump_resources.yml
+
+## The Playbook
+
+The playbook uses **azure_rm_resource_facts** module and does following steps:
+
+- retrieve list of all of the resources in the resource group
+- dump list of resources
+- create list of resource ids
+- dump list of resource ids
+- iterate through resource ids and retrieve details of each resource
+- convert output to single list of all resources
+- dump detailed list of resources
+
 {% raw %}
 ```yaml
     - name: List all the resources under a resource group
       azure_rm_resource_facts:
-        api_version: '2015-01-01'
         resource_group: zimsdtl
         resource_type: resources
       register: output
@@ -37,10 +54,12 @@ Please note it requires Ansible 2.8.
       register: output
       with_items: "{{ resource_ids }}"
 
-    - set_fact:
+    - name: Create single list of resources
+      set_fact:
         resources: "{{ output.results | map(attribute='response') | sum(start=[]) }}"
 
-    - debug:
+    - name: Dump final list of resources
+      debug:
         var: resources
 ```
 {% endraw %}
@@ -68,19 +87,19 @@ ok: [localhost] => {
         "failed": false,
         "response": [
             {
-                "id": "/subscriptions/1c5b82ee-9294-4568-b0c0-b9c523bc0d86/resourceGroups/zimsdtl/providers/Microsoft.DevTestLab/labs/labxxxx",
+                "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/zimsdtl/providers/Microsoft.DevTestLab/labs/labxxxx",
                 "location": "eastus",
                 "name": "labxxxx",
                 "type": "Microsoft.DevTestLab/labs"
             },
             {
-                "id": "/subscriptions/1c5b82ee-9294-4568-b0c0-b9c523bc0d86/resourceGroups/zimsdtl/providers/Microsoft.DevTestLab/labs/labxxxx/virtualMachines/vmxxxx",
+                "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/zimsdtl/providers/Microsoft.DevTestLab/labs/labxxxx/virtualMachines/vmxxxx",
                 "location": "eastus",
                 "name": "labxxxx/vmxxxx",
                 "type": "Microsoft.DevTestLab/labs/virtualMachines"
             },
             {
-                "id": "/subscriptions/1c5b82ee-9294-4568-b0c0-b9c523bc0d86/resourceGroups/zimsdtl/providers/Microsoft.KeyVault/vaults/labxxxx9607",
+                "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/zimsdtl/providers/Microsoft.KeyVault/vaults/labxxxx9607",
                 "location": "eastus",
                 "name": "labxxxx9607",
                 "tags": {
@@ -90,7 +109,7 @@ ok: [localhost] => {
                 "type": "Microsoft.KeyVault/vaults"
             },
             {
-                "id": "/subscriptions/1c5b82ee-9294-4568-b0c0-b9c523bc0d86/resourceGroups/zimsdtl/providers/Microsoft.Network/virtualNetworks/vnxxxx",
+                "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/zimsdtl/providers/Microsoft.Network/virtualNetworks/vnxxxx",
                 "location": "eastus",
                 "name": "vnxxxx",
                 "tags": {
@@ -99,7 +118,7 @@ ok: [localhost] => {
                 "type": "Microsoft.Network/virtualNetworks"
             },
             {
-                "id": "/subscriptions/1c5b82ee-9294-4568-b0c0-b9c523bc0d86/resourceGroups/zimsdtl/providers/Microsoft.Storage/storageAccounts/alabxxxx2409",
+                "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/zimsdtl/providers/Microsoft.Storage/storageAccounts/alabxxxx2409",
                 "kind": "StorageV2",
                 "location": "eastus",
                 "name": "alabxxxx2409",
@@ -113,7 +132,7 @@ ok: [localhost] => {
                 "type": "Microsoft.Storage/storageAccounts"
             }
         ],
-        "url": "/subscriptions/1c5b82ee-9294-4568-b0c0-b9c523bc0d86/resourceGroups/zimsdtl/resources",
+        "url": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/zimsdtl/resources",
         "warnings": [
             "Azure API profile latest does not define an entry for GenericRestClient"
         ]
@@ -126,20 +145,20 @@ ok: [localhost]
 TASK [Dump list of resource IDs] ********************************************************************************************************************************************************
 ok: [localhost] => {
     "resource_ids": [
-        "/subscriptions/1c5b82ee-9294-4568-b0c0-b9c523bc0d86/resourceGroups/zimsdtl/providers/Microsoft.DevTestLab/labs/labxxxx",
-        "/subscriptions/1c5b82ee-9294-4568-b0c0-b9c523bc0d86/resourceGroups/zimsdtl/providers/Microsoft.DevTestLab/labs/labxxxx/virtualMachines/vmxxxx",
-        "/subscriptions/1c5b82ee-9294-4568-b0c0-b9c523bc0d86/resourceGroups/zimsdtl/providers/Microsoft.KeyVault/vaults/labxxxx9607",
-        "/subscriptions/1c5b82ee-9294-4568-b0c0-b9c523bc0d86/resourceGroups/zimsdtl/providers/Microsoft.Network/virtualNetworks/vnxxxx",
-        "/subscriptions/1c5b82ee-9294-4568-b0c0-b9c523bc0d86/resourceGroups/zimsdtl/providers/Microsoft.Storage/storageAccounts/alabxxxx2409"
+        "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/zimsdtl/providers/Microsoft.DevTestLab/labs/labxxxx",
+        "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/zimsdtl/providers/Microsoft.DevTestLab/labs/labxxxx/virtualMachines/vmxxxx",
+        "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/zimsdtl/providers/Microsoft.KeyVault/vaults/labxxxx9607",
+        "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/zimsdtl/providers/Microsoft.Network/virtualNetworks/vnxxxx",
+        "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/zimsdtl/providers/Microsoft.Storage/storageAccounts/alabxxxx2409"
     ]
 }
 
 TASK [Iterate through the resources and query details on each one] **********************************************************************************************************************
-ok: [localhost] => (item=/subscriptions/1c5b82ee-9294-4568-b0c0-b9c523bc0d86/resourceGroups/zimsdtl/providers/Microsoft.DevTestLab/labs/labxxxx)
-ok: [localhost] => (item=/subscriptions/1c5b82ee-9294-4568-b0c0-b9c523bc0d86/resourceGroups/zimsdtl/providers/Microsoft.DevTestLab/labs/labxxxx/virtualMachines/vmxxxx)
-ok: [localhost] => (item=/subscriptions/1c5b82ee-9294-4568-b0c0-b9c523bc0d86/resourceGroups/zimsdtl/providers/Microsoft.KeyVault/vaults/labxxxx9607)
-ok: [localhost] => (item=/subscriptions/1c5b82ee-9294-4568-b0c0-b9c523bc0d86/resourceGroups/zimsdtl/providers/Microsoft.Network/virtualNetworks/vnxxxx)
-ok: [localhost] => (item=/subscriptions/1c5b82ee-9294-4568-b0c0-b9c523bc0d86/resourceGroups/zimsdtl/providers/Microsoft.Storage/storageAccounts/alabxxxx2409)
+ok: [localhost] => (item=/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/zimsdtl/providers/Microsoft.DevTestLab/labs/labxxxx)
+ok: [localhost] => (item=/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/zimsdtl/providers/Microsoft.DevTestLab/labs/labxxxx/virtualMachines/vmxxxx)
+ok: [localhost] => (item=/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/zimsdtl/providers/Microsoft.KeyVault/vaults/labxxxx9607)
+ok: [localhost] => (item=/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/zimsdtl/providers/Microsoft.Network/virtualNetworks/vnxxxx)
+ok: [localhost] => (item=/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/zimsdtl/providers/Microsoft.Storage/storageAccounts/alabxxxx2409)
 
 TASK [Create single list of resources] **************************************************************************************************************************************************
 ok: [localhost]
@@ -148,7 +167,7 @@ TASK [Dump final list of resources] ********************************************
 ok: [localhost] => {
     "resources": [
         {
-            "id": "/subscriptions/1c5b82ee-9294-4568-b0c0-b9c523bc0d86/resourcegroups/zimsdtl/providers/microsoft.devtestlab/labs/labxxxx",
+            "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourcegroups/zimsdtl/providers/microsoft.devtestlab/labs/labxxxx",
             "location": "eastus",
             "name": "labxxxx",
             "properties": {
@@ -158,15 +177,15 @@ ok: [localhost] => {
                     "markdown": "",
                     "title": ""
                 },
-                "artifactsStorageAccount": "/subscriptions/1c5b82ee-9294-4568-b0c0-b9c523bc0d86/resourceGroups/zimsdtl/providers/Microsoft.Storage/storageAccounts/alabxxxx2409",
+                "artifactsStorageAccount": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/zimsdtl/providers/Microsoft.Storage/storageAccounts/alabxxxx2409",
                 "createdDate": "2019-03-01T08:42:35.4625319+00:00",
-                "defaultPremiumStorageAccount": "/subscriptions/1c5b82ee-9294-4568-b0c0-b9c523bc0d86/resourceGroups/zimsdtl/providers/Microsoft.Storage/storageAccounts/alabxxxx2409",
-                "defaultStorageAccount": "/subscriptions/1c5b82ee-9294-4568-b0c0-b9c523bc0d86/resourceGroups/zimsdtl/providers/Microsoft.Storage/storageAccounts/alabxxxx2409",
+                "defaultPremiumStorageAccount": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/zimsdtl/providers/Microsoft.Storage/storageAccounts/alabxxxx2409",
+                "defaultStorageAccount": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/zimsdtl/providers/Microsoft.Storage/storageAccounts/alabxxxx2409",
                 "environmentPermission": "Reader",
                 "labStorageType": "Standard",
                 "mandatoryArtifactsResourceIdsLinux": [],
                 "mandatoryArtifactsResourceIdsWindows": [],
-                "premiumDataDiskStorageAccount": "/subscriptions/1c5b82ee-9294-4568-b0c0-b9c523bc0d86/resourceGroups/zimsdtl/providers/Microsoft.Storage/storageAccounts/alabxxxx2409",
+                "premiumDataDiskStorageAccount": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/zimsdtl/providers/Microsoft.Storage/storageAccounts/alabxxxx2409",
                 "premiumDataDisks": "Disabled",
                 "provisioningState": "Succeeded",
                 "support": {
@@ -174,12 +193,12 @@ ok: [localhost] => {
                     "markdown": ""
                 },
                 "uniqueIdentifier": "1f33aff8-4e19-43e2-b2fc-181ce85afd2a",
-                "vaultName": "/subscriptions/1c5b82ee-9294-4568-b0c0-b9c523bc0d86/resourceGroups/zimsdtl/providers/Microsoft.KeyVault/vaults/labxxxx9607"
+                "vaultName": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/zimsdtl/providers/Microsoft.KeyVault/vaults/labxxxx9607"
             },
             "type": "Microsoft.DevTestLab/labs"
         },
         {
-            "id": "/subscriptions/1c5b82ee-9294-4568-b0c0-b9c523bc0d86/resourcegroups/zimsdtl/providers/microsoft.devtestlab/labs/labxxxx/virtualmachines/vmxxxx",
+            "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourcegroups/zimsdtl/providers/microsoft.devtestlab/labs/labxxxx/virtualmachines/vmxxxx",
             "location": "eastus",
             "name": "vmxxxx",
             "properties": {
@@ -188,7 +207,7 @@ ok: [localhost] => {
                     "artifactsApplied": 0,
                     "totalArtifacts": 0
                 },
-                "computeId": "/subscriptions/1c5b82ee-9294-4568-b0c0-b9c523bc0d86/resourceGroups/labxxxx-vmxxxx-561112/providers/Microsoft.Compute/virtualMachines/vmxxxx",
+                "computeId": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/labxxxx-vmxxxx-561112/providers/Microsoft.Compute/virtualMachines/vmxxxx",
                 "createdByUser": "",
                 "createdByUserId": "",
                 "createdDate": "2019-03-01T08:44:56.9375632+00:00",
@@ -204,7 +223,7 @@ ok: [localhost] => {
                     "version": "latest"
                 },
                 "labSubnetName": "vnxxxxSubnet",
-                "labVirtualNetworkId": "/subscriptions/1c5b82ee-9294-4568-b0c0-b9c523bc0d86/resourceGroups/zimsdtl/providers/Microsoft.DevTestLab/labs/labxxxx/virtualnetworks/vnxxxx",
+                "labVirtualNetworkId": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/zimsdtl/providers/Microsoft.DevTestLab/labs/labxxxx/virtualnetworks/vnxxxx",
                 "lastKnownPowerState": "Stopped",
                 "networkInterface": {},
                 "notes": "Virtual machine notes, just something....",
@@ -221,7 +240,7 @@ ok: [localhost] => {
             "type": "Microsoft.DevTestLab/labs/virtualMachines"
         },
         {
-            "id": "/subscriptions/1c5b82ee-9294-4568-b0c0-b9c523bc0d86/resourceGroups/zimsdtl/providers/Microsoft.KeyVault/vaults/labxxxx9607",
+            "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/zimsdtl/providers/Microsoft.KeyVault/vaults/labxxxx9607",
             "location": "eastus",
             "name": "labxxxx9607",
             "properties": {
@@ -253,7 +272,7 @@ ok: [localhost] => {
         },
         {
             "etag": "W/\"806f86f0-0cdd-4424-9fbc-17b9ab331ad7\"",
-            "id": "/subscriptions/1c5b82ee-9294-4568-b0c0-b9c523bc0d86/resourceGroups/zimsdtl/providers/Microsoft.Network/virtualNetworks/vnxxxx",
+            "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/zimsdtl/providers/Microsoft.Network/virtualNetworks/vnxxxx",
             "location": "eastus",
             "name": "vnxxxx",
             "properties": {
@@ -272,7 +291,7 @@ ok: [localhost] => {
                 "subnets": [
                     {
                         "etag": "W/\"806f86f0-0cdd-4424-9fbc-17b9ab331ad7\"",
-                        "id": "/subscriptions/1c5b82ee-9294-4568-b0c0-b9c523bc0d86/resourceGroups/zimsdtl/providers/Microsoft.Network/virtualNetworks/vnxxxx/subnets/vnxxxxSubnet",
+                        "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/zimsdtl/providers/Microsoft.Network/virtualNetworks/vnxxxx/subnets/vnxxxxSubnet",
                         "name": "vnxxxxSubnet",
                         "properties": {
                             "addressPrefix": "10.0.0.0/20",
@@ -290,7 +309,7 @@ ok: [localhost] => {
             "type": "Microsoft.Network/virtualNetworks"
         },
         {
-            "id": "/subscriptions/1c5b82ee-9294-4568-b0c0-b9c523bc0d86/resourceGroups/zimsdtl/providers/Microsoft.Storage/storageAccounts/alabxxxx2409",
+            "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/zimsdtl/providers/Microsoft.Storage/storageAccounts/alabxxxx2409",
             "kind": "StorageV2",
             "location": "eastus",
             "name": "alabxxxx2409",
